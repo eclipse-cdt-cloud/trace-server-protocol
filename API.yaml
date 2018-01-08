@@ -1,0 +1,1181 @@
+###############################################################################
+# Copyright (c) 2017 Ericsson
+#
+# All rights reserved. This program and the accompanying materials are
+# made available under the terms of the Eclipse Public License v1.0 which
+# accompanies this distribution, and is available at
+# http://www.eclipse.org/legal/epl-v10.html
+###############################################################################
+swagger: '2.0'
+info:
+  description: Open source REST API for viewing and analyzing any type of logs or traces. Its goal is to provide models to populate views, graphs, metrics, and more to help extract useful information from traces, in a way that is more user-friendly and informative than huge text dumps.
+  version: 0.0.0
+  title: Trace Analysis Server Protocol
+  termsOfService: http://tracecompass.org/
+  contact:
+    email: tracecompass-dev@eclipse.org
+  license:
+    name: Eclipse Public License (EPL)
+    url: https://www.eclipse.org/legal/epl-v10.html
+host: localhost:8080
+basePath: /tracecompass
+tags:
+- name: Traces
+  description: How to manage physical traces on your server.
+- name: Experiments
+  description: How to manage experiments on your server, an experiment represent a collection of traces, which can produce output models.
+- name: Bookmarks
+  description: How to bookmark areas of interest in the trace.
+- name: XY
+  description: Learn about querying XY models
+- name: TimeGraph
+  description: Learn about querying Time Graph models.
+- name: Tables
+  description: Learn about querying table models.
+- name: Features
+  description: Discover the features which are available on a given server.
+schemes:
+- http
+paths:
+  /traces:
+    get:
+      tags:
+      - Traces
+      summary: Get the list of physical traces imported on the server.
+      operationId: getTraces
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Returns a list of traces
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TraceModel'
+    post:
+      tags:
+      - Traces
+      summary: Import a trace
+      description: Import a trace to the trace server.
+        Return some base information once imported.
+      operationId: addTrace
+      consumes:
+      - application/x-www-form-urlencoded
+      - application/octet-stream
+      produces:
+      - application/json
+      parameters:
+      - name: path
+        in: formData
+        description: URL to the trace, not necessary if the trace is uploaded via the endpoint
+        required: true
+        type: string
+      - name: name
+        in: formData
+        description: The name of the trace in the server, to override the default name
+        required: false
+        type: string
+      - name: typeID
+        in: formData
+        description: The trace type's id, to force the use of a parser / disambiguate the trace type.
+        required: false
+        type: string
+      responses:
+        200:
+          description: The trace has been successfully added to the trace server.
+          schema:
+            $ref: '#/definitions/TraceModel'
+        404:
+          description: "No trace available at path"
+        406:
+          description: "Not acceptable: cannot read this trace type"
+        409:
+          description: "Conflict: there was already a trace with this name"
+  /traces/{traceUUID}:
+    delete:
+      tags:
+      - Traces
+      summary: Remove a trace from the server.
+        Does not delete the trace from disk.
+      operationId: deleteTrace
+      produces:
+      - application/json
+      parameters:
+      - name: traceUUID
+        in: path
+        description: The unique identifier of the trace in the server
+        required: true
+        type: integer
+        format: int128
+      responses:
+        200:
+          description: The trace was successfully deleted
+          schema:
+            $ref: '#/definitions/TraceModel'
+        204:
+          description: There was no trace with this name to close / delete
+  /experiments:
+    get:
+      tags:
+      - Experiments
+      summary: Get the list of experiments on the server
+      operationId: getExperiments
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Returns a list of experiments
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Experiment'
+    post:
+      summary: Create a new experiment on the server
+      operationId: postExperiment
+      tags:
+      - Experiments
+      - Traces
+      produces:
+      - application/json
+      parameters:
+      - name: name
+        in: query
+        description: The name to give this experiment
+        required: true
+        type: string
+      - name: UUID
+        in: query
+        description: The unique identifiers of the traces to encapsulate in this experiment
+        required: true
+        type: array
+        items:
+          type: integer
+          format: int128
+      responses:
+        200:
+          description: The Experiment was successfully created
+          schema:
+            $ref: '#/definitions/Experiment'
+  /experiments/{expUUID}:
+    get:
+      summary: Get the Model object for an experiment
+      operationId: getExperiment
+      tags:
+      - Experiments
+      - Traces
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to modify
+        required: true
+        type : integer
+        format: int128
+      responses:
+        200:
+          description: Return the experiment model
+          schema:
+            $ref: '#/definitions/Experiment'
+        400:
+          description: No such experiment
+    put:
+      summary: Update an experiment's content and name.
+      operationId: putExperiment
+      tags:
+      - Experiments
+      - Traces
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to modify
+        required: true
+        type : integer
+        format: int128
+      - name: name
+        in: query
+        description: The name to give this experiment
+        required: true
+        type: string
+      - name: UUID
+        in: query
+        description: The unique identifiers of the traces to encapsulate in this experiment
+        required: true
+        type: array
+        items:
+          type : integer
+          format: int128
+      responses:
+        200:
+          description: The Experiment was successfully modified
+          schema:
+            $ref: '#/definitions/Experiment'
+    delete:
+      tags:
+      - Experiments
+      summary: Remove an Experiment from the server.
+      operationId: deleteExperiment
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: The unique identifier of the experiment in the server
+        required: true
+        type : integer
+        format: int128
+      responses:
+        200:
+          description: The trace was successfully deleted, return the deleted experiment.
+          schema:
+            $ref: '#/definitions/Experiment'
+        204:
+          description: There was no experiment with this name to close / delete
+  /experiments/{expUUID}/outputs:
+    get:
+      tags:
+      - Traces
+      summary: Get the list of outputs for this experiment
+      operationId: getOutputs
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: The unique identifier of the experiment in the server
+        required: true
+        type : integer
+        format: int128
+      responses:
+        200:
+          description: Returns a list of output provider descriptors
+          schema:
+            type: object
+            properties:
+              experiment:
+                $ref: '#/definitions/Experiment'
+              providers:
+                type: array
+                items:
+                  $ref: '#/definitions/OutputDescriptor'
+        404:
+          description: No such trace
+          schema:
+            type: string
+  /experiments/{expUUID}/bookmarks:
+    get:
+      summary: Get the collection of bookmarks for an experiment.
+      operationId: getExperimentBookmarks
+      tags:
+      - Bookmarks
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: The UUID of the experiment in the server
+        required: true
+        type : integer
+        format: int128
+      responses:
+        200:
+          description: Returns a list of bookmarks for this trace
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Bookmark'
+        404:
+          description: No such experiment
+          schema:
+            type: string
+    post:
+      summary: Add a bookmark to an experiment.
+      operationId: postExperimentBookmark
+      tags:
+      - Bookmarks
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: The UUID of the experiment in the server
+        required: true
+        type : integer
+        format: int128
+      - name: bookmark
+        in: body
+        description: The bookmark to post
+        required: true
+        schema:
+            $ref: '#/definitions/Bookmark'
+      responses:
+        200:
+          description: Returns the boomark's Id
+          schema:
+            type: integer
+        404:
+          description: No such trace
+          schema:
+            type: string
+  /experiments/{expUUID}/bookmarks/{bookmarkId}:
+    get:
+      summary: Get a specific bookmark from this experiment
+      operationId: getExperimentBookmark
+      tags:
+      - Bookmarks
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: The UUID of the experiment in the server
+        required: true
+        type : integer
+        format: int128
+      - name: bookmarkId
+        in: path
+        description: The unique identifier of the bookmark to get
+        required: true
+        type: integer
+        format: int128
+      responses:
+        200:
+          description: Returns the queried bookmark
+          schema:
+            $ref: '#/definitions/Bookmark'
+        404:
+          description: No such experiment / No such bookmark
+          schema:
+            type: string
+    put:
+      summary: Modify a bookmark
+      operationId: putExperimentBookmark
+      tags:
+      - Bookmarks
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: The UUID of the experiment in the server
+        required: true
+        type: integer
+        format: int128
+      - name: bookmarkId
+        in: path
+        description: The unique identifier of the bookmark to modify
+        required: true
+        type: string
+      - name: bookmark
+        in: body
+        description: The bookmark to update
+        required: true
+        schema:
+            $ref: '#/definitions/Bookmark'
+      responses:
+        200:
+          description: Returns the boomark's Id
+          schema:
+            type: integer
+        404:
+          description: No such trace
+          schema:
+            type: string
+    delete:
+      summary: Delete a bookmark
+      operationId: deleteExperimentBookmark
+      tags:
+      - Bookmarks
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: The UUID of the experiment in the server
+        required: true
+        type: integer
+        format: int128
+      - name: bookmarkId
+        in: path
+        description: The unique identifier of the bookmark to delete
+        required: true
+        type: integer
+        format: int128
+      responses:
+        200:
+          description: Returns the deleted boomark
+          schema:
+            $ref: '#/definitions/Bookmark'
+        404:
+          description: No such trace or bookmark
+          schema:
+            type: string
+  /experiments/{expUUID}/outputs/{outputID}/tree:
+    get:
+      tags:
+      - XY
+      - TimeGraph
+      summary: Tentative API for the XY and Time Graph models.
+      description: Unique entry point for output providers,
+        to get the tree of visible entries
+      operationId: getOutput
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        type : integer
+        format: int128
+      - name: outputID
+        in: path
+        description: ID of the output provider to query
+        type: string
+        required: true
+      - name: low
+        in: query
+        description: Low index for the virtual tree / batching
+        required: false
+        type: integer
+        format: int64
+      - name: size
+        in: query
+        description: Number of entries for the virtual tree / batching
+        required: false
+        type: integer
+        format: int32
+      - name: start
+        in: query
+        description: Start Time of the query
+        required: false
+        type: integer
+        format: int64
+      - name: end
+        in: query
+        description: End Time of the query
+        required: false
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Returns a list of XY entries, Time graph entries or table headers. The returned model must be consistent, parentIds must refer to a parent which exists in the model.
+          schema:
+            type: object
+            properties:
+              output:
+                $ref: '#/definitions/OutputDescriptor'
+              entries:
+                type: array
+                items:
+                  $ref: '#/definitions/TimeGraphEntry'
+              size:
+                description: total number of entries for this model.
+                type: integer
+                format: int64
+        404:
+          description: Experiment or output provider not found
+          schema:
+            type: string
+  /experiments/{expUUID}/outputs/{tableId}/lines:
+    post:
+      tags:
+      - Tables
+      summary: Get a virtual table of the items from a table
+      operationId: getLines
+      produces:
+      - application/json
+      consumes:
+      - application/x-www-form-urlencoded
+      parameters:
+      - name: expUUID
+        in: path
+        description: The UUID of the experiment in the server
+        required: true
+        type : integer
+        format: int128
+      - name: tableId
+        in: path
+        description: The name of the table to query
+        required: true
+        type: string
+      - name: low
+        in: query
+        description: Rank of the first event to query
+        required: true
+        type: integer
+        format: int64
+        minimum: 0
+      - name: size
+        in: query
+        description: Number of events to query
+        required: true
+        type: integer
+        format: int32
+      - name: columns
+        in: query
+        type: array
+        items:
+          type: string
+        description: List of column names to return, all columns will be returned if not specified.
+        required: false
+      - name: filters
+        in: formData
+        type: string
+        description: The form data keys are the column names, their values are
+          the regular expressions to apply to filter the columns
+        required: false
+      responses:
+        200:
+          description: Returns a table model with a 2D array of strings and metadata
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TableModel'
+        400:
+          description: Bad request, the top index and size must be larger than 0
+          schema:
+            type: string
+        404:
+          description: No such Experiment
+          schema:
+            type: string
+        500:
+          description: Error reading the Experiment
+          schema:
+            type: string
+  /experiments/{expUUID}/outputs/{outputID}/tooltip:
+    get:
+      tags:
+      - XY
+      - TimeGraph
+      summary: Tentative API for the XY and Time Graph views tooltips.
+      description: Unique entry point for all XY and Time Graph views,
+        to get the tree of visible entrie
+      operationId: getTooltip
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        type : integer
+        format: int128
+      - name: outputID
+        in: path
+        description: ID of the output provider to query
+        type: string
+        required: true
+      - name: time
+        in: query
+        description: Tooltip's timestamp.
+        required: true
+        type: integer
+        format: int64
+      - name: entryID
+        in: query
+        description: Tooltip's entry, a global tooltip is returned if absent.
+        required: false
+        type: integer
+        format: int64
+      - name: targetID
+        in: query
+        description: Tooltip's entry, when applied on arrows.
+        required: false
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Returns a list of tooltip keys to values
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                key:
+                  type: string
+                value:
+                  type: string
+        404:
+          description: Experiment or output provider not found
+          schema:
+            type: string
+  /experiments/{expUUID}/outputs/{xyOutputID}/xy:
+    get:
+      tags:
+      - XY
+      summary: Tentative API for the XY models
+      description: Unique endpoint for all xy models,
+        ensures that the same template is followed for all endpoints.
+      operationId: getXY
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        type : integer
+        format: int128
+      - name: xyOutputID
+        in: path
+        description: ID of the output provider to query
+        type: string
+        required: true
+      - name: start
+        in: query
+        description: Start Time of the query
+        required: true
+        type: integer
+        format: int64
+      - name: end
+        in: query
+        description: End Time of the query
+        required: true
+        type: integer
+        format: int64
+      - name: nb
+        in: query
+        description: Number of data points to sample
+        required: true
+        type: integer
+        format: int32
+      - name: ids
+        in: query
+        description: Parameters to query specific entries
+        required: true
+        type: array
+        items:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Return the queried XYView
+          schema:
+            $ref: '#/definitions/XYView'
+        404:
+          description: Trace not found
+          schema:
+            type: string
+        405:
+          description: Analysis not possible for this trace
+          schema:
+            type: string
+  /experiments/{expUUID}/outputs/{timeGraphID}/states:
+    get:
+      tags:
+      - TimeGraph
+      summary: Tentative API for the TimeGraph views
+      operationId: getTimeGraphStates
+      description: Unique entry point for all TimeGraph states,
+        ensures that the same template is followed for all views
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiement to query
+        required: true
+        type : integer
+        format: int128
+      - name: timeGraphID
+        in: path
+        description: ID of the output provider to query
+        type: string
+        required: true
+      - name: start
+        in: query
+        description: Start Time of the query
+        required: true
+        type: integer
+        format: int64
+      - name: end
+        in: query
+        description: End Time of the query
+        required: true
+        type: integer
+        format: int64
+      - name: nb
+        in: query
+        description: Number of time stamps to sample
+        required: true
+        type: integer
+        format: int32
+      - name: entries
+        in: query
+        required: true
+        type: array
+        items:
+          type: integer
+          format: int64
+        description: List of entries to query
+      - name: labelRatio
+        in: query
+        description: Ratio of state duration to label's string length to determine if the resolution is large enough to return the label
+        required: false
+        type: integer
+        format: int32
+      responses:
+        200:
+          description: Returns a list of trace entries
+          schema:
+            type: object
+            properties:
+              trace:
+                $ref: '#/definitions/TraceModel'
+              states:
+                type: array
+                items:
+                  $ref: '#/definitions/TimeGraphRow'
+        404:
+          description: Experiment or output provider not found
+          schema:
+            type: string
+  /experiments/{expUUID}/outputs/{timeGraphID}/arrows:
+    get:
+      tags:
+      - TimeGraph
+      summary: Tentative API for the TimeGraph arrows
+      operationId: getTimeGraphArrows
+      description: Unique entry point for all TimeGraph models,
+        ensures that the same template is followed for all models
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        type : integer
+        format: int128
+      - name: timeGraphID
+        in: path
+        description: ID of the output provider to query
+        type: string
+        required: true
+      - name: start
+        in: query
+        description: Start Time of the query
+        required: true
+        type: integer
+        format: int64
+      - name: end
+        in: query
+        description: End Time of the query
+        required: true
+        type: integer
+        format: int64
+      - name: nb
+        in: query
+        description: Number of time stamps to sample
+        required: true
+        type: integer
+        format: int32
+      - name: arrowSeries
+        in: query
+        description: Name of the arrow series to query, return the default series if absent.
+        required: false
+        type: string
+      responses:
+        200:
+          description: Returns a sampled list of TimeGraph arrows
+          schema:
+            type: object
+            properties:
+              output:
+                $ref: '#/definitions/OutputDescriptor'
+              arrows:
+                type: array
+                items:
+                  $ref: '#/definitions/TimeGraphArrow'
+        404:
+          description: Experiment or output provider not found
+          schema:
+            type: string
+  /symbols/{hostID}/{PID}:
+    post:
+      tags:
+      - Symbols
+      summary: Import/Upload a symbol provider.
+      operationId: addSymbolProvider
+      consumes:
+      - application/x-www-form-urlencoded
+      - application/binary
+      produces:
+      - application/json
+      parameters:
+      - name: hostID
+        in: path
+        description: Host ID for the symbol provider
+        required: true
+        type: string
+      - name: PID
+        in: path
+        description: PID for the symbol provider
+        required: true
+        type: string
+      - name: url
+        in: formData
+        description: URL to the symbol provider, not required if the symbol provider is
+          uploaded directly to the endpoint.
+        required: false
+        type: string
+      responses:
+        200:
+          description: The symbol provider has been successfully added to the trace server.
+        406:
+          description: "Not acceptable: cannot read this symbol provider type"
+    get:
+      tags:
+      - Symbols
+      summary: Gets the symbol providers
+      operationId: getSymbols
+      produces:
+      - application/json
+      parameters:
+      - name: hostID
+        in: path
+        description: The host's ID
+        required: true
+        type: string
+      - name: PID
+        in: path
+        description: Process ID
+        required: true
+        type: string
+      responses:
+        200:
+          description: Returns the Symbol providers for this query.
+        404:
+          description: No such Host, Thread and address combination.
+  /about/traceTypes:
+    get:
+      summary: Get the list of trace types supported by this server.
+      operationId: getTraceTypes
+      tags:
+      - Features
+      produces:
+      - application/json
+      responses:
+        200:
+          description: List of the trace types supported by this server.
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                ID:
+                  description: The unique identifier for this trace type
+                  type: string
+                description:
+                  description: Human readable description of this trace type
+                  type: string
+                versions:
+                  description: List supported versions
+                  type: array
+                  items:
+                    type: string
+  /about/outputTypes:
+    get:
+      summary: Get the list of outputs supported by this server.
+      tags:
+      - Features
+      produces:
+      - application/json
+      responses:
+        200:
+          description: List of the output types supported by this server.
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                ID:
+                  description: The unique identifier for this output provider type
+                  type: string
+                description:
+                  description: Human readable description of this output type
+                  type: string
+                versions:
+                  description: List supported versions
+                  type: array
+                  items:
+                    type: string
+definitions:
+  TraceModel:
+    type: object
+    properties:
+      name:
+        description: User defined name for the trace
+        type: string
+      path:
+        description: Path to the trace on the file server's File System
+        type: string
+      nbEvents:
+        description: Current number of indexed events in the trace.
+        type: integer
+        format: int64
+      startTime:
+        description: The trace's start time
+        type: integer
+        format: int64
+      endTime:
+        description: The trace's end time
+        type: integer
+        format: int64
+      UUID:
+        description: The trace's unique identifier
+        type : integer
+        format: int128
+  Experiment:
+    type: object
+    properties:
+      name:
+        description: User defined name for the experiment
+        type: string
+      nbEvents:
+        description: Current number of indexed events in the trace.
+        type: integer
+        format: int64
+      startTime:
+        description: The trace's start time
+        type: integer
+        format: int64
+      endTime:
+        description: The trace's end time
+        type: integer
+        format: int64
+      UUID:
+        description: The experiment's unique identifier
+        type : integer
+        format: int128
+      traces:
+        description: The traces encapsulated by this experiment
+        type: array
+        items:
+          $ref: '#/definitions/TraceModel'
+  Bookmark:
+    type: object
+    properties:
+      start:
+        description: the start time for this bookmark.
+        type: integer
+        format: int64
+      end:
+        description: the end time for this bookmark.
+        type: integer
+        format: int64
+      name:
+        description: this bookmark's name
+        type: string
+      type:
+        description: The type of the bookmark (generic, output, ...)
+        type: string
+      iconUrl:
+        description: URL to the bookmark's icon
+        type: string
+      UUID:
+        description: The bookmark's unique ID, generated by the server.
+        type: integer
+        format: int128
+  OutputDescriptor:
+    type: object
+    properties:
+      ID:
+        description: The output provider's ID
+        type: string
+      name:
+        description: The human readable name
+        type: string
+      description:
+        description: Describe the output provider's features
+        type: string
+      start:
+        description: The start time of the output model
+        type: integer
+        format: int64
+      end:
+        description: The end time of the output model
+        type: integer
+        format: int64
+      final:
+        description: If the start, end times and current model are final, or if they will need to be refreshed later to represent a more up to date version.
+        type: boolean
+  TableModel:
+    type: object
+    properties:
+      trace:
+        $ref: '#/definitions/TraceModel'
+      low:
+        description: Rank of the first returned event
+        type: integer
+        format: int64
+      size:
+        description: Number of events.
+        type: integer
+        format: int32
+      filteredSize:
+        description: Total number of events that currently match this filter
+        type: integer
+        format: int64
+      filters:
+        description: Map of column / aspect name to regular expression filter
+        type: object
+        properties:
+          key:
+            type: string
+          value:
+            type: string
+      lines:
+        type: array
+        items:
+          type: array
+          items:
+            type: string
+  XYEntry:
+    type: object
+    properties:
+      name:
+        description: Displayed name for this Entry
+        type: string
+      id:
+        description: Unique id to identify this entry in the backend.
+        type: integer
+        format: int64
+      parentId:
+        description: Unique id to identify this parent's entry,
+          optional if this entry does not have a parent.
+        type: integer
+        format: int64
+      cssId:
+        description: Optional reference to the CSS class to format this entry's series.
+        type: integer
+        format: int32
+  XYView:
+    type: object
+    properties:
+      trace:
+        $ref: '#/definitions/TraceModel'
+      model:
+        type: object
+        properties:
+          times:
+            description: X values (times) for the XY Model
+            type: array
+            items:
+              type: integer
+              format: int64
+          series:
+            description: map of series' name to Y series model
+            type: array
+            items:
+              type: object
+              properties:
+                key:
+                  description: series' name
+                  type: string
+                values:
+                  description: series' Y values
+                  type: array
+                  items:
+                    type: number
+                    format: double
+      xLabel:
+        description: Label to apply to the x-axis
+        type: string
+      yLabel:
+        description: Label to apply to the y-axis
+        type: string
+  TimeGraphEntry:
+    type: object
+    properties:
+      name:
+        description: Displayed name for this Entry
+        type: string
+      id:
+        description: Unique id to identify this entry in the backend.
+        type: integer
+        format: int32
+      parentId:
+        description: Unique id to identify this parent's entry.
+        type: integer
+        format: int32
+      start:
+        description: Beginning of the range for which this entry exists
+        type: integer
+        format: int64
+      end:
+        description: End of the range for which this entry exists
+        type: integer
+        format: int64
+  TimeGraphState:
+    type: object
+    properties:
+      start:
+        description: start time for this state
+        type: integer
+        format: int64
+      end:
+        description: end time for this state
+        type: integer
+        format: int64
+      label:
+        description: Text label to apply to this TimeGraphState if resolution permits.
+          Optional, no label is applied if absent.
+        type: string
+      cssId:
+        description: optional ID to refer to the css to format this arrow
+        type: integer
+      cssValue:
+        description: optional value to vary css rendering
+        type: integer
+  TimeGraphRow:
+    type: object
+    properties:
+      id:
+        description: The entry to map this state list to
+        type: integer
+        format: int64
+      states:
+        description: List of the time graph entry states associated to this entry and zoom level.
+        type: array
+        items:
+          $ref: '#/definitions/TimeGraphState'
+  TimeGraphArrow:
+    type: object
+    properties:
+      start:
+        description: start time for this arrow
+        type: integer
+        format: int64
+      end:
+        description: end time for this arrow
+        type: integer
+        format: int64
+      sourceId:
+        description: Source entry's unique ID
+        type: integer
+        format: int64
+      targetId:
+        description: Target entry's unique ID
+        type: integer
+        format: int64
+      cssId:
+        description: optional ID to refer to the css to format this arrow
+        type: integer
+        format: int32
