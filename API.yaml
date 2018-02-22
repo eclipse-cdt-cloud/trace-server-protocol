@@ -142,16 +142,18 @@ paths:
       tags:
       - Experiments
       - Traces
+      consumes:
+      - application/x-www-form-urlencoded
       produces:
       - application/json
       parameters:
       - name: name
-        in: query
+        in: formData
         description: The name to give this experiment
         required: true
         type: string
       - name: UUID
-        in: query
+        in: formData
         description: The unique identifiers of the traces to encapsulate in this experiment
         required: true
         type: array
