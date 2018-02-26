@@ -152,7 +152,7 @@ paths:
         description: The name to give this experiment
         required: true
         type: string
-      - name: UUID
+      - name: traces
         in: formData
         description: The unique identifiers of the traces to encapsulate in this experiment
         required: true
