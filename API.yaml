@@ -39,6 +39,8 @@ tags:
   description: Learn about querying Time Graph models.
 - name: Tables
   description: Learn about querying table models.
+- name: Event Tables
+  description: Learn about querying event table models.
 - name: Features
   description: Discover the features which are available on a given server.
 schemes:
@@ -430,6 +432,8 @@ paths:
       tags:
       - XY
       - TimeGraph
+      - Tables
+      - Event Tables
       summary: Tentative API for the XY and Time Graph models.
       description: Unique entry point for output providers,
         to get the tree of visible entries
@@ -495,11 +499,69 @@ paths:
           schema:
             type: string
   /experiments/{expUUID}/outputs/{tableId}/lines:
-    post:
+    get:
       tags:
       - Tables
+      - Event Tables
       summary: Get a virtual table of the items from a table
       operationId: getLines
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: The UUID of the experiment in the server
+        required: true
+        type : integer
+        format: int128
+      - name: tableId
+        in: path
+        description: The name of the table provider to query
+        required: true
+        type: string
+      - name: lowIndex
+        in: query
+        description: Index of the first line to query
+        required: true
+        type: integer
+        format: int64
+        minimum: 0
+      - name: size
+        in: query
+        description: Number of events to query
+        required: true
+        type: integer
+        format: int32
+      - name: columnId
+        in: query
+        type: array
+        items:
+          type: string
+        description: List of column ids to return, all columns will be returned if not specified. The data in the returned lines will use the same order as the columnId array.
+        required: false
+      responses:
+        200:
+          description: Returns a table model with a 2D array of strings and metadata
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TableModel'
+        400:
+          description: Bad request, the top index and size must be larger than 0
+          schema:
+            type: string
+        404:
+          description: No such Experiment
+          schema:
+            type: string
+        500:
+          description: Error reading the Experiment
+          schema:
+            type: string
+    put:
+      tags:
+      - Event Tables
+      summary: Get an virtual table of the items from a table
       produces:
       - application/json
       consumes:
@@ -513,34 +575,33 @@ paths:
         format: int128
       - name: tableId
         in: path
-        description: The name of the table to query
+        description: The name of the table provider to query
         required: true
         type: string
-      - name: low
+      - name: lowIndex
         in: query
-        description: Rank of the first event to query
+        description: Index of the first line to query
         required: true
         type: integer
         format: int64
         minimum: 0
       - name: size
         in: query
-        description: Number of events to query
+        description: Number of lines to query
         required: true
         type: integer
         format: int32
-      - name: columns
+      - name: columnId
         in: query
         type: array
         items:
           type: string
-        description: List of column names to return, all columns will be returned if not specified.
+        description: List of column IDs to return, all columns will be returned if not specified. The data in the returned lines will use the same order as the columnId array.
         required: false
       - name: filters
         in: formData
         type: string
-        description: The form data keys are the column names, their values are
-          the regular expressions to apply to filter the columns
+        description: The form data contains an array of preset filter ID (Key presetfilterId), a boolean to determine of a collapse filter is applied (Key collapseFilter) and a map of column IDs to their regular expressions to apply to filter the columns. Preset filter are filters that are defined outside the table and can be found on the server. The collapse filter, when applied, will collapse two or more consecutive lines together if they are identical and the returned lines will have a count of how many lines were collapsed.
         required: false
       responses:
         200:
@@ -1030,32 +1091,33 @@ definitions:
     properties:
       trace:
         $ref: '#/definitions/TraceModel'
-      low:
+      lowIndex:
         description: Rank of the first returned event
         type: integer
         format: int64
       size:
-        description: Number of events.
+        description: Number of events. If filtered, the size will be the number of events that match the filters
         type: integer
         format: int32
-      filteredSize:
-        description: Total number of events that currently match this filter
-        type: integer
-        format: int64
-      filters:
-        description: Map of column / aspect name to regular expression filter
-        type: object
-        properties:
-          key:
-            type: string
-          value:
-            type: string
+      columnId:
+        type: array
+        items:
+          type: integer
+          format: int64
       lines:
         type: array
         items:
-          type: array
-          items:
-            type: string
+          $ref: '#/definitions/LineModel'
+  LineModel:
+    type: object
+    properties:
+      index:
+        type: integer
+        format: int64
+      line:
+        type: array
+        items:
+          type: string
   XYEntry:
     type: object
     properties:
