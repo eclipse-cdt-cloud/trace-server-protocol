@@ -37,8 +37,6 @@ tags:
   description: Learn about querying XY models
 - name: TimeGraph
   description: Learn about querying Time Graph models.
-- name: Tables
-  description: Learn about querying table models.
 - name: Event Tables
   description: Learn about querying event table models.
 - name: Features
@@ -427,17 +425,14 @@ paths:
           description: No such trace or bookmark
           schema:
             type: string
-  /experiments/{expUUID}/outputs/{outputID}/tree:
+  /experiments/{expUUID}/outputs/XY/{outputID}/tree:
     get:
       tags:
       - XY
-      - TimeGraph
-      - Tables
-      - Event Tables
-      summary: Tentative API for the XY and Time Graph models.
+      summary: Tentative API for the XY models.
       description: Unique entry point for output providers,
         to get the tree of visible entries
-      operationId: getOutput
+      operationId: getXYEntry
       consumes:
       - application/x-www-form-urlencoded
       produces:
@@ -480,7 +475,75 @@ paths:
         format: int64
       responses:
         200:
-          description: Returns a list of XY entries, Time graph entries or table headers. The returned model must be consistent, parentIds must refer to a parent which exists in the model.
+          description: Returns a list of XY entries. The returned model must be consistent, parentIds must refer to a parent which exists in the model.
+          schema:
+            type: object
+            properties:
+              output:
+                $ref: '#/definitions/OutputDescriptor'
+              entries:
+                type: array
+                items:
+                  $ref: '#/definitions/XYEntry'
+              size:
+                description: total number of entries for this model.
+                type: integer
+                format: int64
+        404:
+          description: Experiment or output provider not found
+          schema:
+            type: string
+  /experiments/{expUUID}/outputs/timeGraph/{outputID}/tree:
+    get:
+      tags:
+      - TimeGraph
+      summary: Tentative API for Time Graph models.
+      description: Unique entry point for output providers,
+        to get the tree of visible entries
+      operationId: getTimeGraphEntry
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        type : integer
+        format: int128
+      - name: outputID
+        in: path
+        description: ID of the output provider to query
+        type: string
+        required: true
+      - name: low
+        in: query
+        description: Low index for the virtual tree / batching
+        required: false
+        type: integer
+        format: int64
+      - name: size
+        in: query
+        description: Number of entries for the virtual tree / batching
+        required: false
+        type: integer
+        format: int32
+      - name: start
+        in: query
+        description: Start Time of the query
+        required: false
+        type: integer
+        format: int64
+      - name: end
+        in: query
+        description: End Time of the query
+        required: false
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Returns a list Time graph entries. The returned model must be consistent, parentIds must refer to a parent which exists in the model.
           schema:
             type: object
             properties:
@@ -498,10 +561,77 @@ paths:
           description: Experiment or output provider not found
           schema:
             type: string
-  /experiments/{expUUID}/outputs/{tableId}/lines:
+  /experiments/{expUUID}/outputs/eventsTable/{outputID}/tree:
     get:
       tags:
-      - Tables
+      - Event Tables
+      summary: Tentative API for events table models.
+      description: Unique entry point for output providers,
+        to get the tree of visible entries. In this case it will represent column entries.
+      operationId: getEventsTableEntry
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        type : integer
+        format: int128
+      - name: outputID
+        in: path
+        description: ID of the output provider to query
+        type: string
+        required: true
+      - name: low
+        in: query
+        description: Low index for the virtual tree / batching
+        required: false
+        type: integer
+        format: int64
+      - name: size
+        in: query
+        description: Number of entries for the virtual tree / batching
+        required: false
+        type: integer
+        format: int32
+      - name: start
+        in: query
+        description: Start Time of the query
+        required: false
+        type: integer
+        format: int64
+      - name: end
+        in: query
+        description: End Time of the query
+        required: false
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Returns a list of table headers.
+          schema:
+            type: object
+            properties:
+              output:
+                $ref: '#/definitions/OutputDescriptor'
+              entries:
+                type: array
+                items:
+                  $ref: '#/definitions/ColumnHeaderEntry'
+              size:
+                description: total number of entries for this model.
+                type: integer
+                format: int64
+        404:
+          description: Experiment or output provider not found
+          schema:
+            type: string
+  /experiments/{expUUID}/outputs/eventsTable/{outputID}/lines:
+    get:
+      tags:
       - Event Tables
       summary: Get a virtual table of the items from a table
       operationId: getLines
@@ -679,7 +809,7 @@ paths:
           description: Experiment or output provider not found
           schema:
             type: string
-  /experiments/{expUUID}/outputs/{xyOutputID}/xy:
+  /experiments/{expUUID}/outputs/XY/{outputID}/xy:
     get:
       tags:
       - XY
@@ -742,7 +872,7 @@ paths:
           description: Analysis not possible for this trace
           schema:
             type: string
-  /experiments/{expUUID}/outputs/{timeGraphID}/states:
+  /experiments/{expUUID}/outputs/timeGraph/{outputID}/states:
     get:
       tags:
       - TimeGraph
@@ -814,7 +944,7 @@ paths:
           description: Experiment or output provider not found
           schema:
             type: string
-  /experiments/{expUUID}/outputs/{timeGraphID}/arrows:
+  /experiments/{expUUID}/outputs/timeGraph/{outputID}/arrows:
     get:
       tags:
       - TimeGraph
@@ -1118,6 +1248,23 @@ definitions:
         type: array
         items:
           type: string
+  ColumnHeaderEntry:
+    type: object
+    properties:
+      name:
+        description: Displayed name for this column
+        type: string
+      columnDescription:
+        description: Description of the column
+        type: string
+      id:
+        description: Unique id to identify this column in the backend.
+        type: integer
+        format: int32
+      parentId:
+        description: Unique id to identify this parent's entry.
+        type: integer
+        format: int32
   XYEntry:
     type: object
     properties:
@@ -1133,10 +1280,6 @@ definitions:
           optional if this entry does not have a parent.
         type: integer
         format: int64
-      cssId:
-        description: Optional reference to the CSS class to format this entry's series.
-        type: integer
-        format: int32
   XYView:
     type: object
     properties:
