@@ -5,10 +5,10 @@ This protocol is built to decouple the backend and frontend of trace analysers, 
 
 The protocol is meant to be RESTful, over HTTP.
 
-The specification is currently written in **Swagger 2.0**.
+The specification is currently written in **OpenAPI 3.0**.
 
 # HOW-TO
 
-The specification should be edited with the [swagger editor](https://swagger.io/swagger-editor/) which also handles validating that the swagger specification is respected.
+The specification should be edited with the [swagger editor](https://swagger.io/swagger-editor/) which also handles validating that the OpenAPI specification is respected.
 
-Another option is the Swagger Doc Viewer plug-in for VS Code.
+Another option is the Swagger Viewer plug-in for VS Code.
