@@ -529,22 +529,14 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  output:
-                    $ref: '#/components/schemas/OutputDescriptor'
-                  headers:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/EntryHeader'
-                  entries:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/XYEntry'
-                  size:
-                    description: total number of entries for this model.
-                    type: integer
-                    format: int64
+                allOf:
+                  - $ref: '#/components/schemas/GenericEntryResponse'
+                  - type: object
+                    properties:
+                      entries:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/XYEntry'
         404:
           description: Experiment or output provider not found
           content:
@@ -587,11 +579,11 @@ paths:
               $ref: '#/components/schemas/Query'
       responses:
         200:
-          description: Return the queried XYView
+          description: Return the queried XYResponse
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/XYView'
+                $ref: '#/components/schemas/XYResponse'
         404:
           description: Trace not found
           content:
@@ -707,22 +699,14 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  output:
-                    $ref: '#/components/schemas/OutputDescriptor'
-                  headers:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/EntryHeader'
-                  entries:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TimeGraphEntry'
-                  size:
-                    description: total number of entries for this model.
-                    type: integer
-                    format: int64
+                allOf:
+                  - $ref: '#/components/schemas/GenericResponse'
+                  - type: object
+                    properties:
+                      entries:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TimeGraphEntry'
         404:
           description: Experiment or output provider not found
           content:
@@ -766,18 +750,18 @@ paths:
               $ref: '#/components/schemas/Query'
       responses:
         200:
-          description: Returns a list of trace entries
+          description: Returns a list of time graph row
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  output:
-                    $ref: '#/components/schemas/OutputDescriptor'
-                  states:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TimeGraphRow'
+                allOf:
+                  - $ref: '#/components/schemas/GenericResponse'
+                  - type: object
+                    properties:
+                      model:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TimeGraphRow'
         404:
           description: Experiment or output provider not found
           content:
@@ -822,14 +806,14 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  output:
-                    $ref: '#/components/schemas/OutputDescriptor'
-                  arrows:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TimeGraphArrow'
+                allOf:
+                  - $ref: '#/components/schemas/GenericResponse'
+                  - type: object
+                    properties:
+                      model:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TimeGraphArrow'
         404:
           description: Experiment or output provider not found
           content:
@@ -943,24 +927,24 @@ paths:
               $ref: '#/components/schemas/Query'
       responses:
         200:
-          description: Returns a list of trace entries
+          description: Returns a list of time graph row
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  output:
-                    $ref: '#/components/schemas/OutputDescriptor'
-                  desiredTime:
-                    type: integer
-                    format: int64
-                  desiredEntry:
-                    type: integer
-                    format: int64
-                  states:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TimeGraphRow'
+                allOf:
+                  - $ref: '#/components/schemas/GenericResponse'
+                  - type: object
+                    properties:
+                      desiredTime:
+                        type: integer
+                        format: int64
+                      desiredEntry:
+                        type: integer
+                        format: int64
+                      model:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TimeGraphRow'
   /experiments/{expUUID}/outputs/table/{outputID}/columns:
     post:
       tags:
@@ -997,18 +981,14 @@ paths:
           content:
             application/json:
               schema:
+                allOf:
+                  - $ref: '#/components/schemas/GenericEntryResponse'
                 type: object
                 properties:
-                  output:
-                    $ref: '#/components/schemas/OutputDescriptor'
                   entries:
                     type: array
                     items:
                       $ref: '#/components/schemas/ColumnHeaderEntry'
-                  size:
-                    description: total number of entries for this model.
-                    type: integer
-                    format: int64
         404:
           description: Experiment or output provider not found
           content:
@@ -1052,9 +1032,14 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TableModel'
+                allOf:
+                  - $ref: '#/components/schemas/GenericResponse'
+                  - type: object
+                    properties:
+                      model:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TableModel'
         400:
           description: Bad request, the top index and size must be larger than 0
           content:
@@ -1480,8 +1465,6 @@ components:
     TableModel:
       type: object
       properties:
-        output:
-          $ref: '#/components/schemas/OutputDescriptor'
         lowIndex:
           description: Rank of the first returned event
           type: integer
@@ -1544,105 +1527,87 @@ components:
           description: Displayed name for this header
           type: string
     XYEntry:
+      allOf:
+        - $ref: '#/components/schemas/Entry'
+    XYModel:
       type: object
       properties:
-        name:
-          description: Displayed name for this Entry
+        title:
+          description: Title of the model
+          type: string
+        commonXAxis:
+          description: Indicate if the model use a common X axis
+          type: boolean
+        series:
+          description: Array of XY series
           type: array
           items:
-            type: string
-        id:
-          description: Unique id to identify this entry in the backend.
-          type: integer
-          format: int64
-        parentId:
-          description: Unique id to identify this parent's entry,
-            optional if this entry does not have a parent.
-          type: integer
-          format: int64
-    XYView:
+            $ref: '#/components/schemas/XYSeries'
+    XYSeries:
       type: object
       properties:
-        output:
-          $ref: '#/components/schemas/OutputDescriptor'
-        model:
-          type: object
+        seriesName:
+          description: series' name
+          type: string
+        seriesID:
+          description: series' ID
+          type: string
+        xValues:
+          description: series' X values
+          type: array
+          items:
+            type: integer
+            format: int64
+        yValues:
+          description: series' Y values
+          type: array
+          items:
+            type: number
+            format: double
+        tags:
+          description: Array of tags for each xy values
+          type: array
+          items:
+            type: integer
+            format: int32
+    XYResponse:
+      allOf:
+        - $ref: '#/components/schemas/GenericResponse'
+        - type: object
           properties:
-            commonXAxis:
-              description: Indicate if the model use a common X axis
-              type: boolean
-            series:
-              description: map of series' name to XY series model
-              type: array
-              items:
-                type: object
-                properties:
-                  seriesName:
-                    description: series' name
-                    type: string
-                  seriesID:
-                    description: series' ID
-                    type: string
-                  xValues:
-                    description: series' X values
-                    type: array
-                    items:
-                      type: integer
-                      format: int64
-                  yValues:
-                    description: series' Y values
-                    type: array
-                    items:
-                      type: number
-                      format: double
-                  tags:
-                    description: Array of tags for each xy values
-                    type: array
-                    items:
-                      type: integer
-                      format: int32
-        xAxis:
-          type: object
-          properties:
-            label:
-              description: Label to apply to the x-axis
-              type: string
-            unit:
-              description: Type of units used for this axis
-              type: string
-        yAxis:
-          type: object
-          properties:
-            label:
-              description: Label to apply to the y-axis
-              type: string
-            unit:
-              description: Type of units used for this axis
-              type: string
+            model:
+              $ref: '#/components/schemas/XYModel'
+            xAxis:
+              type: object
+              properties:
+                label:
+                  description: Label to apply to the x-axis
+                  type: string
+                unit:
+                  description: Type of units used for this axis
+                  type: string
+            yAxis:
+              type: object
+              properties:
+                label:
+                  description: Label to apply to the y-axis
+                  type: string
+                unit:
+                  description: Type of units used for this axis
+                  type: string
     TimeGraphEntry:
-      type: object
-      properties:
-        name:
-          description: Displayed name for this Entry
-          type: array
-          items:
-            type: string
-        id:
-          description: Unique id to identify this entry in the backend.
-          type: integer
-          format: int32
-        parentId:
-          description: Unique id to identify this parent's entry.
-          type: integer
-          format: int32
-        start:
-          description: Beginning of the range for which this entry exists
-          type: integer
-          format: int64
-        end:
-          description: End of the range for which this entry exists
-          type: integer
-          format: int64
+      allOf:
+        - $ref: '#/components/schemas/Entry'
+        - type: object
+          properties:
+            start:
+              description: Beginning of the range for which this entry exists
+              type: integer
+              format: int64
+            end:
+              description: End of the range for which this entry exists
+              type: integer
+              format: int64
     TimeGraphState:
       type: object
       properties:
@@ -1743,3 +1708,53 @@ components:
             format: int32
       required:
               - parameters
+    ResponseStatus:
+      description: All possible status for a server response
+      type: string
+      enum:
+        - RUNNING
+        - COMPLETED
+        - FAILED
+        - CANCELLED
+    GenericResponse:
+      description: Generic response that include an output descriptor, the status and a status message
+      type: object
+      properties:
+        output:
+          $ref: '#/components/schemas/OutputDescriptor'
+        status:
+          $ref: '#/components/schemas/ResponseStatus'
+        statusMessage:
+          type: string
+    GenericEntryResponse:
+      description: Generic response for tree request that include an output descriptor and the number of elements
+      allOf:
+        - $ref: '#/components/schemas/GenericResponse'
+        - type: object
+          properties:
+            headers:
+              type: array
+              items:
+                $ref: '#/components/schemas/EntryHeader'
+            size:
+              description: Number of entries in this response
+              type: integer
+              format: int32
+    Entry:
+      description: Base entry returned by tree endpoints
+      type: object
+      properties:
+        name:
+          description: Displayed name for this Entry
+          type: array
+          items:
+            type: string
+        id:
+          description: Unique id to identify this entry in the backend
+          type: integer
+          format: int32
+        parentId:
+          description: Unique id to identify this parent's entry,
+            optional if this entry does not have a parent.
+          type: integer
+          format: int32
