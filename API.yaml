@@ -1086,13 +1086,11 @@ paths:
           type: string
       responses:
         200:
-          description: Style file that contain all the information necessary for this output (ex. states color and style)
+          description: Style model that can be use jointly with styleKey to retreive specific style values
           content:
             application/json:
               schema:
-                description: Style file
-                type: string
-                format: binary
+                $ref: '#/components/schemas/StyleModel'
   /filters:
     get:
       summary: Get the list of filters available.
@@ -1626,7 +1624,7 @@ components:
           type: integer
           format: int32
         styleKey:
-          description: optional key to search for the style of this state
+          description: optional key to search for the style of this state. The style map can be obtained by using the style endpoint.
           type: string
     TimeGraphRow:
       type: object
@@ -1660,7 +1658,7 @@ components:
           type: integer
           format: int64
         styleKey:
-          description: optional key to search for the style of this arrow
+          description: optional key to search for the style of this arrow. The style map can be obtained by using the style endpoint.
           type: string
     Filter:
       type: object
@@ -1753,3 +1751,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EntryHeader'
+    StyleValue:
+      type: object
+      properties:
+        bgColor:
+          type: string
+        fgColor:
+          type: string
+        height:
+          type: integer
+          format: int32
+        font:
+          type: string
+        fontColor:
+          type: string
+      additionalProperties:
+        description: Additional properties can be used to add more style key for a specific output (ex. arrowHead, icons, ...)
+        type: object
+    StyleModel:
+      type: object
+      description: Map of style specific to an output where values gives hints on the style (ex. time graph state)
+      additionalProperties:
+        $ref: '#/components/schemas/StyleValue'
