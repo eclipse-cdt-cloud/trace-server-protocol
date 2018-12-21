@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
-openapi: '3.0.0'
+openapi: '3.0.2'
 info:
   description: Open source REST API for viewing and analyzing any type of logs or traces. Its goal is to provide models to populate views, graphs, metrics, and more to help extract useful information from traces, in a way that is more user-friendly and informative than huge text dumps.
   version: 0.0.0
@@ -25,7 +25,7 @@ info:
     name: Apache 2
     url: http://www.apache.org/licenses/
 servers:
-  - url: 'http://localhost:8080/tracecompass'
+  - url: 'https://localhost:8080/tsp/api'
 tags:
 - name: Traces
   description: How to manage physical traces on your server.
@@ -39,6 +39,8 @@ tags:
   description: Learn about querying Time Graph models.
 - name: Virtual Tables
   description: Learn about querying virtual table models (e.g. Events Table).
+- name: Style
+  description: Retreive styles for different outputs
 - name: Filters
   description: How to filter and query
 - name: Features
@@ -69,12 +71,12 @@ paths:
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               properties:
-                path:
-                  description: URL to the trace, not necessary if the trace is uploaded via the endpoint
+                URI:
+                  description: URI of the trace, not necessary if the trace is uploaded via the endpoint
                   type: string
                 name:
                   description: The name of the trace in the server, to override the default name
@@ -83,7 +85,7 @@ paths:
                   description: The trace type's id, to force the use of a parser / disambiguate the trace type.
                   type: string
               required:
-                - path
+                - URI
       responses:
         200:
           description: The trace has been successfully added to the trace server.
@@ -101,9 +103,8 @@ paths:
     delete:
       tags:
       - Traces
-      summary: Remove a trace from the server.
-        Does not delete the trace from disk.
-      operationId: deleteTrace
+      summary: Remove a trace from the server. By default it does not delete the trace from disk.
+      operationId: removeTrace
       parameters:
       - name: traceUUID
         in: path
@@ -112,6 +113,21 @@ paths:
         schema:
           type: integer
           format: int128
+      - name: deleteTrace
+        in: query
+        description: Indicate if the trace should be deleted from disk or not (false by default)
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: removeCache
+        in: query
+        description: Indicate if the cache or supplementary files should be removed (false by default).
+          If deleteTrace=true, this parameter will also be true.
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         200:
           description: The trace was successfully deleted
@@ -141,11 +157,10 @@ paths:
       operationId: postExperiment
       tags:
       - Experiments
-      - Traces
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               properties:
@@ -174,7 +189,6 @@ paths:
       operationId: getExperiment
       tags:
       - Experiments
-      - Traces
       parameters:
       - name: expUUID
         in: path
@@ -197,7 +211,6 @@ paths:
       operationId: putExperiment
       tags:
       - Experiments
-      - Traces
       parameters:
       - name: expUUID
         in: path
@@ -212,15 +225,39 @@ paths:
         required: true
         schema:
           type: string
-      - name: UUID
-        in: query
-        description: The unique identifiers of the traces to encapsulate in this experiment
-        required: true
-        schema:
-          type: array
-          items:
-            type : integer
-            format: int128
+      requestBody:
+        description: Additional information to update an experiment
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expTypeID:
+                  description: Type ID to apply to this experiment
+                  type: string
+                traces:
+                  description: Traces to modify in this experiment
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      traceUUID:
+                        description: The unique identifier of the trace
+                        type: integer
+                        format: int128
+                      timeOffset:
+                        description: Time offset to apply to this trace
+                        type: integer
+                        format: int64
+                      action:
+                        description: Action to perform on the given trace (add or remove from the experiment)
+                        type: string
+                        enum: [add, remove]
+                        default: add
+                    required:
+                      - traceUUID
+                      - action
       responses:
         200:
           description: The Experiment was successfully modified
@@ -253,7 +290,7 @@ paths:
   /experiments/{expUUID}/outputs:
     get:
       tags:
-      - Traces
+      - Experiments
       summary: Get the list of outputs for this experiment
       operationId: getOutputs
       parameters:
@@ -453,7 +490,7 @@ paths:
               schema:
                 type: string
   /experiments/{expUUID}/outputs/XY/{outputID}/tree:
-    get:
+    post:
       tags:
       - XY
       summary: Tentative API for the XY models.
@@ -474,48 +511,44 @@ paths:
         required: true
         schema:
           type: string
-      - name: queryFilterID
-        in: query
-        description: Filter ID previously created
-        schema:
-          type: integer
-          format: int32
+      requestBody:
+        description: Query parameters to fetch the XY tree.
+          Usually contains these parameters, but not limited to
+          - lowIndex, starting index for the tree
+          - size, number of entries to return
+          - startTime
+          - endTime
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
       responses:
         200:
           description: Returns a list of XY entries. The returned model must be consistent, parentIds must refer to a parent which exists in the model.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  output:
-                    $ref: '#/components/schemas/OutputDescriptor'
-                  headers:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/EntryHeader'
-                  entries:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/XYEntry'
-                  size:
-                    description: total number of entries for this model.
-                    type: integer
-                    format: int64
+                allOf:
+                  - $ref: '#/components/schemas/GenericResponse'
+                  - type: object
+                    properties:
+                      model:
+                        $ref: '#/components/schemas/EntryModel'
         404:
           description: Experiment or output provider not found
           content:
             application/json:
               schema:
                 type: string
-  /experiments/{expUUID}/outputs/timeGraph/{outputID}/tree:
-    get:
+  /experiments/{expUUID}/outputs/XY/{outputID}/xy:
+    post:
       tags:
-      - TimeGraph
-      summary: Tentative API for Time Graph models.
-      description: Unique entry point for output providers,
-        to get the tree of visible entries
-      operationId: getTimeGraphEntry
+      - XY
+      summary: Tentative API for the XY models
+      description: Unique endpoint for all xy models,
+        ensures that the same template is followed for all endpoints.
+      operationId: getXY
       parameters:
       - name: expUUID
         in: path
@@ -530,47 +563,49 @@ paths:
         required: true
         schema:
           type: string
-      - name: queryFilterID
-        in: query
-        description: Filter ID previously created
-        schema:
-          type: integer
-          format: int32
+      requestBody:
+        description: Query parameters to fetch the XY model.
+          Usually contains these parameters, but not limited to
+          - entries, array of all the entry (series) IDs
+          - nb, number of data points to sample
+          - startTime
+          - endTime
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
       responses:
         200:
-          description: Returns a list Time graph entries. The returned model must be consistent, parentIds must refer to a parent which exists in the model.
+          description: Return the queried XYResponse
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  output:
-                    $ref: '#/components/schemas/OutputDescriptor'
-                  headers:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/EntryHeader'
-                  entries:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TimeGraphEntry'
-                  size:
-                    description: total number of entries for this model.
-                    type: integer
-                    format: int64
+                allOf:
+                  - $ref: '#/components/schemas/GenericResponse'
+                  - type: object
+                    properties:
+                      model:
+                        $ref: '#/components/schemas/XYModel'
         404:
-          description: Experiment or output provider not found
+          description: Trace not found
           content:
             application/json:
               schema:
                 type: string
-  /experiments/{expUUID}/outputs/table/{outputID}/columns:
+        405:
+          description: Analysis not possible for this trace
+          content:
+            application/json:
+              schema:
+                type: string
+  /experiments/{expUUID}/outputs/XY/{outputID}/tooltip:
     get:
       tags:
-      - Virtual Tables
-      summary: Tentative API for events table models.
-      description: Unique entry point for output providers, to get the column entries.
-      operationId: getEventsTableEntry
+      - XY
+      summary: Tentative API for XY views tooltips.
+      description: Endpoint to retreive tooltips for XY
+      operationId: getXYTooltip
       parameters:
       - name: expUUID
         in: path
@@ -585,146 +620,24 @@ paths:
         required: true
         schema:
           type: string
-      - name: queryFilterID
+      - name: xValue
         in: query
-        description: Filter ID previously created
-        schema:
-          type: integer
-          format: int32
-      responses:
-        200:
-          description: Returns a list of table headers.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  output:
-                    $ref: '#/components/schemas/OutputDescriptor'
-                  entries:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ColumnHeaderEntry'
-                  size:
-                    description: total number of entries for this model.
-                    type: integer
-                    format: int64
-        404:
-          description: Experiment or output provider not found
-          content:
-            application/json:
-              schema:
-                type: string
-  /experiments/{expUUID}/outputs/table/{outputID}/lines:
-    get:
-      tags:
-      - Virtual Tables
-      summary: Get a virtual table of the items from a table
-      operationId: getLines
-      parameters:
-      - name: expUUID
-        in: path
-        description: The UUID of the experiment in the server
-        required: true
-        schema:
-          type : integer
-          format: int128
-      - name: outputID
-        in: path
-        description: The name of the table provider to query
-        required: true
-        schema:
-          type: string
-      - name: lowIndex
-        in: query
-        description: Index of the first line to query
+        description: X value to use to fetch the tooltip
         required: true
         schema:
           type: integer
           format: int64
-          minimum: 0
-      - name: size
+      - name: yValue
         in: query
-        description: Number of events to query
-        required: true
-        schema:
-          type: integer
-          format: int32
-      - name: columnId
-        in: query
-        description: List of column ids to return, all columns will be returned if not specified. The data in the returned lines will use the same order as the columnId array.
+        description: Additional Y value to identify the right tooltip.
+          If two points have the same X value and no Y value is provided, the tooltip will include data for all the points.
         required: false
-        schema:
-          type: array
-          items:
-            type: string
-      responses:
-        200:
-          description: Returns a table model with a 2D array of strings and metadata
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TableModel'
-        400:
-          description: Bad request, the top index and size must be larger than 0
-          content:
-            application/json:
-              schema:
-                type: string
-        404:
-          description: No such Experiment
-          content:
-            application/json:
-              schema:
-                type: string
-        500:
-          description: Error reading the Experiment
-          content:
-            application/json:
-              schema:
-                type: string
-  /experiments/{expUUID}/outputs/{outputID}/tooltip:
-    get:
-      tags:
-      - XY
-      - TimeGraph
-      summary: Tentative API for the XY and Time Graph views tooltips.
-      description: Unique entry point for all XY and Time Graph views,
-        to get the tree of visible entrie
-      operationId: getTooltip
-      parameters:
-      - name: expUUID
-        in: path
-        description: UUID of the experiment to query
-        required: true
-        schema:
-          type : integer
-          format: int128
-      - name: outputID
-        in: path
-        description: ID of the output provider to query
-        required: true
-        schema:
-          type: string
-      - name: time
-        in: query
-        description: Tooltip's timestamp.
-        required: true
         schema:
           type: integer
           format: int64
       - name: entryID
         in: query
-        description: Tooltip's entry, a global tooltip is returned if absent.
-        required: false
-        schema:
-          type: integer
-          format: int64
-      - name: targetID
-        in: query
-        description: Tooltip's entry, when applied on arrows.
+        description: Series ID (entry ID) to give the appropriate for a given series, a global tooltip is returned if absent.
         required: false
         schema:
           type: integer
@@ -749,14 +662,14 @@ paths:
             application/json:
               schema:
                 type: string
-  /experiments/{expUUID}/outputs/XY/{outputID}/xy:
-    get:
+  /experiments/{expUUID}/outputs/timeGraph/{outputID}/tree:
+    post:
       tags:
-      - XY
-      summary: Tentative API for the XY models
-      description: Unique endpoint for all xy models,
-        ensures that the same template is followed for all endpoints.
-      operationId: getXY
+      - TimeGraph
+      summary: Tentative API for Time Graph models.
+      description: Unique entry point for output providers,
+        to get the tree of visible entries
+      operationId: getTimeGraphEntry
       parameters:
       - name: expUUID
         in: path
@@ -771,33 +684,45 @@ paths:
         required: true
         schema:
           type: string
-      - name: queryFilterID
-        in: query
-        description: Filter ID previously created
-        schema:
-          type: integer
-          format: int32
+      requestBody:
+        description: Query parameters to fetch the timegraph tree.
+          Usually contains these parameters, but not limited to
+          - lowIndex, starting index for the tree
+          - size, number of entries to return
+          - startTime
+          - endTime
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
       responses:
         200:
-          description: Return the queried XYView
+          description: Returns a list Time graph entries. The returned model must be consistent, parentIds must refer to a parent which exists in the model.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/XYView'
+                allOf:
+                  - $ref: '#/components/schemas/GenericResponse'
+                  - type: object
+                    properties:
+                      model:
+                        allOf:
+                          - $ref: '#/components/schemas/EntryModel'
+                          - type: object
+                            properties:
+                              entries:
+                                type: array
+                                items:
+                                  $ref: '#/components/schemas/TimeGraphEntry'
         404:
-          description: Trace not found
-          content:
-            application/json:
-              schema:
-                type: string
-        405:
-          description: Analysis not possible for this trace
+          description: Experiment or output provider not found
           content:
             application/json:
               schema:
                 type: string
   /experiments/{expUUID}/outputs/timeGraph/{outputID}/states:
-    get:
+    post:
       tags:
       - TimeGraph
       summary: Tentative API for the TimeGraph views
@@ -818,26 +743,31 @@ paths:
         required: true
         schema:
           type: string
-      - name: queryFilterID
-        in: query
-        description: Filter ID previously created
-        schema:
-          type: integer
-          format: int32
+      requestBody:
+        description: Query parameters to fetch the timegraph states.
+          Usually contains these parameters, but not limited to
+          - entries, array of all the entry (series) IDs
+          - nb, number of time stamps to sample
+          - startTime
+          - endTime
+          - labelRatio, ratio of state duration to label's string length to determine if the resolution is large enough to return the label
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
       responses:
         200:
-          description: Returns a list of trace entries
+          description: Returns a list of time graph row
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  trace:
-                    $ref: '#/components/schemas/TraceModel'
-                  states:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TimeGraphRow'
+                allOf:
+                  - $ref: '#/components/schemas/GenericResponse'
+                  - type: object
+                    properties:
+                      model:
+                        $ref: '#/components/schemas/TimeGraphModel'
         404:
           description: Experiment or output provider not found
           content:
@@ -845,7 +775,7 @@ paths:
               schema:
                 type: string
   /experiments/{expUUID}/outputs/timeGraph/{outputID}/arrows:
-    get:
+    post:
       tags:
       - TimeGraph
       summary: Tentative API for the TimeGraph arrows
@@ -866,90 +796,301 @@ paths:
         required: true
         schema:
           type: string
-      - name: queryFilterID
-        in: query
-        description: Filter ID previously created
-        schema:
-          type: integer
-          format: int32
+      requestBody:
+        description: Query parameters to fetch the timegraph arrows.
+          Usually contains these parameters, but not limited to
+          - startTime
+          - endTime
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
       responses:
         200:
           description: Returns a sampled list of TimeGraph arrows
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  output:
-                    $ref: '#/components/schemas/OutputDescriptor'
-                  arrows:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TimeGraphArrow'
+                allOf:
+                  - $ref: '#/components/schemas/GenericResponse'
+                  - type: object
+                    properties:
+                      model:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TimeGraphArrow'
         404:
           description: Experiment or output provider not found
           content:
             application/json:
               schema:
                 type: string
-  /symbols/{hostID}/{PID}:
-    post:
+  /experiments/{expUUID}/outputs/timeGraph/{outputID}/tooltip:
+    get:
       tags:
-      - Symbols
-      summary: Import/Upload a symbol provider.
-      operationId: addSymbolProvider
+      - TimeGraph
+      summary: Tentative API for Time Graph views tooltips.
+      description: Endpoint to retreive tooltips for time graph
+      operationId: getTimeGraphTooltip
       parameters:
-      - name: hostID
+      - name: expUUID
         in: path
-        description: Host ID for the symbol provider
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type : integer
+          format: int128
+      - name: outputID
+        in: path
+        description: ID of the output provider to query
         required: true
         schema:
           type: string
-      - name: PID
+      - name: time
+        in: query
+        description: Tooltip's timestamp.
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: entryID
+        in: query
+        description: Tooltip's entry, a global tooltip is returned if absent.
+          Source entry when applied on arrows.
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: targetID
+        in: query
+        description: Target entry when applied on arrows.
+        required: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Returns a list of tooltip keys to values
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    key:
+                      type: string
+                    value:
+                      type: string
+        404:
+          description: Experiment or output provider not found
+          content:
+            application/json:
+              schema:
+                type: string
+  /experiments/{expUUID}/outputs/timeGraph/{outputID}/navigate/states:
+    post:
+      tags:
+      - TimeGraph
+      summary: Tentative API for TimeGraph navigation
+      operationId: navigateStates
+      description: Endpoint to retreive the next / previous corresponding states
+      parameters:
+      - name: expUUID
         in: path
-        description: PID for the symbol provider
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type : integer
+          format: int128
+      - name: outputID
+        in: path
+        description: ID of the output provider to query
+        required: true
+        schema:
+          type: string
+      - name: direction
+        in: query
+        description: Direction of the navigation
+        required: true
+        schema:
+          type: string
+          enum: [next, previous]
+      requestBody:
+        description: Query parameters to fetch the timegraph states.
+          Usually contains these parameters, but not limited to
+          - entries, array of all the entry (series) IDs
+          - nb, number of time stamps to sample
+          - startTime
+          - endTime
+          - labelRatio, ratio of state duration to label's string length to determine if the resolution is large enough to return the label
+          - currentTime, Current selected time, starting point of for the next / previous
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+      responses:
+        200:
+          description: Returns a list of time graph row
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/GenericResponse'
+                  - type: object
+                    properties:
+                      desiredTime:
+                        type: integer
+                        format: int64
+                      desiredEntry:
+                        type: integer
+                        format: int64
+                      model:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TimeGraphModel'
+  /experiments/{expUUID}/outputs/table/{outputID}/columns:
+    post:
+      tags:
+      - Virtual Tables
+      summary: Tentative API for events table models.
+      description: Unique entry point for output providers, to get the column entries.
+      operationId: getEventsTableEntry
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type : integer
+          format: int128
+      - name: outputID
+        in: path
+        description: ID of the output provider to query
         required: true
         schema:
           type: string
       requestBody:
-        description: URL to the symbol provider, not required if the symbol provider is uploaded directly to the endpoint.
+        description: Query parameters to fetch the timegraph tree.
+          Usually contains these parameters, but not limited to
+          - size, number of entries to return
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
-              type: object
-              properties:
-                url:
-                  description: URL to the symbol provider, not required if the symbol provider is uploaded directly to the endpoint.
-                  type: string
+              $ref: '#/components/schemas/Query'
       responses:
         200:
-          description: The symbol provider has been successfully added to the trace server.
-        406:
-          description: "Not acceptable: cannot read this symbol provider type"
+          description: Returns a list of table headers.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/GenericResponse'
+                type: object
+                properties:
+                  model:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ColumnHeaderEntry'
+        404:
+          description: Experiment or output provider not found
+          content:
+            application/json:
+              schema:
+                type: string
+  /experiments/{expUUID}/outputs/table/{outputID}/lines:
+    post:
+      tags:
+      - Virtual Tables
+      summary: Get a virtual table of the items from a table
+      operationId: getLines
+      parameters:
+      - name: expUUID
+        in: path
+        description: The UUID of the experiment in the server
+        required: true
+        schema:
+          type : integer
+          format: int128
+      - name: outputID
+        in: path
+        description: The name of the table provider to query
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Query parameters to fetch the timegraph tree.
+          Usually contains these parameters, but not limited to
+          - lowIndex, index of the first line to query
+          - size, number of lines to return
+          - columnId, List of column ids to return, all columns will be returned if not specified. The data in the returned lines will use the same order as the columnId array
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+      responses:
+        200:
+          description: Returns a table model with a 2D array of strings and metadata
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/GenericResponse'
+                  - type: object
+                    properties:
+                      model:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TableModel'
+        400:
+          description: Bad request, the top index and size must be larger than 0
+          content:
+            application/json:
+              schema:
+                type: string
+        404:
+          description: No such Experiment
+          content:
+            application/json:
+              schema:
+                type: string
+        500:
+          description: Error reading the Experiment
+          content:
+            application/json:
+              schema:
+                type: string
+  /experiments/{expUUID}/outputs/{outputID}/style:
     get:
       tags:
-      - Symbols
-      summary: Gets the symbol providers
-      operationId: getSymbols
+      - Style
+      summary: Get the style associated to this experiment and output
+      operationId: getStyle
       parameters:
-      - name: hostID
+      - name: expUUID
         in: path
-        description: The host's ID
+        description: The UUID of the experiment in the server
         required: true
         schema:
-          type: string
-      - name: PID
+          type : integer
+          format: int128
+      - name: outputID
         in: path
-        description: Process ID
+        description: The name of the output provider to query
         required: true
         schema:
           type: string
       responses:
         200:
-          description: Returns the Symbol providers for this query.
-        404:
-          description: No such Host, Thread and address combination.
+          description: Style model that can be use jointly with styleKey to retreive specific style values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StyleModel'
   /filters:
     get:
       summary: Get the list of filters available.
@@ -973,17 +1114,13 @@ paths:
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               properties:
                 name:
                   description: Human readable label for this filter
                   type: string
-                filterType:
-                  description: Type of the filter
-                  type: string
-                  enum: [query, expression]
                 start:
                   description: start time for this filter
                   type: integer
@@ -992,17 +1129,16 @@ paths:
                   description: end time for this filter
                   type: integer
                   format: int64
-                queryObject:
-                  description: query object
-                  type: object
                 filterExpression:
                   description: expression from the filter language
                   type: string
+                tags:
+                  description: Desired tags to apply when an elements pass the filter
+                  type: integer
+                  format: int32
               required:
-                - filterType
                 - start
                 - end
-                - queryObject
                 - filterExpression
       responses:
         200:
@@ -1048,17 +1184,13 @@ paths:
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               properties:
                 name:
                   description: Human readable label for this filter
                   type: string
-                filterType:
-                  description: Type of the filter
-                  type: string
-                  enum: [query, expression]
                 start:
                   description: start time for this filter
                   type: integer
@@ -1067,12 +1199,13 @@ paths:
                   description: end time for this filter
                   type: integer
                   format: int64
-                queryObject:
-                  description: query object
-                  type: object
                 filterExpression:
                   description: expression from the filter language
                   type: string
+                tags:
+                  description: Desired tags to apply when an elements pass the filter
+                  type: integer
+                  format: int32
       responses:
         200:
           description: The filter
@@ -1080,6 +1213,86 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Filter'
+    delete:
+      summary: Delete the given filter
+      operationId: deleteFilter
+      tags:
+      - Filters
+      parameters:
+      - name: filterID
+        description: Filter ID
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: The deleted filter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filter'
+        204:
+          description: There was no filter with this ID to delete
+  /symbols/{hostID}/{PID}:
+    post:
+      tags:
+      - Symbols
+      summary: Import/Upload a symbol provider.
+      operationId: addSymbolProvider
+      parameters:
+      - name: hostID
+        in: path
+        description: Host ID for the symbol provider
+        required: true
+        schema:
+          type: string
+      - name: PID
+        in: path
+        description: PID for the symbol provider
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: URL to the symbol provider, not required if the symbol provider is uploaded directly to the endpoint.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  description: URL to the symbol provider, not required if the symbol provider is uploaded directly to the endpoint.
+                  type: string
+      responses:
+        200:
+          description: The symbol provider has been successfully added to the trace server.
+        406:
+          description: "Not acceptable: cannot read this symbol provider type"
+    get:
+      tags:
+      - Symbols
+      summary: Gets the symbol providers
+      operationId: getSymbols
+      parameters:
+      - name: hostID
+        in: path
+        description: The host's ID
+        required: true
+        schema:
+          type: string
+      - name: PID
+        in: path
+        description: Process ID
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Returns the Symbol providers for this query.
+        404:
+          description: No such Host, Thread and address combination.
   /about/traceTypes:
     get:
       summary: Get the list of trace types supported by this server.
@@ -1141,6 +1354,10 @@ components:
         name:
           description: User defined name for the trace
           type: string
+        UUID:
+          description: The trace's unique identifier
+          type : integer
+          format: int128
         path:
           description: Path to the trace on the file server's File System
           type: string
@@ -1156,32 +1373,34 @@ components:
           description: The trace's end time
           type: integer
           format: int64
-        UUID:
-          description: The trace's unique identifier
-          type : integer
-          format: int128
+        indexingStatus:
+          description: Status of the trace indexing Process
+          type: string
     Experiment:
       type: object
       properties:
         name:
           description: User defined name for the experiment
           type: string
-        nbEvents:
-          description: Current number of indexed events in the trace.
-          type: integer
-          format: int64
-        startTime:
-          description: The trace's start time
-          type: integer
-          format: int64
-        endTime:
-          description: The trace's end time
-          type: integer
-          format: int64
         UUID:
           description: The experiment's unique identifier
           type : integer
           format: int128
+        nbEvents:
+          description: Current number of indexed events in the experiment.
+          type: integer
+          format: int64
+        startTime:
+          description: The experiment's start time
+          type: integer
+          format: int64
+        endTime:
+          description: The experiment's end time
+          type: integer
+          format: int64
+        indexingStatus:
+          description: Status of the experiment indexing Process
+          type: string
         traces:
           description: The traces encapsulated by this experiment
           type: array
@@ -1242,11 +1461,14 @@ components:
         final:
           description: If the start, end times and current model are final, or if they will need to be refreshed later to represent a more up to date version.
           type: boolean
+        compatibleProviders:
+          description: List of compatible outputs that can be used in the same view (ex. as overlay)
+          type: array
+          items:
+            type: string
     TableModel:
       type: object
       properties:
-        trace:
-          $ref: '#/components/schemas/TraceModel'
         lowIndex:
           description: Rank of the first returned event
           type: integer
@@ -1270,121 +1492,118 @@ components:
         index:
           type: integer
           format: int64
-        line:
+        cells:
           type: array
           items:
-            type: string
+            type: object
+            properties:
+              content:
+                description: Content of the cell for this line. The content uses markdown to format the text
+                type: string
+              tags:
+                description: Specific tags for this cell
+                type: integer
+                format: int32
+        tags:
+          description: Tags for the entire line
+          type: integer
+          format: int32
     ColumnHeaderEntry:
       type: object
       properties:
+        id:
+          description: Unique id to identify this column in the backend.
+          type: integer
+          format: int32
         name:
           description: Displayed name for this column
           type: string
         columnDescription:
           description: Description of the column
           type: string
-        id:
-          description: Unique id to identify this column in the backend.
-          type: integer
-          format: int32
-        parentId:
-          description: Unique id to identify this parent's entry.
-          type: integer
-          format: int32
+        columnType:
+          description: Type of data associated to this column
+          type: string
     EntryHeader:
       type: object
       properties:
         name:
           description: Displayed name for this header
           type: string
-    XYEntry:
+    XYModel:
       type: object
       properties:
-        name:
-          description: Displayed name for this Entry
-          type: array
-          items:
-            type: string
-        id:
-          description: Unique id to identify this entry in the backend.
-          type: integer
-          format: int64
-        parentId:
-          description: Unique id to identify this parent's entry,
-            optional if this entry does not have a parent.
-          type: integer
-          format: int64
-    XYView:
-      type: object
-      properties:
-        trace:
-          $ref: '#/components/schemas/TraceModel'
-        model:
+        title:
+          description: Title of the model
+          type: string
+        commonXAxis:
+          description: Indicate if the model use a common X axis
+          type: boolean
+        series:
+          description: Map of XY series
           type: object
-          properties:
-            xValues:
-              description: X values for the XY Model
-              type: array
-              items:
-                type: integer
-                format: int64
-            series:
-              description: map of series' name to Y series model
-              type: array
-              items:
-                type: object
-                properties:
-                  seriesName:
-                    description: series' name
-                    type: string
-                  yValues:
-                    description: series' Y values
-                    type: array
-                    items:
-                      type: number
-                      format: double
+          additionalProperties:
+            $ref: '#/components/schemas/XYSeries'
+    XYSeries:
+      type: object
+      properties:
+        seriesName:
+          description: series' name
+          type: string
+        seriesID:
+          description: series' ID
+          type: string
         xAxis:
-          type: object
-          properties:
-            label:
-              description: Label to apply to the x-axis
-              type: string
-            unit:
-              description: Type of units used for this axis
-              type: string
+          $ref: '#/components/schemas/XYAxis'
         yAxis:
-          type: object
-          properties:
-            label:
-              description: Label to apply to the y-axis
-              type: string
-            unit:
-              description: Type of units used for this axis
-              type: string
-    TimeGraphEntry:
-      type: object
-      properties:
-        name:
-          description: Displayed name for this Entry
+          $ref: '#/components/schemas/XYAxis'
+        xValues:
+          description: series' X values
           type: array
           items:
-            type: string
-        id:
-          description: Unique id to identify this entry in the backend.
-          type: integer
-          format: int32
-        parentId:
-          description: Unique id to identify this parent's entry.
-          type: integer
-          format: int32
-        start:
-          description: Beginning of the range for which this entry exists
-          type: integer
-          format: int64
-        end:
-          description: End of the range for which this entry exists
-          type: integer
-          format: int64
+            type: integer
+            format: int64
+        yValues:
+          description: series' Y values
+          type: array
+          items:
+            type: number
+            format: double
+        tags:
+          description: Array of tags for each xy values
+          type: array
+          items:
+            type: integer
+            format: int32
+    XYAxis:
+      type: object
+      properties:
+        label:
+          description: Label to apply to the axis
+          type: string
+        unit:
+          description: Type of units used for this axis
+          type: string
+    TimeGraphModel:
+      type: object
+      properties:
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeGraphRow'
+    TimeGraphEntry:
+      allOf:
+        - $ref: '#/components/schemas/Entry'
+        - type: object
+          properties:
+            start:
+              description: Beginning of the range for which this entry exists
+              type: integer
+              format: int64
+            end:
+              description: End of the range for which this entry exists
+              type: integer
+              format: int64
     TimeGraphState:
       type: object
       properties:
@@ -1400,12 +1619,13 @@ components:
           description: Text label to apply to this TimeGraphState if resolution permits.
             Optional, no label is applied if absent.
           type: string
-        cssId:
-          description: optional ID to refer to the css to format this arrow
+        tags:
+          description: Tags to apply on this states
           type: integer
-        cssValue:
-          description: optional value to vary css rendering
-          type: integer
+          format: int32
+        styleKey:
+          description: optional key to search for the style of this state. The style map can be obtained by using the style endpoint.
+          type: string
     TimeGraphRow:
       type: object
       properties:
@@ -1437,10 +1657,9 @@ components:
           description: Target entry's unique ID
           type: integer
           format: int64
-        cssId:
-          description: optional ID to refer to the css to format this arrow
-          type: integer
-          format: int32
+        styleKey:
+          description: optional key to search for the style of this arrow. The style map can be obtained by using the style endpoint.
+          type: string
     Filter:
       type: object
       properties:
@@ -1451,10 +1670,6 @@ components:
         name:
           description: Human readable label for this filter
           type: string
-        filterType:
-          description: Type of the filter
-          type: string
-          enum: [query, expression]
         start:
           description: start time for this filter
           type: integer
@@ -1463,10 +1678,98 @@ components:
           description: end time for this filter
           type: integer
           format: int64
-        query:
-          description: query object
-          type: object
         expression:
           description: expression from the filter language
           type: string
-        
+        tags:
+          description: Tags to be applied on elements that pass this filter
+          type: integer
+          format: int32
+    Query:
+      description: Describes the parameter used in a request.
+        A query contains all the parameters that need to be pass for a specific output. Parameters can be found in the output descriptor.
+        It also contains a list of filters to be applied on a specific output. The output response will contain only elements that pass these filters.
+      type: object
+      properties:
+        parameters:
+          description: Map of all the parameters used for a specific output
+          type: object
+          additionalProperties:
+            type: object
+        filters:
+          description: List of filter IDs to apply
+          type: array
+          items: 
+            type: integer
+            format: int32
+      required:
+              - parameters
+    ResponseStatus:
+      description: All possible status for a server response
+      type: string
+      enum:
+        - RUNNING
+        - COMPLETED
+        - FAILED
+        - CANCELLED
+    GenericResponse:
+      description: Generic response that include an output descriptor, the status and a status message
+      type: object
+      properties:
+        output:
+          $ref: '#/components/schemas/OutputDescriptor'
+        status:
+          $ref: '#/components/schemas/ResponseStatus'
+        statusMessage:
+          type: string
+    Entry:
+      description: Base entry returned by tree endpoints
+      type: object
+      properties:
+        name:
+          description: Displayed name for this Entry
+          type: array
+          items:
+            type: string
+        id:
+          description: Unique id to identify this entry in the backend
+          type: integer
+          format: int32
+        parentId:
+          description: Unique id to identify this parent's entry,
+            optional if this entry does not have a parent.
+          type: integer
+          format: int32
+    EntryModel:
+      type: object
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/Entry'
+        headers:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntryHeader'
+    StyleValue:
+      type: object
+      properties:
+        bgColor:
+          type: string
+        fgColor:
+          type: string
+        height:
+          type: integer
+          format: int32
+        font:
+          type: string
+        fontColor:
+          type: string
+      additionalProperties:
+        description: Additional properties can be used to add more style key for a specific output (ex. arrowHead, icons, ...)
+        type: object
+    StyleModel:
+      type: object
+      description: Map of style specific to an output where values gives hints on the style (ex. time graph state)
+      additionalProperties:
+        $ref: '#/components/schemas/StyleValue'
