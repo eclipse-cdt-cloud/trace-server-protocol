@@ -1433,7 +1433,7 @@ components:
     OutputDescriptor:
       type: object
       properties:
-        ID:
+        id:
           description: The output provider's ID
           type: string
         name:
@@ -1442,9 +1442,13 @@ components:
         description:
           description: Describe the output provider's features
           type: string
-        responseType:
-          description: Type of data returned by this output. Serve as a hint to determine what kind of view should be use for this output (ex. XY, Time Graph, Table, etc..)
+        outputType:
+          description: Type of data returned by this output. Serve as a hint to determine what kind of view should be use for this output (ex. XY, Time Graph, Table, etc..). Providers of type TREE_TIME_XY and TIME_GRAPH can be grouped under the same time axis.
           type: string
+          enum:
+            - TABLE
+            - TREE_TIME_XY
+            - TIME_GRAPH
         queryParameters:
           description: List all the possible paramaters that can be use to query this output.
           type: object
@@ -1462,7 +1466,7 @@ components:
           description: If the start, end times and current model are final, or if they will need to be refreshed later to represent a more up to date version.
           type: boolean
         compatibleProviders:
-          description: List of compatible outputs that can be used in the same view (ex. as overlay)
+          description: List of IDs of compatible outputs that can be used in the same view (ex. as overlay)
           type: array
           items:
             type: string
