@@ -493,7 +493,7 @@ paths:
     post:
       tags:
       - XY
-      summary: Tentative API for the XY models.
+      summary: API to get the XY tree.
       description: Unique entry point for output providers,
         to get the tree of visible entries
       operationId: getXYEntry
@@ -545,7 +545,7 @@ paths:
     post:
       tags:
       - XY
-      summary: Tentative API for the XY models
+      summary: API to get the XY model.
       description: Unique endpoint for all xy models,
         ensures that the same template is followed for all endpoints.
       operationId: getXY
@@ -603,7 +603,7 @@ paths:
     get:
       tags:
       - XY
-      summary: Tentative API for XY views tooltips.
+      summary: API to get the XY tooltips.
       description: Endpoint to retreive tooltips for XY
       operationId: getXYTooltip
       parameters:
@@ -666,7 +666,7 @@ paths:
     post:
       tags:
       - TimeGraph
-      summary: Tentative API for Time Graph models.
+      summary: API to get the Time Graph tree.
       description: Unique entry point for output providers,
         to get the tree of visible entries
       operationId: getTimeGraphEntry
@@ -725,7 +725,7 @@ paths:
     post:
       tags:
       - TimeGraph
-      summary: Tentative API for the TimeGraph views
+      summary: API to get the Time Graph states
       operationId: getTimeGraphStates
       description: Unique entry point for all TimeGraph states,
         ensures that the same template is followed for all views
@@ -778,7 +778,7 @@ paths:
     post:
       tags:
       - TimeGraph
-      summary: Tentative API for the TimeGraph arrows
+      summary: API to get the Time Graph arrows
       operationId: getTimeGraphArrows
       description: Unique entry point for all TimeGraph models,
         ensures that the same template is followed for all models
@@ -830,7 +830,7 @@ paths:
     get:
       tags:
       - TimeGraph
-      summary: Tentative API for Time Graph views tooltips.
+      summary: API to get the Time Graph tooltips.
       description: Endpoint to retreive tooltips for time graph
       operationId: getTimeGraphTooltip
       parameters:
@@ -955,7 +955,7 @@ paths:
     post:
       tags:
       - Virtual Tables
-      summary: Tentative API for events table models.
+      summary: API to get table columns.
       description: Unique entry point for output providers, to get the column entries.
       operationId: getEventsTableEntry
       parameters:
@@ -1005,7 +1005,7 @@ paths:
     post:
       tags:
       - Virtual Tables
-      summary: Get a virtual table of the items from a table
+      summary: API to get virtual table lines
       operationId: getLines
       parameters:
       - name: expUUID
@@ -1068,7 +1068,7 @@ paths:
     get:
       tags:
       - Style
-      summary: Get the style associated to this experiment and output
+      summary: API to get the style associated to this experiment and output
       operationId: getStyle
       parameters:
       - name: expUUID
@@ -1690,9 +1690,16 @@ components:
           type: integer
           format: int32
     Query:
-      description: Describes the parameter used in a request.
+      description: |
+        Describes the parameters used in a request.
         A query contains all the parameters that need to be pass for a specific output. Parameters can be found in the output descriptor.
-        It also contains a list of filters to be applied on a specific output. The output response will contain only elements that pass these filters.
+
+        Common parameter keys to use when building queries:
+        - `requested_times_key`
+        - `requested_items_key`
+        - `requested_table_count_key`
+        - `requested_table_index_key`
+        - `requested_table_column_ids_key`
       type: object
       properties:
         parameters:
@@ -1700,14 +1707,12 @@ components:
           type: object
           additionalProperties:
             type: object
-        filters:
-          description: List of filter IDs to apply
-          type: array
-          items: 
-            type: integer
-            format: int32
       required:
               - parameters
+      example:
+        parameters:
+          requested_times_key: []
+          requested_items_key: []
     ResponseStatus:
       description: All possible status for a server response
       type: string
