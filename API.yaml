@@ -39,8 +39,10 @@ tags:
   description: Learn about querying Time Graph models.
 - name: Virtual Tables
   description: Learn about querying virtual table models (e.g. Events Table).
-- name: Style
-  description: Retreive styles for different outputs
+- name: Styles
+  description: Retrieve styles for different outputs
+- name: Annotations
+  description: Retrieve annotations for different outputs
 - name: Filters
   description: How to filter and query
 - name: Features
@@ -600,11 +602,11 @@ paths:
               schema:
                 type: string
   /experiments/{expUUID}/outputs/XY/{outputID}/tooltip:
-    get:
+    post:
       tags:
       - XY
       summary: API to get the XY tooltips.
-      description: Endpoint to retreive tooltips for XY
+      description: Endpoint to retrieve tooltips for XY
       operationId: getXYTooltip
       parameters:
       - name: expUUID
@@ -620,28 +622,17 @@ paths:
         required: true
         schema:
           type: string
-      - name: xValue
-        in: query
-        description: X value to use to fetch the tooltip
+      requestBody:
+        description: Query parameters to fetch tooltips.
+          Usually contains these parameters, but not limited to
+          - entries, array of all the entry (series) IDs
+          - xValue, X value to use to fetch the tooltip
+          - yValue, Additional Y value to identify the right tooltip.
         required: true
-        schema:
-          type: integer
-          format: int64
-      - name: yValue
-        in: query
-        description: Additional Y value to identify the right tooltip.
-          If two points have the same X value and no Y value is provided, the tooltip will include data for all the points.
-        required: false
-        schema:
-          type: integer
-          format: int64
-      - name: entryID
-        in: query
-        description: Series ID (entry ID) to give the appropriate for a given series, a global tooltip is returned if absent.
-        required: false
-        schema:
-          type: integer
-          format: int64
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
       responses:
         200:
           description: Returns a list of tooltip keys to values
@@ -827,11 +818,11 @@ paths:
               schema:
                 type: string
   /experiments/{expUUID}/outputs/timeGraph/{outputID}/tooltip:
-    get:
+    post:
       tags:
       - TimeGraph
       summary: API to get the Time Graph tooltips.
-      description: Endpoint to retreive tooltips for time graph
+      description: Endpoint to retrieve tooltips for time graph
       operationId: getTimeGraphTooltip
       parameters:
       - name: expUUID
@@ -847,28 +838,16 @@ paths:
         required: true
         schema:
           type: string
-      - name: time
-        in: query
-        description: Tooltip's timestamp.
+      requestBody:
+        description: Query parameters to fetch the tooltips.
+          Usually contains these parameters, but not limited to
+          - entries, array of all the entry (series) IDs
+          - times, array of all the times
         required: true
-        schema:
-          type: integer
-          format: int64
-      - name: entryID
-        in: query
-        description: Tooltip's entry, a global tooltip is returned if absent.
-          Source entry when applied on arrows.
-        required: false
-        schema:
-          type: integer
-          format: int64
-      - name: targetID
-        in: query
-        description: Target entry when applied on arrows.
-        required: false
-        schema:
-          type: integer
-          format: int64
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
       responses:
         200:
           description: Returns a list of tooltip keys to values
@@ -895,7 +874,7 @@ paths:
       - TimeGraph
       summary: Tentative API for TimeGraph navigation
       operationId: navigateStates
-      description: Endpoint to retreive the next / previous corresponding states
+      description: Endpoint to retrieve the next / previous corresponding states
       parameters:
       - name: expUUID
         in: path
@@ -1065,11 +1044,45 @@ paths:
               schema:
                 type: string
   /experiments/{expUUID}/outputs/{outputID}/style:
-    get:
+    post:
       tags:
       - Style
       summary: API to get the style associated to this experiment and output
-      operationId: getStyle
+      operationId: getStyles
+      parameters:
+      - name: expUUID
+        in: path
+        description: The UUID of the experiment in the server
+        required: true
+        schema:
+          type : integer
+          format: int128
+      - name: outputID
+        in: path
+        description: The name of the output provider to query
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Query parameters to fetch the style.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+      responses:
+        200:
+          description: Style model that can be used jointly with OutputElementStyle to retrieve specific style values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutputStyleModel'
+  /experiments/{expUUID}/outputs/{outputID}/annotations:
+    get:
+      tags:
+      - Annotations
+      summary: API to get annotation categories associated to this experiment and output
+      operationId: getAnnotationCategories
       parameters:
       - name: expUUID
         in: path
@@ -1086,11 +1099,47 @@ paths:
           type: string
       responses:
         200:
-          description: Style model that can be use jointly with styleKey to retreive specific style values
+          description: Annotation categories model
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StyleModel'
+                $ref: '#/components/schemas/AnnotationCategoriesModel'
+    post:
+      tags:
+      - Annotations
+      summary: API to get the annotations associated to this experiment and output
+      operationId: getAnnotations
+      parameters:
+      - name: expUUID
+        in: path
+        description: The UUID of the experiment in the server
+        required: true
+        schema:
+          type : integer
+          format: int128
+      - name: outputID
+        in: path
+        description: The name of the output provider to query
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Query parameters to fetch the annotations.
+          Usually contains these parameters, but not limited to
+          - entries, array of all the entry (series) IDs
+          - times, array of times
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+      responses:
+        200:
+          description: Annotation model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnotationModel'
   /filters:
     get:
       summary: Get the list of filters available.
@@ -1579,6 +1628,8 @@ components:
           items:
             type: integer
             format: int32
+        style:
+          $ref: '#/components/schemas/OutputElementStyle'
     XYAxis:
       type: object
       properties:
@@ -1624,12 +1675,11 @@ components:
             Optional, no label is applied if absent.
           type: string
         tags:
-          description: Tags to apply on this states
+          description: Tags to apply on this state
           type: integer
           format: int32
-        styleKey:
-          description: optional key to search for the style of this state. The style map can be obtained by using the style endpoint.
-          type: string
+        style:
+          $ref: '#/components/schemas/OutputElementStyle'
     TimeGraphRow:
       type: object
       properties:
@@ -1661,9 +1711,8 @@ components:
           description: Target entry's unique ID
           type: integer
           format: int64
-        styleKey:
-          description: optional key to search for the style of this arrow. The style map can be obtained by using the style endpoint.
-          type: string
+        style:
+          $ref: '#/components/schemas/OutputElementStyle'
     Filter:
       type: object
       properties:
@@ -1749,6 +1798,8 @@ components:
             optional if this entry does not have a parent.
           type: integer
           format: int32
+        style:
+          $ref: '#/components/schemas/OutputElementStyle'
     EntryModel:
       type: object
       properties:
@@ -1760,25 +1811,62 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EntryHeader'
-    StyleValue:
+    OutputElementStyle:
       type: object
+      description: Represents the style on an element (ex. Entry, TimeGraphState, ...) returned by any output. 
+        Supports style inheritance. To avoid having too many styles, the element style can have a parent style and will have all the same style property values as the parent and can add or override style properties.
       properties:
-        bgColor:
+        parentStyleKey:
+          description: Parent style key or empty if there is no parent. The parent key should match another style key and is used for style inheritance
           type: string
-        fgColor:
-          type: string
-        height:
-          type: integer
-          format: int32
-        font:
-          type: string
-        fontColor:
-          type: string
-      additionalProperties:
-        description: Additional properties can be used to add more style key for a specific output (ex. arrowHead, icons, ...)
-        type: object
-    StyleModel:
+        values:
+          type: object            
+          description: Style values or empty map if there is no values. CSS properties are used as keys.
+          additionalProperties:
+            type: object
+    OutputStyleModel:
       type: object
-      description: Map of style specific to an output where values gives hints on the style (ex. time graph state)
-      additionalProperties:
-        $ref: '#/components/schemas/StyleValue'
+      description: Map of styles specific to an output where values gives hints on the style. The keys are strings that can be used in OutputElementStyle
+      properties:
+        styles:
+          additionalProperties:
+            $ref: '#/components/schemas/OutputElementStyle'
+    Annotation:
+      type: object
+      description: An annotation is used to mark interesting area in a given range.
+      properties:
+        label:
+          type: string
+        time:
+          type: integer
+          format: int64
+        duration:
+          type: integer
+          format: int64
+        entryId:
+          type: integer
+          format: int64
+        type:
+          type: string
+          enum: [TREE, CHART]
+        style:
+          $ref: '#/components/schemas/OutputElementStyle'
+    AnnotationModel:
+      type: object
+      description: Model returned by outputs that contains annotations per category.
+      properties:
+        annotations:
+          description: Map of annotations where the keys are categories
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/Annotation'
+    AnnotationCategoriesModel:
+      type: object
+      description: Model returned by outputs that contains annotation categories available for this output.
+      properties:
+        annotationCategories:
+          description: Array of all the categories
+          type: array
+          items:
+            type: string
