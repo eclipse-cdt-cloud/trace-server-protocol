@@ -323,6 +323,46 @@ paths:
             application/json:
               schema:
                 type: string
+  /experiments/{expUUID}/outputs/{outputID}:
+    get:
+      tags:
+      - Experiments
+      summary: Get the output descriptor for this experiment and output
+      operationId: getOutput
+      parameters:
+      - name: expUUID
+        in: path
+        description: The unique identifier of the experiment in the server
+        required: true
+        schema:
+          type : integer
+          format: int128
+      - name: outputID
+        in: path
+        description: The name of the output provider to query
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Returns the output provider descriptor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  experiment:
+                    $ref: '#/components/schemas/Experiment'
+                  providers:
+                    type: object
+                    items:
+                      $ref: '#/components/schemas/OutputDescriptor'
+        404:
+          description: No such experiment or output
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments/{expUUID}/bookmarks:
     get:
       summary: Get the collection of bookmarks for an experiment.
