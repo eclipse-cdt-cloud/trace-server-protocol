@@ -1672,6 +1672,9 @@ components:
         name:
           description: Displayed name for this header
           type: string
+        tooltip:
+          description: Displayed tooltip for this header. Optional, no tooltip is applied if absent.
+          type: string
       required:
         - name
     XYModel:
@@ -1903,8 +1906,8 @@ components:
       description: Base entry returned by tree endpoints
       type: object
       properties:
-        name:
-          description: Displayed name for this Entry
+        labels:
+          description: Array of cell labels to be displayed. The length of the array and the index of each column need to correspond to the header array returned in the tree model.
           type: array
           items:
             type: string
@@ -1923,6 +1926,7 @@ components:
         style:
           $ref: '#/components/schemas/OutputElementStyle'
       required:
+        - labels
         - id
         - parentId
     EntryModel:
