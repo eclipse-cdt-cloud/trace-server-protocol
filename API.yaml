@@ -1677,8 +1677,17 @@ components:
           description: Label to apply to the axis
           type: string
         unit:
-          description: Type of units used for this axis
+          description: The units used for this axis, to be appended to the data
           type: string
+        dataType:
+          description: Type of data this series represents. Gives a hint on the formatting to give to the data
+          type: string
+          enum:
+            - NUMBER
+            - BINARY_NUMBER
+            - TIMESTAMP
+            - DURATION
+            - STRING
     TimeGraphModel:
       type: object
       properties:
