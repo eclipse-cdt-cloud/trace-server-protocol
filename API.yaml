@@ -1672,6 +1672,9 @@ components:
         name:
           description: Displayed name for this header
           type: string
+        tooltip:
+          description: Displayed tooltop for this header. Optional, no tooltip is applied if absent.
+          type: string
     XYModel:
       type: object
       properties:
@@ -1882,8 +1885,8 @@ components:
       description: Base entry returned by tree endpoints
       type: object
       properties:
-        name:
-          description: Displayed name for this Entry
+        labels:
+          description: Displayed labels of each column if tree has table columns. The length of the array and the index of each column correspond to the header array return in the tree model.
           type: array
           items:
             type: string
