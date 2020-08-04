@@ -1454,11 +1454,11 @@ components:
           description: Current number of indexed events in the trace.
           type: integer
           format: int64
-        startTime:
+        start:
           description: The trace's start time
           type: integer
           format: int64
-        endTime:
+        end:
           description: The trace's end time
           type: integer
           format: int64
@@ -1479,11 +1479,11 @@ components:
           description: Current number of indexed events in the experiment.
           type: integer
           format: int64
-        startTime:
+        start:
           description: The experiment's start time
           type: integer
           format: int64
-        endTime:
+        end:
           description: The experiment's end time
           type: integer
           format: int64
