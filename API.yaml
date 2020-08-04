@@ -1623,6 +1623,8 @@ components:
         name:
           description: Displayed name for this header
           type: string
+      required:
+        - name
     XYModel:
       type: object
       properties:
@@ -1636,6 +1638,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/XYSeries'
+      required:
+        - title
+        - series
     XYSeries:
       type: object
       properties:
@@ -1669,6 +1674,11 @@ components:
             format: int32
         style:
           $ref: '#/components/schemas/OutputElementStyle'
+      required:
+        - seriesName
+        - seriesId
+        - xValues
+        - yValues
     XYAxis:
       type: object
       properties:
@@ -1728,6 +1738,9 @@ components:
           format: int32
         style:
           $ref: '#/components/schemas/OutputElementStyle'
+      required:
+        - start
+        - end
     TimeGraphRow:
       type: object
       properties:
@@ -1740,6 +1753,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TimeGraphState'
+      required:
+        - entryId
+        - states
     TimeGraphArrow:
       type: object
       properties:
@@ -1761,6 +1777,11 @@ components:
           format: int64
         style:
           $ref: '#/components/schemas/OutputElementStyle'
+      required:
+        - start
+        - end
+        - sourceId
+        - targetId
     Filter:
       type: object
       properties:
@@ -1848,6 +1869,9 @@ components:
           format: int32
         style:
           $ref: '#/components/schemas/OutputElementStyle'
+      required:
+        - id
+        - parentId
     EntryModel:
       type: object
       properties:
@@ -1859,6 +1883,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EntryHeader'
+      required:
+        - entries
     OutputElementStyle:
       type: object
       description: Represents the style on an element (ex. Entry, TimeGraphState, ...) returned by any output. 
