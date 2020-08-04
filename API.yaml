@@ -1633,9 +1633,8 @@ components:
           description: Indicate if the model use a common X axis
           type: boolean
         series:
-          description: Map of XY series
-          type: object
-          additionalProperties:
+          type: array
+          items:
             $ref: '#/components/schemas/XYSeries'
     XYSeries:
       type: object
