@@ -1893,7 +1893,7 @@ components:
       description: Represents the style on an element (ex. Entry, TimeGraphState, ...) returned by any output. 
         Supports style inheritance. To avoid having too many styles, the element style can have a parent style and will have all the same style property values as the parent and can add or override style properties.
       properties:
-        parentStyleKey:
+        parentKey:
           description: Parent style key or empty if there is no parent. The parent key should match another style key and is used for style inheritance
           type: string
         values:
