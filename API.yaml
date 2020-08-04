@@ -1642,7 +1642,7 @@ components:
         seriesName:
           description: series' name
           type: string
-        seriesID:
+        seriesId:
           description: series' ID
           type: string
         xAxis:
