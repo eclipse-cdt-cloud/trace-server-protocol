@@ -1868,7 +1868,7 @@ components:
             optional if this entry does not have a parent.
           type: integer
           format: int32
-        hasRowModel:
+        hasData:
           description: Whether or not this entry has data
           type: boolean
         style:
