@@ -113,8 +113,8 @@ paths:
         description: The unique identifier of the trace in the server
         required: true
         schema:
-          type: integer
-          format: int128
+          type: string
+          format: uuid
       - name: deleteTrace
         in: query
         description: Indicate if the trace should be deleted from disk or not (false by default)
@@ -173,8 +173,8 @@ paths:
                   description: The unique identifiers of the traces to encapsulate in this experiment
                   type: array
                   items:
-                    type: integer
-                    format: int128
+                    type: string
+                    format: uuid
               required:
                 - name
                 - traces
@@ -197,8 +197,8 @@ paths:
         description: UUID of the experiment to modify
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       responses:
         200:
           description: Return the experiment model
@@ -219,8 +219,8 @@ paths:
         description: UUID of the experiment to modify
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: name
         in: query
         description: The name to give this experiment
@@ -246,8 +246,8 @@ paths:
                     properties:
                       traceUUID:
                         description: The unique identifier of the trace
-                        type: integer
-                        format: int128
+                        type: string
+                        format: uuid
                       timeOffset:
                         description: Time offset to apply to this trace
                         type: integer
@@ -278,8 +278,8 @@ paths:
         description: The unique identifier of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       responses:
         200:
           description: The trace was successfully deleted, return the deleted experiment.
@@ -301,8 +301,8 @@ paths:
         description: The unique identifier of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       responses:
         200:
           description: Returns a list of output provider descriptors
@@ -335,8 +335,8 @@ paths:
         description: The unique identifier of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: The name of the output provider to query
@@ -375,8 +375,8 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       responses:
         200:
           description: Returns a list of bookmarks for this trace
@@ -403,8 +403,8 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       requestBody:
         description: The bookmark to post
         required: true
@@ -437,15 +437,15 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: bookmarkId
         in: path
         description: The unique identifier of the bookmark to get
         required: true
         schema:
-          type: integer
-          format: int128
+          type: string
+          format: uuid
       responses:
         200:
           description: Returns the queried bookmark
@@ -470,8 +470,8 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type: integer
-          format: int128
+          type: string
+          format: uuid
       - name: bookmarkId
         in: path
         description: The unique identifier of the bookmark to modify
@@ -509,15 +509,15 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type: integer
-          format: int128
+          type: string
+          format: uuid
       - name: bookmarkId
         in: path
         description: The unique identifier of the bookmark to delete
         required: true
         schema:
-          type: integer
-          format: int128
+          type: string
+          format: uuid
       responses:
         200:
           description: Returns the deleted boomark
@@ -545,8 +545,8 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -597,8 +597,8 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -654,8 +654,8 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -707,8 +707,8 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -766,8 +766,8 @@ paths:
         description: UUID of the experiement to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -819,8 +819,8 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -870,8 +870,8 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -921,8 +921,8 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -983,8 +983,8 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -1032,8 +1032,8 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: The name of the table provider to query
@@ -1095,8 +1095,8 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: The name of the output provider to query
@@ -1129,8 +1129,8 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: The name of the output provider to query
@@ -1155,8 +1155,8 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: The name of the output provider to query
@@ -1445,8 +1445,8 @@ components:
           type: string
         UUID:
           description: The trace's unique identifier
-          type : integer
-          format: int128
+          type : string
+          format: uuid
         path:
           description: Path to the trace on the file server's File System
           type: string
@@ -1473,8 +1473,8 @@ components:
           type: string
         UUID:
           description: The experiment's unique identifier
-          type : integer
-          format: int128
+          type : string
+          format: uuid
         nbEvents:
           description: Current number of indexed events in the experiment.
           type: integer
@@ -1517,8 +1517,8 @@ components:
           type: string
         UUID:
           description: The bookmark's unique ID, generated by the server.
-          type: integer
-          format: int128
+          type: string
+          format: uuid
     OutputDescriptor:
       type: object
       properties:
