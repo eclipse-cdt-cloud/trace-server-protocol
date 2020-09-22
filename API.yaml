@@ -33,6 +33,8 @@ tags:
   description: How to manage experiments on your server, an experiment represent a collection of traces, which can produce output models.
 - name: Bookmarks
   description: How to bookmark areas of interest in the trace.
+- name: Data Tree
+  description: Learn about querying generic data tree models
 - name: XY
   description: Learn about querying XY models
 - name: TimeGraph
@@ -113,8 +115,8 @@ paths:
         description: The unique identifier of the trace in the server
         required: true
         schema:
-          type: integer
-          format: int128
+          type: string
+          format: uuid
       - name: deleteTrace
         in: query
         description: Indicate if the trace should be deleted from disk or not (false by default)
@@ -173,8 +175,8 @@ paths:
                   description: The unique identifiers of the traces to encapsulate in this experiment
                   type: array
                   items:
-                    type: integer
-                    format: int128
+                    type: string
+                    format: uuid
               required:
                 - name
                 - traces
@@ -197,8 +199,8 @@ paths:
         description: UUID of the experiment to modify
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       responses:
         200:
           description: Return the experiment model
@@ -219,8 +221,8 @@ paths:
         description: UUID of the experiment to modify
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: name
         in: query
         description: The name to give this experiment
@@ -246,8 +248,8 @@ paths:
                     properties:
                       traceUUID:
                         description: The unique identifier of the trace
-                        type: integer
-                        format: int128
+                        type: string
+                        format: uuid
                       timeOffset:
                         description: Time offset to apply to this trace
                         type: integer
@@ -278,8 +280,8 @@ paths:
         description: The unique identifier of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       responses:
         200:
           description: The trace was successfully deleted, return the deleted experiment.
@@ -301,8 +303,8 @@ paths:
         description: The unique identifier of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       responses:
         200:
           description: Returns a list of output provider descriptors
@@ -335,8 +337,8 @@ paths:
         description: The unique identifier of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: The name of the output provider to query
@@ -375,8 +377,8 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       responses:
         200:
           description: Returns a list of bookmarks for this trace
@@ -403,8 +405,8 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       requestBody:
         description: The bookmark to post
         required: true
@@ -437,15 +439,15 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: bookmarkId
         in: path
         description: The unique identifier of the bookmark to get
         required: true
         schema:
-          type: integer
-          format: int128
+          type: string
+          format: uuid
       responses:
         200:
           description: Returns the queried bookmark
@@ -470,8 +472,8 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type: integer
-          format: int128
+          type: string
+          format: uuid
       - name: bookmarkId
         in: path
         description: The unique identifier of the bookmark to modify
@@ -509,15 +511,15 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type: integer
-          format: int128
+          type: string
+          format: uuid
       - name: bookmarkId
         in: path
         description: The unique identifier of the bookmark to delete
         required: true
         schema:
-          type: integer
-          format: int128
+          type: string
+          format: uuid
       responses:
         200:
           description: Returns the deleted boomark
@@ -527,6 +529,56 @@ paths:
                 $ref: '#/components/schemas/Bookmark'
         404:
           description: No such trace or bookmark
+          content:
+            application/json:
+              schema:
+                type: string
+  /experiments/{expUUID}/outputs/data/{outputID}/tree:
+    post:
+      tags:
+      - Data Tree
+      summary: API to get a data tree.
+      description: Unique entry point for output providers,
+        to get the tree of visible entries
+      operationId: getDataTeeEntry
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type : integer
+          format: int128
+      - name: outputID
+        in: path
+        description: ID of the output provider to query
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Query parameters to fetch the data tree.
+          Usually contains these parameters, but not limited to
+          - startTime
+          - endTime
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+      responses:
+        200:
+          description: Returns a list of data tree entries. The returned model must be consistent, parentIds must refer to a parent which exists in the model.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/GenericResponse'
+                  - type: object
+                    properties:
+                      model:
+                        $ref: '#/components/schemas/EntryModel'
+        404:
+          description: Experiment or output provider not found
           content:
             application/json:
               schema:
@@ -545,8 +597,8 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -556,8 +608,6 @@ paths:
       requestBody:
         description: Query parameters to fetch the XY tree.
           Usually contains these parameters, but not limited to
-          - lowIndex, starting index for the tree
-          - size, number of entries to return
           - startTime
           - endTime
         required: true
@@ -597,8 +647,8 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -654,8 +704,8 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -707,8 +757,8 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -718,8 +768,6 @@ paths:
       requestBody:
         description: Query parameters to fetch the timegraph tree.
           Usually contains these parameters, but not limited to
-          - lowIndex, starting index for the tree
-          - size, number of entries to return
           - startTime
           - endTime
         required: true
@@ -766,8 +814,8 @@ paths:
         description: UUID of the experiement to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -819,8 +867,8 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -870,8 +918,8 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -921,8 +969,8 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -983,8 +1031,8 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -1032,8 +1080,8 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: The name of the table provider to query
@@ -1095,8 +1143,8 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: The name of the output provider to query
@@ -1129,8 +1177,8 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: The name of the output provider to query
@@ -1155,8 +1203,8 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : integer
-          format: int128
+          type : string
+          format: uuid
       - name: outputID
         in: path
         description: The name of the output provider to query
@@ -1445,8 +1493,8 @@ components:
           type: string
         UUID:
           description: The trace's unique identifier
-          type : integer
-          format: int128
+          type : string
+          format: uuid
         path:
           description: Path to the trace on the file server's File System
           type: string
@@ -1454,11 +1502,11 @@ components:
           description: Current number of indexed events in the trace.
           type: integer
           format: int64
-        startTime:
+        start:
           description: The trace's start time
           type: integer
           format: int64
-        endTime:
+        end:
           description: The trace's end time
           type: integer
           format: int64
@@ -1473,17 +1521,17 @@ components:
           type: string
         UUID:
           description: The experiment's unique identifier
-          type : integer
-          format: int128
+          type : string
+          format: uuid
         nbEvents:
           description: Current number of indexed events in the experiment.
           type: integer
           format: int64
-        startTime:
+        start:
           description: The experiment's start time
           type: integer
           format: int64
-        endTime:
+        end:
           description: The experiment's end time
           type: integer
           format: int64
@@ -1517,8 +1565,8 @@ components:
           type: string
         UUID:
           description: The bookmark's unique ID, generated by the server.
-          type: integer
-          format: int128
+          type: string
+          format: uuid
     OutputDescriptor:
       type: object
       properties:
@@ -1532,12 +1580,13 @@ components:
           description: Describe the output provider's features
           type: string
         outputType:
-          description: Type of data returned by this output. Serve as a hint to determine what kind of view should be use for this output (ex. XY, Time Graph, Table, etc..). Providers of type TREE_TIME_XY and TIME_GRAPH can be grouped under the same time axis.
+          description: Type of data returned by this output. Serve as a hint to determine what kind of view should be use for this output (ex. XY, Time Graph, Table, etc..). Providers of type TREE_TIME_XY and TIME_GRAPH can be grouped under the same time axis. Providers of type DATA_TREE only provide a tree with columns and don't have any XY nor time graph data associated with.
           type: string
           enum:
             - TABLE
             - TREE_TIME_XY
             - TIME_GRAPH
+            - DATA_TREE
         queryParameters:
           description: List all the possible paramaters that can be use to query this output.
           type: object
@@ -1623,6 +1672,11 @@ components:
         name:
           description: Displayed name for this header
           type: string
+        tooltip:
+          description: Displayed tooltip for this header. Optional, no tooltip is applied if absent.
+          type: string
+      required:
+        - name
     XYModel:
       type: object
       properties:
@@ -1633,19 +1687,22 @@ components:
           description: Indicate if the model use a common X axis
           type: boolean
         series:
-          description: Map of XY series
-          type: object
-          additionalProperties:
+          type: array
+          items:
             $ref: '#/components/schemas/XYSeries'
+      required:
+        - title
+        - series
     XYSeries:
       type: object
       properties:
         seriesName:
           description: series' name
           type: string
-        seriesID:
+        seriesId:
           description: series' ID
-          type: string
+          type: integer
+          format: int64
         xAxis:
           $ref: '#/components/schemas/XYAxis'
         yAxis:
@@ -1670,6 +1727,11 @@ components:
             format: int32
         style:
           $ref: '#/components/schemas/OutputElementStyle'
+      required:
+        - seriesName
+        - seriesId
+        - xValues
+        - yValues
     XYAxis:
       type: object
       properties:
@@ -1729,6 +1791,9 @@ components:
           format: int32
         style:
           $ref: '#/components/schemas/OutputElementStyle'
+      required:
+        - start
+        - end
     TimeGraphRow:
       type: object
       properties:
@@ -1741,6 +1806,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TimeGraphState'
+      required:
+        - entryId
+        - states
     TimeGraphArrow:
       type: object
       properties:
@@ -1762,6 +1830,11 @@ components:
           format: int64
         style:
           $ref: '#/components/schemas/OutputElementStyle'
+      required:
+        - start
+        - end
+        - sourceId
+        - targetId
     Filter:
       type: object
       properties:
@@ -1833,8 +1906,8 @@ components:
       description: Base entry returned by tree endpoints
       type: object
       properties:
-        name:
-          description: Displayed name for this Entry
+        labels:
+          description: Array of cell labels to be displayed. The length of the array and the index of each column need to correspond to the header array returned in the tree model.
           type: array
           items:
             type: string
@@ -1847,8 +1920,15 @@ components:
             optional if this entry does not have a parent.
           type: integer
           format: int32
+        hasData:
+          description: Whether or not this entry has data
+          type: boolean
         style:
           $ref: '#/components/schemas/OutputElementStyle'
+      required:
+        - labels
+        - id
+        - parentId
     EntryModel:
       type: object
       properties:
@@ -1860,12 +1940,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EntryHeader'
+      required:
+        - entries
     OutputElementStyle:
       type: object
       description: Represents the style on an element (ex. Entry, TimeGraphState, ...) returned by any output. 
         Supports style inheritance. To avoid having too many styles, the element style can have a parent style and will have all the same style property values as the parent and can add or override style properties.
       properties:
-        parentStyleKey:
+        parentKey:
           description: Parent style key or empty if there is no parent. The parent key should match another style key and is used for style inheritance
           type: string
         values:
