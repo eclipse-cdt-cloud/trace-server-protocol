@@ -1961,7 +1961,6 @@ components:
       required:
         - labels
         - id
-        - parentId
     EntryModel:
       type: object
       properties:
