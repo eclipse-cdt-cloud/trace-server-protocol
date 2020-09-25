@@ -5,7 +5,7 @@ This protocol is built to decouple the backend and frontend of trace analysers, 
 
 The protocol is meant to be RESTful, over HTTP.
 
-The specification is currently written in **OpenAPI 3.0**.
+The specification is currently written in **OpenAPI 3.0** and can be pretty-visualized in the [github pages](https://theia-ide.github.io/trace-server-protocol/).
 
 # HOW-TO
 
