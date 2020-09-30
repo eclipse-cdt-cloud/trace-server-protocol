@@ -1131,6 +1131,68 @@ paths:
             application/json:
               schema:
                 type: string
+  /experiments/{expUUID}/outputs/table/{outputID}/tooltip:
+    post:
+      tags:
+      - Virtual Tables
+      summary: API to get virtual table tooltip
+      operationId: getTooltip
+      parameters:
+      - name: expUUID
+        in: path
+        description: The UUID of the experiment in the server
+        required: true
+        schema:
+          type : string
+          format: uuid
+      - name: outputID
+        in: path
+        description: The name of the table provider to query
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Query parameters to fetch the timegraph tree.
+          Usually contains these parameters, but not limited to
+          - requested_items, index of the first line to query
+          - requested_times, number of lines to return
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+      responses:
+        200:
+          description: Returns a list of tooltip entries. The returned model must be consistent, parentIds must refer to a parent which exists in the model.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/GenericResponse'
+                  - type: object
+                    properties:
+                      model:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TableModel'
+        400:
+          description: Bad request, the requested_items must be larger than 0
+          content:
+            application/json:
+              schema:
+                type: string
+        404:
+          description: No such Experiment
+          content:
+            application/json:
+              schema:
+                type: string
+        500:
+          description: Error reading the Experiment
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments/{expUUID}/outputs/{outputID}/style:
     post:
       tags:
