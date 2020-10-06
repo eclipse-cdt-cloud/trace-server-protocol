@@ -1095,7 +1095,7 @@ paths:
           Usually contains these parameters, but not limited to
           - lowIndex, index of the first line to query
           - size, number of lines to return
-          - columnId, List of column ids to return, all columns will be returned if not specified. The data in the returned lines will use the same order as the columnId array
+          - columnIds, List of column ids to return, all columns will be returned if not specified. The data in the returned lines will use the same order as the columnId array
         required: true
         content:
           application/json:
@@ -1112,9 +1112,7 @@ paths:
                   - type: object
                     properties:
                       model:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/TableModel'
+                        $ref: '#/components/schemas/TableModel'
         400:
           description: Bad request, the top index and size must be larger than 0
           content:
@@ -1644,14 +1642,15 @@ components:
       type: object
       properties:
         lowIndex:
-          description: Rank of the first returned event
+          description: Index in the virtual table of the first returned event
           type: integer
           format: int64
         size:
           description: Number of events. If filtered, the size will be the number of events that match the filters
           type: integer
           format: int32
-        columnId:
+        columnIds:
+          description: The array of column ids that are returned. They should match the content of the lines' content.
           type: array
           items:
             type: integer
@@ -1664,9 +1663,11 @@ components:
       type: object
       properties:
         index:
+          description: The index of this line in the virtual table
           type: integer
           format: int64
         cells:
+          description: The content of the cells for this line. This array matches the column ids returned above.
           type: array
           items:
             type: object
@@ -1692,10 +1693,10 @@ components:
         name:
           description: Displayed name for this column
           type: string
-        columnDescription:
+        description:
           description: Description of the column
           type: string
-        columnType:
+        type:
           description: Type of data associated to this column
           type: string
     EntryHeader:
