@@ -49,6 +49,8 @@ tags:
   description: How to filter and query
 - name: Features
   description: Discover the features which are available on a given server.
+- name: Diagnostic
+  description: Refer to the server's status
 paths:
   /traces:
     get:
@@ -1483,6 +1485,36 @@ paths:
                       type: array
                       items:
                         type: string
+  /health:
+    get:
+      summary: Get the health status of this server
+      tags:
+      - Diagnostic
+      responses:
+        200:
+          description: The trace server is running and ready to receive requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    description: The status of the server
+                    type: string
+                    enum:
+                    - "UP"
+        503:
+          description: The trace server is unavailable or in maintenance and cannot receive requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    description: The status of the server
+                    type: string
+                    enum:
+                    - "DOWN"
 components:
   schemas:
     TraceModel:
