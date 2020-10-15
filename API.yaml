@@ -1134,7 +1134,7 @@ paths:
   /experiments/{expUUID}/outputs/{outputID}/style:
     post:
       tags:
-      - Style
+      - Styles
       summary: API to get the style associated to this experiment and output
       operationId: getStyles
       parameters:
