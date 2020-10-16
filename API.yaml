@@ -16,7 +16,7 @@
 openapi: '3.0.2'
 info:
   description: Open source REST API for viewing and analyzing any type of logs or traces. Its goal is to provide models to populate views, graphs, metrics, and more to help extract useful information from traces, in a way that is more user-friendly and informative than huge text dumps.
-  version: 0.0.0
+  version: 0.1.0
   title: Trace Analysis Server Protocol
   termsOfService: http://tracecompass.org/
   contact:
