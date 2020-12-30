@@ -1,0 +1,212 @@
+type Trace {
+  name: String!
+  uuid: ID!
+  path: String!
+  nbEvents: String
+  startTime: String!
+  endTime: String
+  indexingStatus: IndexingStatus!
+}
+
+enum IndexingStatus {
+  RUNNING
+  COMPLETED
+  ERROR
+}
+
+type Experiment {
+  name: String!
+  uuid: ID!
+  nbEvents: String
+  startTime: String!
+  endTime: String
+  indexingStatus: IndexingStatus!
+  traces: [Trace!]!
+}
+
+type Bookmark {
+  uuid: ID!
+  start: String!
+  end: String
+  name: String!
+  type: String
+  iconUrl: String
+}
+
+type OutputDescriptor {
+  id: ID!
+  name: String
+  description: String
+  type: OutputType!
+  queryParameter: [OutputQueryParameter!]
+  start: String
+  end: String
+  final: Boolean
+  compatibleProviders: [ID!]
+}
+
+enum OutputType {
+  TABLE
+  TREE_TIME_XY
+  TREE_GRAPH
+}
+
+enum OutputStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+type OutputQueryParameter {
+  key: String!
+  value: String!
+}
+
+type Table {
+  startIndex: String!
+  size: Int!
+  columns: [Column!]!
+  lines: [Line!]! @defer
+}
+
+type Column {
+  id: ID!
+  name: String!
+  columnDescription: String
+  columnType: String
+}
+
+type Line {
+  index: String!
+  cells: [Cell!]!
+  tags: [String!]
+}
+
+type Cell {
+  content: String!
+  tags: [String!]
+}
+
+type XY {
+  title: String
+  commonXAxis: Boolean
+  series: [XYSeries!]!
+}
+
+type XYSeries {
+  name: String
+  id: ID!
+  xAxis: XYAxis!
+  yAxis: XYAxis!
+  xValues: [String!]!
+  yValues: [String!]!
+  tags: [String!]
+}
+
+type XYAxis {
+  label: String!
+  unit: String
+}
+
+type TreeXY implements treeOutput{
+  output: OutputDescriptor
+  status: OutputStatus!
+  statusMessage: String
+  tree: Tree!
+  xy: XY! @defer
+  style: Style @defer
+}
+
+type TimeGraph implements treeOutput{
+  output: OutputDescriptor
+  status: OutputStatus!
+  statusMessage: String
+  tree: Tree!
+  rows: [TimeGraphRow!] @defer
+  style: Style @defer
+}
+
+type TimeGraphRow {
+  id: ID!
+  states: [TimeGraphState!]
+}
+
+type TimeGraphState {
+  start: String!
+  end: String!
+  label: String
+  tags: [String!]
+  styleKey: String
+}
+
+type StyleValue {
+  bgColor: String
+  fgColor: String
+  height: Int
+  font: String
+  fontColor: String
+  additional: [AdditionalStyleValue!]
+}
+
+type AdditionalStyleValue {
+  key: String!
+  value: String!
+}
+
+type Style {
+  key: String!
+  value: StyleValue!
+}
+
+type Entry {
+  name: [String!]!
+  id: ID!
+  parentId: ID
+}
+
+type EntryHeader {
+  name: String!
+}
+
+type Tree {
+  entries: [Entry!]
+  headers: [EntryHeader!]
+}
+
+type Tooltip {
+  key: String!
+  value: String!
+}
+
+interface treeOutput {
+  output: OutputDescriptor
+  status: OutputStatus!
+  statusMessage: String
+  tree: Tree!
+}
+
+input QueryInput {
+  parameters: [ParameterInput!]
+  filter: [Int!]
+}
+
+input ParameterInput {
+  key: String!
+  value: String!
+}
+
+type Query {
+  traces(): [Trace!]
+  experiments(): [Experiment!]
+  experiment(experimentId: ID!): Experiment!
+  experimentOutputs(experimentId: ID!): OutputDescriptor!
+
+  treeXY(experimentId: ID!, outputId: ID!, treeParameter: QueryInput, XYParameter: QueryInput): TreeXY!
+  XYTooltip(experimentId: ID!, outputId: ID!, xValue: String!, yValue: String, seriesId: ID): [Tooltip!]
+
+  timegraph(experimentId: ID!, outputId: ID!, treeParameter: QueryInput, timegraphParameter: QueryInput): TimeGraph!
+  timegraphTooltip(experimentId: ID!, outputId: ID!, time: String!, entryId: ID, targetId: ID): [Tooltip!]
+
+  virtualTable(experimentId: ID!, outputId: ID!, tableParameter: QueryInput): Table!
+}
