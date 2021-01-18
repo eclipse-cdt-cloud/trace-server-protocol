@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2018 Ericsson
+# Copyright (c) 2018, 2021 Ericsson
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ openapi: '3.0.2'
 info:
   description: Open source REST API for viewing and analyzing any type of logs or traces. Its goal is to provide models to populate views, graphs, metrics, and more to help extract useful information from traces, in a way that is more user-friendly and informative than huge text dumps.
   version: 0.1.0
-  title: Trace Analysis Server Protocol
+  title: Trace Server Protocol
   termsOfService: http://tracecompass.org/
   contact:
     email: tracecompass-dev@eclipse.org
@@ -201,7 +201,7 @@ paths:
         description: UUID of the experiment to modify
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       responses:
         200:
@@ -223,7 +223,7 @@ paths:
         description: UUID of the experiment to modify
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       - name: name
         in: query
@@ -282,7 +282,7 @@ paths:
         description: The unique identifier of the experiment in the server
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       responses:
         200:
@@ -305,7 +305,7 @@ paths:
         description: The unique identifier of the experiment in the server
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       responses:
         200:
@@ -339,7 +339,7 @@ paths:
         description: The unique identifier of the experiment in the server
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       - name: outputID
         in: path
@@ -379,7 +379,7 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       responses:
         200:
@@ -407,7 +407,7 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       requestBody:
         description: The bookmark to post
@@ -441,7 +441,7 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       - name: bookmarkId
         in: path
@@ -542,15 +542,15 @@ paths:
       summary: API to get a data tree.
       description: Unique entry point for output providers,
         to get the tree of visible entries
-      operationId: getDataTeeEntry
+      operationId: getDataTreeEntry
       parameters:
       - name: expUUID
         in: path
         description: UUID of the experiment to query
         required: true
         schema:
-          type : integer
-          format: int128
+          type: string
+          format: uuid
       - name: outputID
         in: path
         description: ID of the output provider to query
@@ -559,14 +559,27 @@ paths:
           type: string
       requestBody:
         description: Query parameters to fetch the data tree.
-          Usually contains these parameters, but not limited to
-          - startTime
-          - endTime
+          When 'requested_times' is absent the tree for the full range is returned. When present it specifies a range as [start, end].
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Query'
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    requested_times:
+                      type: array
+                      items:
+                        type: integer
+                  additionalProperties:
+                    type: object
+              required:
+                - parameters
+              example:
+                parameters:
+                  requested_times: [111111111, 222222222]
       responses:
         200:
           description: Returns a list of data tree entries. The returned model must be consistent, parentIds must refer to a parent which exists in the model.
@@ -599,7 +612,7 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       - name: outputID
         in: path
@@ -609,14 +622,27 @@ paths:
           type: string
       requestBody:
         description: Query parameters to fetch the XY tree.
-          Usually contains these parameters, but not limited to
-          - startTime
-          - endTime
+          When 'requested_times' is absent the tree for the full range is returned. When present it specifies a range as [start, end].
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Query'
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    requested_times:
+                      type: array
+                      items:
+                        type: integer
+                  additionalProperties:
+                    type: object
+              required:
+                - parameters
+              example:
+                parameters:
+                  requested_times: [111111111, 222222222]
       responses:
         200:
           description: Returns a list of XY entries. The returned model must be consistent, parentIds must refer to a parent which exists in the model.
@@ -649,7 +675,7 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       - name: outputID
         in: path
@@ -659,16 +685,36 @@ paths:
           type: string
       requestBody:
         description: Query parameters to fetch the XY model.
-          Usually contains these parameters, but not limited to
-          - entries, array of all the entry (series) IDs
-          - nb, number of data points to sample
-          - startTime
-          - endTime
+          The array 'requested_times' is the explicit array of requested sample times.
+          The array 'requested_items' is the list of entryId or serieId being requested.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Query'
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    requested_times:
+                      type: array
+                      items:
+                        type: integer
+                    requested_items:
+                      type: array
+                      items:
+                        type: integer
+                  required:
+                    - requested_times
+                    - requested_items
+                  additionalProperties:
+                    type: object
+              required:
+                - parameters
+              example:
+                parameters:
+                  requested_times: [111111111, 222222222]
+                  requested_items: [1, 2]
       responses:
         200:
           description: Return the queried XYResponse
@@ -694,7 +740,7 @@ paths:
               schema:
                 type: string
   /experiments/{expUUID}/outputs/XY/{outputID}/tooltip:
-    post:
+    get:
       tags:
       - XY
       summary: API to get the XY tooltips.
@@ -706,7 +752,7 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       - name: outputID
         in: path
@@ -714,17 +760,22 @@ paths:
         required: true
         schema:
           type: string
-      requestBody:
-        description: Query parameters to fetch tooltips.
-          Usually contains these parameters, but not limited to
-          - entries, array of all the entry (series) IDs
-          - xValue, X value to use to fetch the tooltip
-          - yValue, Additional Y value to identify the right tooltip.
+      - name: xValue
+        in: query
+        description: The xValue for which to get the tooltip
         required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Query'
+        schema:
+          type: integer
+      - name: yValue
+        in: query
+        description: The yValue for which to get the tooltip
+        schema:
+          type: number
+      - name: entryId
+        in: query
+        description: The entryId or serieId for which to get the tooltip
+        schema:
+          type: integer
       responses:
         200:
           description: Returns a list of tooltip keys to values
@@ -759,7 +810,7 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       - name: outputID
         in: path
@@ -769,14 +820,27 @@ paths:
           type: string
       requestBody:
         description: Query parameters to fetch the timegraph tree.
-          Usually contains these parameters, but not limited to
-          - startTime
-          - endTime
+          When 'requested_times' is absent the tree for the full range is returned. When present it specifies a range as [start, end].
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Query'
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    requested_times:
+                      type: array
+                      items:
+                        type: integer
+                  additionalProperties:
+                    type: object
+              required:
+                - parameters
+              example:
+                parameters:
+                  requested_times: [111111111, 222222222]
       responses:
         200:
           description: Returns a list Time graph entries. The returned model must be consistent, parentIds must refer to a parent which exists in the model.
@@ -816,7 +880,7 @@ paths:
         description: UUID of the experiement to query
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       - name: outputID
         in: path
@@ -826,17 +890,36 @@ paths:
           type: string
       requestBody:
         description: Query parameters to fetch the timegraph states.
-          Usually contains these parameters, but not limited to
-          - entries, array of all the entry (series) IDs
-          - nb, number of time stamps to sample
-          - startTime
-          - endTime
-          - labelRatio, ratio of state duration to label's string length to determine if the resolution is large enough to return the label
+          The array 'requested_times' is the explicit array of requested sample times.
+          The array 'requested_items' is the list of entryId being requested.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Query'
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    requested_times:
+                      type: array
+                      items:
+                        type: integer
+                    requested_items:
+                      type: array
+                      items:
+                        type: integer
+                  required:
+                    - requested_times
+                    - requested_items
+                  additionalProperties:
+                    type: object
+              required:
+                - parameters
+              example:
+                parameters:
+                  requested_times: [111111111, 222222222]
+                  requested_items: [1, 2]
       responses:
         200:
           description: Returns a list of time graph row
@@ -869,7 +952,7 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       - name: outputID
         in: path
@@ -879,14 +962,29 @@ paths:
           type: string
       requestBody:
         description: Query parameters to fetch the timegraph arrows.
-          Usually contains these parameters, but not limited to
-          - startTime
-          - endTime
+          The array 'requested_times' is the explicit array of requested sample times.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Query'
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    requested_times:
+                      type: array
+                      items:
+                        type: integer
+                  required:
+                    - requested_times
+                  additionalProperties:
+                    type: object
+              required:
+                - parameters
+              example:
+                parameters:
+                  requested_times: [111111111, 222222222]
       responses:
         200:
           description: Returns a sampled list of TimeGraph arrows
@@ -908,7 +1006,7 @@ paths:
               schema:
                 type: string
   /experiments/{expUUID}/outputs/timeGraph/{outputID}/tooltip:
-    post:
+    get:
       tags:
       - TimeGraph
       summary: API to get the Time Graph tooltips.
@@ -920,7 +1018,7 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       - name: outputID
         in: path
@@ -928,16 +1026,23 @@ paths:
         required: true
         schema:
           type: string
-      requestBody:
-        description: Query parameters to fetch the tooltips.
-          Usually contains these parameters, but not limited to
-          - entries, array of all the entry (series) IDs
-          - times, array of all the times
+      - name: time
+        in: query
+        description: The time for which to get the tooltip
         required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Query'
+        schema:
+          type: integer
+      - name: entryId
+        in: query
+        description: The entryId for which to get the tooltip
+        required: true
+        schema:
+          type: integer
+      - name: targetId
+        in: query
+        description: The optional arrow targetId for which to get the tooltip
+        schema:
+          type: integer
       responses:
         200:
           description: Returns a list of tooltip keys to values
@@ -971,7 +1076,7 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       - name: outputID
         in: path
@@ -987,19 +1092,37 @@ paths:
           type: string
           enum: [next, previous]
       requestBody:
-        description: Query parameters to fetch the timegraph states.
-          Usually contains these parameters, but not limited to
-          - entries, array of all the entry (series) IDs
-          - nb, number of time stamps to sample
-          - startTime
-          - endTime
-          - labelRatio, ratio of state duration to label's string length to determine if the resolution is large enough to return the label
-          - currentTime, Current selected time, starting point of for the next / previous
+        description: Query parameters to fetch the next / previous timegraph state.
+          The 'requested_times' array contains the currently selected time.
+          The 'requested_times' array contains the currently selected entryId.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Query'
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    requested_times:
+                      type: array
+                      items:
+                        type: integer
+                    requested_items:
+                      type: array
+                      items:
+                        type: integer
+                  required:
+                    - requested_times
+                    - requested_items
+                  additionalProperties:
+                    type: object
+              required:
+                - parameters
+              example:
+                parameters:
+                  requested_times: [111111111]
+                  requested_items: [1]
       responses:
         200:
           description: Returns a list of time graph row
@@ -1033,7 +1156,7 @@ paths:
         description: UUID of the experiment to query
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       - name: outputID
         in: path
@@ -1042,14 +1165,22 @@ paths:
         schema:
           type: string
       requestBody:
-        description: Query parameters to fetch the timegraph tree.
-          Usually contains these parameters, but not limited to
-          - size, number of entries to return
+        description: Query parameters to fetch the table columns.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Query'
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  additionalProperties:
+                    type: object
+              required:
+                - parameters
+              example:
+                parameters:
+                  {}
       responses:
         200:
           description: Returns a list of table headers.
@@ -1082,7 +1213,7 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       - name: outputID
         in: path
@@ -1091,16 +1222,42 @@ paths:
         schema:
           type: string
       requestBody:
-        description: Query parameters to fetch the timegraph tree.
-          Usually contains these parameters, but not limited to
-          - lowIndex, index of the first line to query
-          - size, number of lines to return
-          - columnIds, List of column ids to return, all columns will be returned if not specified. The data in the returned lines will use the same order as the columnId array
+        description: Query parameters to fetch the table lines.
+          One of 'requested_table_index' or 'requested_times' should be present. If 'requested_table_index' is used it is the starting index of the lines to be returned. If 'requested_times' is used it should contain an array with a single timestamp and the returned lines starting at the given timestamp (or the nearest following) will be returned.
+          The 'requested_table_count' is the number of lines that should be returned.
+          When 'requested_table_column_ids' is absent all columns are returned. When present it is the array of requested columnIds.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Query'
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    requested_table_index:
+                      type: integer
+                    requested_times:
+                      type: array
+                      items:
+                        type: integer
+                    requested_table_count:
+                      type: integer
+                    requested_table_column_ids:
+                      type: array
+                      items:
+                        type: integer
+                  required:
+                    - requested_table_count
+                  additionalProperties:
+                    type: object
+              required:
+                - parameters
+              example:
+                parameters:
+                  requested_table_index: 0
+                  requested_table_count: 100
+                  requested_table_column_ids: [0, 1, 2]
       responses:
         200:
           description: Returns a table model with a 2D array of strings and metadata
@@ -1135,7 +1292,7 @@ paths:
     post:
       tags:
       - Styles
-      summary: API to get the style associated to this experiment and output
+      summary: API to get the style map associated to this experiment and output
       operationId: getStyles
       parameters:
       - name: expUUID
@@ -1143,7 +1300,7 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       - name: outputID
         in: path
@@ -1152,12 +1309,22 @@ paths:
         schema:
           type: string
       requestBody:
-        description: Query parameters to fetch the style.
+        description: Query parameters to fetch the style map.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Query'
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  additionalProperties:
+                    type: object
+              required:
+                - parameters
+              example:
+                parameters:
+                  {}
       responses:
         200:
           description: Style model that can be used jointly with OutputElementStyle to retrieve specific style values
@@ -1177,7 +1344,7 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       - name: outputID
         in: path
@@ -1203,7 +1370,7 @@ paths:
         description: The UUID of the experiment in the server
         required: true
         schema:
-          type : string
+          type: string
           format: uuid
       - name: outputID
         in: path
@@ -1213,14 +1380,35 @@ paths:
           type: string
       requestBody:
         description: Query parameters to fetch the annotations.
-          Usually contains these parameters, but not limited to
-          - entries, array of all the entry (series) IDs
-          - times, array of times
+          The array 'requested_times' is the explicit array of requested sample times.
+          The array 'requested_items' is the list of entryId being requested.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Query'
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    requested_times:
+                      type: array
+                      items:
+                        type: integer
+                    requested_items:
+                      type: array
+                      items:
+                        type: integer
+                  required:
+                    - requested_times
+                  additionalProperties:
+                    type: object
+              required:
+                - parameters
+              example:
+                parameters:
+                  requested_times: [111111111, 222222222]
+                  requested_items: [1, 2]
       responses:
         200:
           description: Annotation model
@@ -1523,7 +1711,7 @@ components:
           type: string
         UUID:
           description: The trace's unique identifier
-          type : string
+          type: string
           format: uuid
         path:
           description: Path to the trace on the file server's File System
@@ -1551,7 +1739,7 @@ components:
           type: string
         UUID:
           description: The experiment's unique identifier
-          type : string
+          type: string
           format: uuid
         nbEvents:
           description: Current number of indexed events in the experiment.
@@ -1893,30 +2081,6 @@ components:
           description: Tags to be applied on elements that pass this filter
           type: integer
           format: int32
-    Query:
-      description: |
-        Describes the parameters used in a request.
-        A query contains all the parameters that need to be pass for a specific output. Parameters can be found in the output descriptor.
-
-        Common parameter keys to use when building queries:
-        - `requested_times_key`
-        - `requested_items_key`
-        - `requested_table_count_key`
-        - `requested_table_index_key`
-        - `requested_table_column_ids_key`
-      type: object
-      properties:
-        parameters:
-          description: Map of all the parameters used for a specific output
-          type: object
-          additionalProperties:
-            type: object
-      required:
-              - parameters
-      example:
-        parameters:
-          requested_times_key: []
-          requested_items_key: []
     ResponseStatus:
       description: All possible status for a server response
       type: string
