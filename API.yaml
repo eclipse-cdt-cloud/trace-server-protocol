@@ -1871,31 +1871,47 @@ components:
           description: Tags for the entire line
           type: integer
           format: int32
+    DataType:
+      type: object
+      properties:
+        unit:
+          description: The units used for this data, to be appended to the data
+          type: string
+        dataType:
+          description: Type of data a value represents. Gives a hint on the formatting to give to the data
+          type: string
+          enum:
+            - NUMBER
+            - BINARY_NUMBER
+            - TIMESTAMP
+            - DURATION
+            - STRING
     ColumnHeaderEntry:
-      type: object
-      properties:
-        id:
-          description: Unique id to identify this column in the backend.
-          type: integer
-          format: int32
-        name:
-          description: Displayed name for this column
-          type: string
-        description:
-          description: Description of the column
-          type: string
-        type:
-          description: Type of data associated to this column
-          type: string
+      allOf:
+        - type: object
+          properties:
+            id:
+              description: Unique id to identify this column in the backend.
+              type: integer
+              format: int32
+            name:
+              description: Displayed name for this column
+              type: string
+            description:
+              description: Description of the column
+              type: string
+        - $ref: '#/components/schemas/DataType'
     EntryHeader:
-      type: object
-      properties:
-        name:
-          description: Displayed name for this header
-          type: string
-        tooltip:
-          description: Displayed tooltip for this header. Optional, no tooltip is applied if absent.
-          type: string
+      allOf:
+        - type: object
+          properties:
+            name:
+              description: Displayed name for this header
+              type: string
+            tooltip:
+              description: Displayed tooltip for this header. Optional, no tooltip is applied if absent.
+              type: string
+        - $ref: '#/components/schemas/DataType'
       required:
         - name
     XYModel:
@@ -1954,23 +1970,13 @@ components:
         - xValues
         - yValues
     XYAxis:
-      type: object
-      properties:
-        label:
-          description: Label to apply to the axis
-          type: string
-        unit:
-          description: The units used for this axis, to be appended to the data
-          type: string
-        dataType:
-          description: Type of data this series represents. Gives a hint on the formatting to give to the data
-          type: string
-          enum:
-            - NUMBER
-            - BINARY_NUMBER
-            - TIMESTAMP
-            - DURATION
-            - STRING
+      allOf:
+        - type: object
+          properties:
+            label:
+              description: Label to apply to the axis
+              type: string
+        - $ref: '#/components/schemas/DataType'
     TimeGraphModel:
       type: object
       properties:
