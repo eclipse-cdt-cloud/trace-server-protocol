@@ -1729,8 +1729,12 @@ components:
           type: integer
           format: int64
         indexingStatus:
-          description: Status of the trace indexing Process
+          description: Status of the trace indexing
           type: string
+          enum:
+            - RUNNING
+            - COMPLETED
+            - CLOSED
     Experiment:
       type: object
       properties:
@@ -1754,8 +1758,12 @@ components:
           type: integer
           format: int64
         indexingStatus:
-          description: Status of the experiment indexing Process
+          description: Status of the experiment indexing
           type: string
+          enum:
+            - RUNNING
+            - COMPLETED
+            - CLOSED
         traces:
           description: The traces encapsulated by this experiment
           type: array
@@ -2197,3 +2205,4 @@ components:
           type: array
           items:
             type: string
+
