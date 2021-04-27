@@ -713,7 +713,7 @@ paths:
                 - parameters
               example:
                 parameters:
-                  requested_times: [111111111, 222222222]
+                  requested_times: [111200000, 111300000, 111400000, 111500000]
                   requested_items: [1, 2]
       responses:
         200:
@@ -918,7 +918,7 @@ paths:
                 - parameters
               example:
                 parameters:
-                  requested_times: [111111111, 222222222]
+                  requested_times: [111200000, 111300000, 111400000, 111500000]
                   requested_items: [1, 2]
       responses:
         200:
@@ -984,7 +984,7 @@ paths:
                 - parameters
               example:
                 parameters:
-                  requested_times: [111111111, 222222222]
+                  requested_times: [111200000, 111300000, 111400000, 111500000]
       responses:
         200:
           description: Returns a sampled list of TimeGraph arrows
@@ -1407,7 +1407,7 @@ paths:
                 - parameters
               example:
                 parameters:
-                  requested_times: [111111111, 222222222]
+                  requested_times: [111200000, 111300000, 111400000, 111500000]
                   requested_items: [1, 2]
       responses:
         200:
