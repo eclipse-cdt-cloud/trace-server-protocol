@@ -2146,26 +2146,82 @@ components:
             $ref: '#/components/schemas/EntryHeader'
       required:
         - entries
+    OutputStyleModel:
+      type: object
+      description: Map of styles specific to an output where values gives hints on the style. The keys are strings that can be used in OutputElementStyle
+      properties:
+        styles:
+          properties:
+            styleKey1:
+              $ref: '#/components/schemas/OutputElementStyle'
+            styleKey2:
+              $ref: '#/components/schemas/OutputElementStyle'
     OutputElementStyle:
       type: object
       description: Represents the style on an element (ex. Entry, TimeGraphState, ...) returned by any output. 
         Supports style inheritance. To avoid having too many styles, the element style can have a parent style and will have all the same style property values as the parent and can add or override style properties.
       properties:
         parentKey:
-          description: Parent style key or empty if there is no parent. The parent key should match another style key and is used for style inheritance
+          description: Parent style key or empty if there is no parent. The parent key should match a style key defined in the style model and is used for style inheritance. A comma-delimited list of parent style keys can be used for style composition, the last one taking precedence.
           type: string
         values:
-          type: object            
-          description: Style values or empty map if there is no values. CSS properties are used as keys.
-          additionalProperties:
-            type: object
-    OutputStyleModel:
+            $ref: '#/components/schemas/StyleProperty'
+    StyleProperty:
       type: object
-      description: Map of styles specific to an output where values gives hints on the style. The keys are strings that can be used in OutputElementStyle
+      description: Style values or empty map if there is no values.
       properties:
-        styles:
-          additionalProperties:
-            $ref: '#/components/schemas/OutputElementStyle'
+        background-color:
+          description: Background color, specified as an hex string '#rrggbb'. Default is '#000000'.
+          type: string
+        color:
+          description: Foreground color, specified as an hex string '#rrggbb'. Default is '#000000' or, when the element has a background color, a distinct color from this background color.
+          type: string
+        opacity:
+          description: Opacity level of an element between 0.0 and 1.0 where 0.0 is transparent and 1.0 is fully opaque. Default is 1.0.
+          type: number
+        border-style:
+          description: Border style as string. Default is 'none'.
+          enum:
+            - none
+            - dotted
+            - dashed
+            - solid
+            - double
+        border-color:
+          description: Border color, specified as an hex string '#rrggbb'. Used when 'border-style' is other than 'none'. Default is '#000000'.
+          type: string
+        border-width:
+          description: Border width in pixels. Used when 'border-style' is other than 'none'. Default is 1.
+          type: number
+        height:
+          description: Height of an element, as a factor, between 0.0 and 1.0, of the normal element height. Default is 1.0.
+          type: number
+        width:
+          description: Width of an element in pixels. Not applicable to elements representing a time duration. Default is 1.
+          type: number
+        symbol-type:
+          description: Symbol type as a string. Default is 'none'.
+          enum:
+            - none
+            - diamond
+            - circle
+            - square
+            - triangle
+            - inverted-triangle
+            - cross
+            - plus
+        vertical-align:
+          description: Vertical alignment as a string. Default is 'middle'.
+          enum:
+            - middle
+            - top
+            - bottom
+        <colorkey>-blend:
+          description: Suffix to be appended to a color style key to apply a blending color to that style's color value. The value of the modifier style is an hex string that includes the blending color's alpha between 0 and 255 '#rrggbbaa'.
+          type: string
+        <numberkey>-factor:
+          description: Suffix to be appended to a numerical style key to apply a multiplication factor to that style's numerical value. The value of the modifier style is a positive number.
+          type: number
     Annotation:
       type: object
       description: An annotation is used to mark interesting area in a given range.
