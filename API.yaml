@@ -1006,10 +1006,10 @@ paths:
               schema:
                 type: string
   /experiments/{expUUID}/outputs/timeGraph/{outputID}/tooltip:
-    get:
+    post:
       tags:
       - TimeGraph
-      summary: API to get the Time Graph tooltips.
+      summary: API to get a Time Graph tooltip.
       description: Endpoint to retrieve tooltips for time graph
       operationId: getTimeGraphTooltip
       parameters:
@@ -1026,23 +1026,43 @@ paths:
         required: true
         schema:
           type: string
-      - name: time
-        in: query
-        description: The time for which to get the tooltip
+      requestBody:
+        description: Query parameters to fetch the timegraph tooltip.
+          The array 'requested_times' is an array with a single timestamp.
+          The array 'requested_items' is an array with a single entryId being requested.
+          The object 'requested_element' is the element for which the tooltip is requested.
         required: true
-        schema:
-          type: integer
-      - name: entryId
-        in: query
-        description: The entryId for which to get the tooltip
-        required: true
-        schema:
-          type: integer
-      - name: targetId
-        in: query
-        description: The optional arrow targetId for which to get the tooltip
-        schema:
-          type: integer
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    requested_times:
+                      type: array
+                      items:
+                        type: integer
+                    requested_items:
+                      type: array
+                      items:
+                        type: integer
+                    requested_element:
+                      $ref: '#/components/schemas/Element'
+                  required:
+                    - requested_times
+                    - requested_items
+                    - requested_element
+                  additionalProperties:
+                    type: object
+              required:
+                - parameters
+              example:
+                parameters:
+                  requested_times: [111200000]
+                  requested_items: [1]
+                  requested_element: {elementType: state, time: 111100000, duration: 100000}
       responses:
         200:
           description: Returns a list of tooltip keys to values
@@ -2224,24 +2244,34 @@ components:
           type: number
     Annotation:
       type: object
-      description: An annotation is used to mark interesting area in a given range.
+      description: An annotation is used to mark interesting area at a given time or time range.
       properties:
-        label:
-          type: string
         time:
           type: integer
           format: int64
+          description: time of this annoation
         duration:
           type: integer
           format: int64
+          description: duration of this annotation
         entryId:
           type: integer
           format: int64
+          description: entry's unique ID or -1 if annotation not associated with an entry
         type:
           type: string
           enum: [TREE, CHART]
+          description: type of annotation indicating its location
+        label:
+          type: string
+          description: text label of this annotation
         style:
           $ref: '#/components/schemas/OutputElementStyle'
+      required:
+        - time
+        - duration
+        - entryId
+        - type
     AnnotationModel:
       type: object
       description: Model returned by outputs that contains annotations per category.
@@ -2261,4 +2291,32 @@ components:
           type: array
           items:
             type: string
+    Element:
+      type: object
+      description: An element model to be identified.
+      properties:
+        elementType:
+          description: The type of element
+          type: string
+          enum: [state, annotation, arrow]
+        time:
+          description: element's start time
+          type: integer
+          format: int64
+        duration:
+          description: element's duration
+          type: integer
+          format: int64
+        entryId:
+          description: entry's unique ID (annotation, arrow)
+          type: integer
+          format: int32
+        destinationId:
+          description: destination entry's unique ID (arrow)
+          type: integer
+          format: int32
+      required:
+        - elementType
+        - time
+        - duration
 
