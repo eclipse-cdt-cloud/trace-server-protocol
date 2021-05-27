@@ -1382,6 +1382,9 @@ paths:
         description: Query parameters to fetch the annotations.
           The array 'requested_times' is the explicit array of requested sample times.
           The array 'requested_items' is the list of entryId being requested.
+          The optional string 'requested_markerset' is the markerset to add to the list.
+          The optional string 'requested_trace' is the hostID of the trace to get.
+
         required: true
         content:
           application/json:
