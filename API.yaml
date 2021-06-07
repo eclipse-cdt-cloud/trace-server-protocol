@@ -1246,6 +1246,8 @@ paths:
           One of 'requested_table_index' or 'requested_times' should be present. If 'requested_table_index' is used it is the starting index of the lines to be returned. If 'requested_times' is used it should contain an array with a single timestamp and the returned lines starting at the given timestamp (or the nearest following) will be returned.
           The 'requested_table_count' is the number of lines that should be returned.
           When 'requested_table_column_ids' is absent all columns are returned. When present it is the array of requested columnIds.
+          Use 'table_search_expressions' for search providing a map of <columnId, regular expression>. Returned lines that match the search expression will be tagged.
+          Use 'table_search_direction' to specifiy search direction [NEXT, PREVIOUS]. If present, 'requested_table_count' events are returned starting from the first matching event. Matching and not matching events are returned. Matching events will be tagged. If no matches are found, an empty list will be returned.
         required: true
         content:
           application/json:
@@ -1267,6 +1269,16 @@ paths:
                       type: array
                       items:
                         type: integer
+                    table_search_expressions:
+                      type: object
+                      additionalProperties:
+                        type: string
+                    table_search_direction:
+                      type: string
+                      description: Search next or previous item (e.g. event, state etc.)
+                      enum:
+                        - "NEXT"
+                        - "PREVIOUS"
                   required:
                     - requested_table_count
                   additionalProperties:
@@ -1278,6 +1290,8 @@ paths:
                   requested_table_index: 0
                   requested_table_count: 100
                   requested_table_column_ids: [0, 1, 2]
+                  requested_search_expression: {"1": "cpu.*"}
+                  requested_search_direction: "NEXT"
       responses:
         200:
           description: Returns a table model with a 2D array of strings and metadata
@@ -1938,6 +1952,7 @@ components:
           description: Tags for the entire line
           type: integer
           format: int32
+          $ref: '#/components/schemas/Tags'
     ColumnHeaderEntry:
       type: object
       properties:
@@ -2368,4 +2383,8 @@ components:
         - elementType
         - time
         - duration
+    Tags:
+      type: integer
+      description: A bit masks to apply for tagging elements (e.g. table lines, states). This can be used by the server to indicate if a filter matches and what action to apply. Use 0 for no tags, 1 and 2 are reserved, 4 for 'BORDER' and 8 for 'HIGHLIGHT'.
+      format: int64
 
