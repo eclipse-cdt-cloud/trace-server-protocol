@@ -1352,6 +1352,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OutputStyleModel'
+  /experiments/{expUUID}/outputs/markerSets:
+    get:
+      tags:
+      - Annotations
+      summary: API to get marker sets available for this experiment
+      operationId: getMarkerSets
+      parameters:
+      - name: expUUID
+        in: path
+        description: The UUID of the experiment in the server
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: List of marker sets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MarkerSet'
   /experiments/{expUUID}/outputs/{outputID}/annotations:
     get:
       tags:
@@ -1370,6 +1393,12 @@ paths:
         in: path
         description: The name of the output provider to query
         required: true
+        schema:
+          type: string
+      - name: markerSetId
+        in: query
+        description: The optional requested marker set's id
+        required: false
         schema:
           type: string
       responses:
@@ -1402,6 +1431,7 @@ paths:
         description: Query parameters to fetch the annotations.
           The array 'requested_times' is the explicit array of requested sample times.
           The array 'requested_items' is the list of entryId being requested.
+          The string 'requested_marker_set' is the optional requested marker set's id.
           The array 'requested_marker_categories' is the list of requested annotation categories. If absent, all annotations are returned.
         required: true
         content:
@@ -1420,6 +1450,8 @@ paths:
                       type: array
                       items:
                         type: integer
+                    requested_marker_set:
+                      type: string
                     requested_marker_categories:
                       type: array
                       items:
@@ -1434,6 +1466,7 @@ paths:
                 parameters:
                   requested_times: [111200000, 111300000, 111400000, 111500000]
                   requested_items: [1, 2]
+                  requested_marker_set: 'markerSetId'
                   requested_marker_categories: ['category1', 'category2']
       responses:
         200:
@@ -2248,6 +2281,16 @@ components:
         <numberkey>-factor:
           description: Suffix to be appended to a numerical style key to apply a multiplication factor to that style's numerical value. The value of the modifier style is a positive number.
           type: number
+    MarkerSet:
+      type: object
+      description: A marker set is used to represent a set of annotations that can be fetched
+      properties:
+        name:
+          type: string
+          description: name of this marker set
+        id:
+          type: string
+          description: id of this marker set
     Annotation:
       type: object
       description: An annotation is used to mark interesting area at a given time or time range.
