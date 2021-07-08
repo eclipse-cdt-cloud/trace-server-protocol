@@ -1402,6 +1402,7 @@ paths:
         description: Query parameters to fetch the annotations.
           The array 'requested_times' is the explicit array of requested sample times.
           The array 'requested_items' is the list of entryId being requested.
+          The array 'requested_marker_categories' is the list of requested annotation categories. If absent, all annotations are returned.
         required: true
         content:
           application/json:
@@ -1419,6 +1420,10 @@ paths:
                       type: array
                       items:
                         type: integer
+                    requested_marker_categories:
+                      type: array
+                      items:
+                        type: string
                   required:
                     - requested_times
                   additionalProperties:
@@ -1429,6 +1434,7 @@ paths:
                 parameters:
                   requested_times: [111200000, 111300000, 111400000, 111500000]
                   requested_items: [1, 2]
+                  requested_marker_categories: ['category1', 'category2']
       responses:
         200:
           description: Annotation model
