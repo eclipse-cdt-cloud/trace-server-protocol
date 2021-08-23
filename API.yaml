@@ -1006,10 +1006,10 @@ paths:
               schema:
                 type: string
   /experiments/{expUUID}/outputs/timeGraph/{outputID}/tooltip:
-    get:
+    post:
       tags:
       - TimeGraph
-      summary: API to get the Time Graph tooltips.
+      summary: API to get a Time Graph tooltip.
       description: Endpoint to retrieve tooltips for time graph
       operationId: getTimeGraphTooltip
       parameters:
@@ -1026,23 +1026,43 @@ paths:
         required: true
         schema:
           type: string
-      - name: time
-        in: query
-        description: The time for which to get the tooltip
+      requestBody:
+        description: Query parameters to fetch the timegraph tooltip.
+          The array 'requested_times' is an array with a single timestamp.
+          The array 'requested_items' is an array with a single entryId being requested.
+          The object 'requested_element' is the element for which the tooltip is requested.
         required: true
-        schema:
-          type: integer
-      - name: entryId
-        in: query
-        description: The entryId for which to get the tooltip
-        required: true
-        schema:
-          type: integer
-      - name: targetId
-        in: query
-        description: The optional arrow targetId for which to get the tooltip
-        schema:
-          type: integer
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    requested_times:
+                      type: array
+                      items:
+                        type: integer
+                    requested_items:
+                      type: array
+                      items:
+                        type: integer
+                    requested_element:
+                      $ref: '#/components/schemas/Element'
+                  required:
+                    - requested_times
+                    - requested_items
+                    - requested_element
+                  additionalProperties:
+                    type: object
+              required:
+                - parameters
+              example:
+                parameters:
+                  requested_times: [111200000]
+                  requested_items: [1]
+                  requested_element: {elementType: state, time: 111100000, duration: 100000}
       responses:
         200:
           description: Returns a list of tooltip keys to values
@@ -1226,6 +1246,8 @@ paths:
           One of 'requested_table_index' or 'requested_times' should be present. If 'requested_table_index' is used it is the starting index of the lines to be returned. If 'requested_times' is used it should contain an array with a single timestamp and the returned lines starting at the given timestamp (or the nearest following) will be returned.
           The 'requested_table_count' is the number of lines that should be returned.
           When 'requested_table_column_ids' is absent all columns are returned. When present it is the array of requested columnIds.
+          Use 'table_search_expressions' for search providing a map of <columnId, regular expression>. Returned lines that match the search expression will be tagged.
+          Use 'table_search_direction' to specifiy search direction [NEXT, PREVIOUS]. If present, 'requested_table_count' events are returned starting from the first matching event. Matching and not matching events are returned. Matching events will be tagged. If no matches are found, an empty list will be returned.
         required: true
         content:
           application/json:
@@ -1247,6 +1269,16 @@ paths:
                       type: array
                       items:
                         type: integer
+                    table_search_expressions:
+                      type: object
+                      additionalProperties:
+                        type: string
+                    table_search_direction:
+                      type: string
+                      description: Search next or previous item (e.g. event, state etc.)
+                      enum:
+                        - "NEXT"
+                        - "PREVIOUS"
                   required:
                     - requested_table_count
                   additionalProperties:
@@ -1258,6 +1290,8 @@ paths:
                   requested_table_index: 0
                   requested_table_count: 100
                   requested_table_column_ids: [0, 1, 2]
+                  requested_search_expression: {"1": "cpu.*"}
+                  requested_search_direction: "NEXT"
       responses:
         200:
           description: Returns a table model with a 2D array of strings and metadata
@@ -1332,6 +1366,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OutputStyleModel'
+  /experiments/{expUUID}/outputs/markerSets:
+    get:
+      tags:
+      - Annotations
+      summary: API to get marker sets available for this experiment
+      operationId: getMarkerSets
+      parameters:
+      - name: expUUID
+        in: path
+        description: The UUID of the experiment in the server
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: List of marker sets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MarkerSet'
   /experiments/{expUUID}/outputs/{outputID}/annotations:
     get:
       tags:
@@ -1350,6 +1407,12 @@ paths:
         in: path
         description: The name of the output provider to query
         required: true
+        schema:
+          type: string
+      - name: markerSetId
+        in: query
+        description: The optional requested marker set's id
+        required: false
         schema:
           type: string
       responses:
@@ -1382,6 +1445,8 @@ paths:
         description: Query parameters to fetch the annotations.
           The array 'requested_times' is the explicit array of requested sample times.
           The array 'requested_items' is the list of entryId being requested.
+          The string 'requested_marker_set' is the optional requested marker set's id.
+          The array 'requested_marker_categories' is the list of requested annotation categories. If absent, all annotations are returned.
         required: true
         content:
           application/json:
@@ -1399,6 +1464,12 @@ paths:
                       type: array
                       items:
                         type: integer
+                    requested_marker_set:
+                      type: string
+                    requested_marker_categories:
+                      type: array
+                      items:
+                        type: string
                   required:
                     - requested_times
                   additionalProperties:
@@ -1409,6 +1480,8 @@ paths:
                 parameters:
                   requested_times: [111200000, 111300000, 111400000, 111500000]
                   requested_items: [1, 2]
+                  requested_marker_set: 'markerSetId'
+                  requested_marker_categories: ['category1', 'category2']
       responses:
         200:
           description: Annotation model
@@ -1729,8 +1802,12 @@ components:
           type: integer
           format: int64
         indexingStatus:
-          description: Status of the trace indexing Process
+          description: Status of the trace indexing
           type: string
+          enum:
+            - RUNNING
+            - COMPLETED
+            - CLOSED
     Experiment:
       type: object
       properties:
@@ -1754,8 +1831,12 @@ components:
           type: integer
           format: int64
         indexingStatus:
-          description: Status of the experiment indexing Process
+          description: Status of the experiment indexing
           type: string
+          enum:
+            - RUNNING
+            - COMPLETED
+            - CLOSED
         traces:
           description: The traces encapsulated by this experiment
           type: array
@@ -1871,6 +1952,7 @@ components:
           description: Tags for the entire line
           type: integer
           format: int32
+          $ref: '#/components/schemas/Tags'
     ColumnHeaderEntry:
       type: object
       properties:
@@ -2138,46 +2220,122 @@ components:
             $ref: '#/components/schemas/EntryHeader'
       required:
         - entries
+    OutputStyleModel:
+      type: object
+      description: Map of styles specific to an output where values gives hints on the style. The keys are strings that can be used in OutputElementStyle
+      properties:
+        styles:
+          properties:
+            styleKey1:
+              $ref: '#/components/schemas/OutputElementStyle'
+            styleKey2:
+              $ref: '#/components/schemas/OutputElementStyle'
     OutputElementStyle:
       type: object
       description: Represents the style on an element (ex. Entry, TimeGraphState, ...) returned by any output. 
         Supports style inheritance. To avoid having too many styles, the element style can have a parent style and will have all the same style property values as the parent and can add or override style properties.
       properties:
         parentKey:
-          description: Parent style key or empty if there is no parent. The parent key should match another style key and is used for style inheritance
+          description: Parent style key or empty if there is no parent. The parent key should match a style key defined in the style model and is used for style inheritance. A comma-delimited list of parent style keys can be used for style composition, the last one taking precedence.
           type: string
         values:
-          type: object            
-          description: Style values or empty map if there is no values. CSS properties are used as keys.
-          additionalProperties:
-            type: object
-    OutputStyleModel:
+            $ref: '#/components/schemas/StyleProperty'
+    StyleProperty:
       type: object
-      description: Map of styles specific to an output where values gives hints on the style. The keys are strings that can be used in OutputElementStyle
+      description: Style values or empty map if there is no values.
       properties:
-        styles:
-          additionalProperties:
-            $ref: '#/components/schemas/OutputElementStyle'
+        background-color:
+          description: Background color, specified as an hex string '#rrggbb'. Default is '#000000'.
+          type: string
+        color:
+          description: Foreground color, specified as an hex string '#rrggbb'. Default is '#000000' or, when the element has a background color, a distinct color from this background color.
+          type: string
+        opacity:
+          description: Opacity level of an element between 0.0 and 1.0 where 0.0 is transparent and 1.0 is fully opaque. Default is 1.0.
+          type: number
+        border-style:
+          description: Border style as string. Default is 'none'.
+          enum:
+            - none
+            - dotted
+            - dashed
+            - solid
+            - double
+        border-color:
+          description: Border color, specified as an hex string '#rrggbb'. Used when 'border-style' is other than 'none'. Default is '#000000'.
+          type: string
+        border-width:
+          description: Border width in pixels. Used when 'border-style' is other than 'none'. Default is 1.
+          type: number
+        height:
+          description: Height of an element, as a factor, between 0.0 and 1.0, of the normal element height. Default is 1.0.
+          type: number
+        width:
+          description: Width of an element in pixels. Not applicable to elements representing a time duration. Default is 1.
+          type: number
+        symbol-type:
+          description: Symbol type as a string. Default is 'none'.
+          enum:
+            - none
+            - diamond
+            - circle
+            - square
+            - triangle
+            - inverted-triangle
+            - cross
+            - plus
+        vertical-align:
+          description: Vertical alignment as a string. Default is 'middle'.
+          enum:
+            - middle
+            - top
+            - bottom
+        <colorkey>-blend:
+          description: Suffix to be appended to a color style key to apply a blending color to that style's color value. The value of the modifier style is an hex string that includes the blending color's alpha between 0 and 255 '#rrggbbaa'.
+          type: string
+        <numberkey>-factor:
+          description: Suffix to be appended to a numerical style key to apply a multiplication factor to that style's numerical value. The value of the modifier style is a positive number.
+          type: number
+    MarkerSet:
+      type: object
+      description: A marker set is used to represent a set of annotations that can be fetched
+      properties:
+        name:
+          type: string
+          description: name of this marker set
+        id:
+          type: string
+          description: id of this marker set
     Annotation:
       type: object
-      description: An annotation is used to mark interesting area in a given range.
+      description: An annotation is used to mark interesting area at a given time or time range.
       properties:
-        label:
-          type: string
         time:
           type: integer
           format: int64
+          description: time of this annoation
         duration:
           type: integer
           format: int64
+          description: duration of this annotation
         entryId:
           type: integer
           format: int64
+          description: entry's unique ID or -1 if annotation not associated with an entry
         type:
           type: string
           enum: [TREE, CHART]
+          description: type of annotation indicating its location
+        label:
+          type: string
+          description: text label of this annotation
         style:
           $ref: '#/components/schemas/OutputElementStyle'
+      required:
+        - time
+        - duration
+        - entryId
+        - type
     AnnotationModel:
       type: object
       description: Model returned by outputs that contains annotations per category.
@@ -2197,3 +2355,36 @@ components:
           type: array
           items:
             type: string
+    Element:
+      type: object
+      description: An element model to be identified.
+      properties:
+        elementType:
+          description: The type of element
+          type: string
+          enum: [state, annotation, arrow]
+        time:
+          description: element's start time
+          type: integer
+          format: int64
+        duration:
+          description: element's duration
+          type: integer
+          format: int64
+        entryId:
+          description: entry's unique ID (annotation, arrow)
+          type: integer
+          format: int32
+        destinationId:
+          description: destination entry's unique ID (arrow)
+          type: integer
+          format: int32
+      required:
+        - elementType
+        - time
+        - duration
+    Tags:
+      type: integer
+      description: A bit masks to apply for tagging elements (e.g. table lines, states). This can be used by the server to indicate if a filter matches and what action to apply. Use 0 for no tags, 1 and 2 are reserved, 4 for 'BORDER' and 8 for 'HIGHLIGHT'.
+      format: int64
+
