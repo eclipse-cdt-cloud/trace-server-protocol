@@ -418,7 +418,7 @@ paths:
                 $ref: '#/components/schemas/Bookmark'         
       responses:
         200:
-          description: Returns the boomark's Id
+          description: Returns the bookmark's Id
           content:
             application/json:
               schema:
@@ -491,7 +491,7 @@ paths:
                 $ref: '#/components/schemas/Bookmark' 
       responses:
         200:
-          description: Returns the boomark's Id
+          description: Returns the bookmark's Id
           content:
             application/json:
               schema:
@@ -524,7 +524,7 @@ paths:
           format: uuid
       responses:
         200:
-          description: Returns the deleted boomark
+          description: Returns the deleted bookmark
           content:
             application/json:
               schema:
@@ -686,7 +686,7 @@ paths:
       requestBody:
         description: Query parameters to fetch the XY model.
           The array 'requested_times' is the explicit array of requested sample times.
-          The array 'requested_items' is the list of entryId or serieId being requested.
+          The array 'requested_items' is the list of entryId or seriesId being requested.
         required: true
         content:
           application/json:
@@ -773,7 +773,7 @@ paths:
           type: number
       - name: entryId
         in: query
-        description: The entryId or serieId for which to get the tooltip
+        description: The entryId or seriesId for which to get the tooltip
         schema:
           type: integer
       responses:
@@ -877,7 +877,7 @@ paths:
       parameters:
       - name: expUUID
         in: path
-        description: UUID of the experiement to query
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
@@ -1247,7 +1247,7 @@ paths:
           The 'requested_table_count' is the number of lines that should be returned.
           When 'requested_table_column_ids' is absent all columns are returned. When present it is the array of requested columnIds.
           Use 'table_search_expressions' for search providing a map of <columnId, regular expression>. Returned lines that match the search expression will be tagged.
-          Use 'table_search_direction' to specifiy search direction [NEXT, PREVIOUS]. If present, 'requested_table_count' events are returned starting from the first matching event. Matching and not matching events are returned. Matching events will be tagged. If no matches are found, an empty list will be returned.
+          Use 'table_search_direction' to specify search direction [NEXT, PREVIOUS]. If present, 'requested_table_count' events are returned starting from the first matching event. Matching and not matching events are returned. Matching events will be tagged. If no matches are found, an empty list will be returned.
         required: true
         content:
           application/json:
@@ -1887,7 +1887,7 @@ components:
             - TIME_GRAPH
             - DATA_TREE
         queryParameters:
-          description: List all the possible paramaters that can be use to query this output.
+          description: List all the possible parameters that can be use to query this output.
           type: object
           additionalProperties:
             type: object
@@ -2313,7 +2313,7 @@ components:
         time:
           type: integer
           format: int64
-          description: time of this annoation
+          description: time of this annotation
         duration:
           type: integer
           format: int64
