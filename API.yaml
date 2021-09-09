@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
-openapi: '3.0.2'
+openapi: "3.0.2"
 info:
   description: Open source REST API for viewing and analyzing any type of logs or traces. Its goal is to provide models to populate views, graphs, metrics, and more to help extract useful information from traces, in a way that is more user-friendly and informative than huge text dumps.
   version: 0.1.0
@@ -25,37 +25,37 @@ info:
     name: Apache 2
     url: http://www.apache.org/licenses/
 servers:
-  - url: 'https://localhost:8080/tsp/api'
+  - url: "https://localhost:8080/tsp/api"
 tags:
-- name: Traces
-  description: How to manage physical traces on your server.
-- name: Experiments
-  description: How to manage experiments on your server, an experiment represent a collection of traces, which can produce output models.
-- name: Bookmarks
-  description: How to bookmark areas of interest in the trace.
-- name: Data Tree
-  description: Learn about querying generic data tree models
-- name: XY
-  description: Learn about querying XY models
-- name: TimeGraph
-  description: Learn about querying Time Graph models.
-- name: Virtual Tables
-  description: Learn about querying virtual table models (e.g. Events Table).
-- name: Styles
-  description: Retrieve styles for different outputs
-- name: Annotations
-  description: Retrieve annotations for different outputs
-- name: Filters
-  description: How to filter and query
-- name: Features
-  description: Discover the features which are available on a given server.
-- name: Diagnostic
-  description: Refer to the server's status
+  - name: Traces
+    description: How to manage physical traces on your server.
+  - name: Experiments
+    description: How to manage experiments on your server, an experiment represent a collection of traces, which can produce output models.
+  - name: Bookmarks
+    description: How to bookmark areas of interest in the trace.
+  - name: Data Tree
+    description: Learn about querying generic data tree models
+  - name: XY
+    description: Learn about querying XY models
+  - name: TimeGraph
+    description: Learn about querying Time Graph models.
+  - name: Virtual Tables
+    description: Learn about querying virtual table models (e.g. Events Table).
+  - name: Styles
+    description: Retrieve styles for different outputs
+  - name: Annotations
+    description: Retrieve annotations for different outputs
+  - name: Filters
+    description: How to filter and query
+  - name: Features
+    description: Discover the features which are available on a given server.
+  - name: Diagnostic
+    description: Refer to the server's status
 paths:
   /traces:
     get:
       tags:
-      - Traces
+        - Traces
       summary: Get the list of physical traces imported on the server.
       operationId: getTraces
       responses:
@@ -66,10 +66,10 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TraceModel'
+                  $ref: "#/components/schemas/TraceModel"
     post:
       tags:
-      - Traces
+        - Traces
       summary: Import a trace
       description: Import a trace to the trace server.
         Return some base information once imported.
@@ -98,7 +98,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TraceModel'
+                $ref: "#/components/schemas/TraceModel"
         404:
           description: "No trace available at path"
         406:
@@ -108,45 +108,46 @@ paths:
   /traces/{traceUUID}:
     delete:
       tags:
-      - Traces
+        - Traces
       summary: Remove a trace from the server. By default it does not delete the trace from disk.
       operationId: removeTrace
       parameters:
-      - name: traceUUID
-        in: path
-        description: The unique identifier of the trace in the server
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: deleteTrace
-        in: query
-        description: Indicate if the trace should be deleted from disk or not (false by default)
-        required: false
-        schema:
-          type: boolean
-          default: false
-      - name: removeCache
-        in: query
-        description: Indicate if the cache or supplementary files should be removed (false by default).
-          If deleteTrace=true, this parameter will also be true.
-        required: false
-        schema:
-          type: boolean
-          default: false
+        - name: traceUUID
+          in: path
+          description: The unique identifier of the trace in the server
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: deleteTrace
+          in: query
+          description: Indicate if the trace should be deleted from disk or not (false by default)
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: removeCache
+          in: query
+          description:
+            Indicate if the cache or supplementary files should be removed (false by default).
+            If deleteTrace=true, this parameter will also be true.
+          required: false
+          schema:
+            type: boolean
+            default: false
       responses:
         200:
           description: The trace was successfully deleted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TraceModel'
+                $ref: "#/components/schemas/TraceModel"
         204:
           description: There was no trace with this name to close / delete
   /experiments:
     get:
       tags:
-      - Experiments
+        - Experiments
       summary: Get the list of experiments on the server
       operationId: getExperiments
       responses:
@@ -157,12 +158,12 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Experiment'
+                  $ref: "#/components/schemas/Experiment"
     post:
       summary: Create a new experiment on the server
       operationId: postExperiment
       tags:
-      - Experiments
+        - Experiments
       requestBody:
         required: true
         content:
@@ -188,49 +189,49 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Experiment'
+                $ref: "#/components/schemas/Experiment"
   /experiments/{expUUID}:
     get:
       summary: Get the Model object for an experiment
       operationId: getExperiment
       tags:
-      - Experiments
+        - Experiments
       parameters:
-      - name: expUUID
-        in: path
-        description: UUID of the experiment to modify
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: expUUID
+          in: path
+          description: UUID of the experiment to modify
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         200:
           description: Return the experiment model
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Experiment'
+                $ref: "#/components/schemas/Experiment"
         400:
           description: No such experiment
     put:
       summary: Update an experiment's content and name.
       operationId: putExperiment
       tags:
-      - Experiments
+        - Experiments
       parameters:
-      - name: expUUID
-        in: path
-        description: UUID of the experiment to modify
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: name
-        in: query
-        description: The name to give this experiment
-        required: true
-        schema:
-          type: string
+        - name: expUUID
+          in: path
+          description: UUID of the experiment to modify
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: name
+          in: query
+          description: The name to give this experiment
+          required: true
+          schema:
+            type: string
       requestBody:
         description: Additional information to update an experiment
         required: false
@@ -270,43 +271,43 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Experiment'
+                $ref: "#/components/schemas/Experiment"
     delete:
       tags:
-      - Experiments
+        - Experiments
       summary: Remove an Experiment from the server.
       operationId: deleteExperiment
       parameters:
-      - name: expUUID
-        in: path
-        description: The unique identifier of the experiment in the server
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: expUUID
+          in: path
+          description: The unique identifier of the experiment in the server
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         200:
           description: The trace was successfully deleted, return the deleted experiment.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Experiment'
+                $ref: "#/components/schemas/Experiment"
         204:
           description: There was no experiment with this name to close / delete
   /experiments/{expUUID}/outputs:
     get:
       tags:
-      - Experiments
+        - Experiments
       summary: Get the list of outputs for this experiment
       operationId: getOutputs
       parameters:
-      - name: expUUID
-        in: path
-        description: The unique identifier of the experiment in the server
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: expUUID
+          in: path
+          description: The unique identifier of the experiment in the server
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         200:
           description: Returns a list of output provider descriptors
@@ -316,11 +317,11 @@ paths:
                 type: object
                 properties:
                   experiment:
-                    $ref: '#/components/schemas/Experiment'
+                    $ref: "#/components/schemas/Experiment"
                   providers:
                     type: array
                     items:
-                      $ref: '#/components/schemas/OutputDescriptor'
+                      $ref: "#/components/schemas/OutputDescriptor"
         404:
           description: No such trace
           content:
@@ -330,23 +331,23 @@ paths:
   /experiments/{expUUID}/outputs/{outputID}:
     get:
       tags:
-      - Experiments
+        - Experiments
       summary: Get the output descriptor for this experiment and output
       operationId: getOutput
       parameters:
-      - name: expUUID
-        in: path
-        description: The unique identifier of the experiment in the server
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputID
-        in: path
-        description: The name of the output provider to query
-        required: true
-        schema:
-          type: string
+        - name: expUUID
+          in: path
+          description: The unique identifier of the experiment in the server
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: outputID
+          in: path
+          description: The name of the output provider to query
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: Returns the output provider descriptor
@@ -356,11 +357,11 @@ paths:
                 type: object
                 properties:
                   experiment:
-                    $ref: '#/components/schemas/Experiment'
+                    $ref: "#/components/schemas/Experiment"
                   providers:
                     type: object
                     items:
-                      $ref: '#/components/schemas/OutputDescriptor'
+                      $ref: "#/components/schemas/OutputDescriptor"
         404:
           description: No such experiment or output
           content:
@@ -372,15 +373,15 @@ paths:
       summary: Get the collection of bookmarks for an experiment.
       operationId: getExperimentBookmarks
       tags:
-      - Bookmarks
+        - Bookmarks
       parameters:
-      - name: expUUID
-        in: path
-        description: The UUID of the experiment in the server
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: expUUID
+          in: path
+          description: The UUID of the experiment in the server
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         200:
           description: Returns a list of bookmarks for this trace
@@ -389,7 +390,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Bookmark'
+                  $ref: "#/components/schemas/Bookmark"
         404:
           description: No such experiment
           content:
@@ -400,22 +401,22 @@ paths:
       summary: Add a bookmark to an experiment.
       operationId: postExperimentBookmark
       tags:
-      - Bookmarks
+        - Bookmarks
       parameters:
-      - name: expUUID
-        in: path
-        description: The UUID of the experiment in the server
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: expUUID
+          in: path
+          description: The UUID of the experiment in the server
+          required: true
+          schema:
+            type: string
+            format: uuid
       requestBody:
         description: The bookmark to post
         required: true
         content:
           application/json:
             schema:
-                $ref: '#/components/schemas/Bookmark'         
+              $ref: "#/components/schemas/Bookmark"
       responses:
         200:
           description: Returns the bookmark's Id
@@ -434,29 +435,29 @@ paths:
       summary: Get a specific bookmark from this experiment
       operationId: getExperimentBookmark
       tags:
-      - Bookmarks
+        - Bookmarks
       parameters:
-      - name: expUUID
-        in: path
-        description: The UUID of the experiment in the server
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: bookmarkId
-        in: path
-        description: The unique identifier of the bookmark to get
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: expUUID
+          in: path
+          description: The UUID of the experiment in the server
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: bookmarkId
+          in: path
+          description: The unique identifier of the bookmark to get
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         200:
           description: Returns the queried bookmark
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Bookmark'
+                $ref: "#/components/schemas/Bookmark"
         404:
           description: No such experiment / No such bookmark
           content:
@@ -467,28 +468,28 @@ paths:
       summary: Modify a bookmark
       operationId: putExperimentBookmark
       tags:
-      - Bookmarks
+        - Bookmarks
       parameters:
-      - name: expUUID
-        in: path
-        description: The UUID of the experiment in the server
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: bookmarkId
-        in: path
-        description: The unique identifier of the bookmark to modify
-        required: true
-        schema:
-          type: string
+        - name: expUUID
+          in: path
+          description: The UUID of the experiment in the server
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: bookmarkId
+          in: path
+          description: The unique identifier of the bookmark to modify
+          required: true
+          schema:
+            type: string
       requestBody:
         description: The bookmark to update
         required: true
         content:
           application/json:
             schema:
-                $ref: '#/components/schemas/Bookmark' 
+              $ref: "#/components/schemas/Bookmark"
       responses:
         200:
           description: Returns the bookmark's Id
@@ -506,29 +507,29 @@ paths:
       summary: Delete a bookmark
       operationId: deleteExperimentBookmark
       tags:
-      - Bookmarks
+        - Bookmarks
       parameters:
-      - name: expUUID
-        in: path
-        description: The UUID of the experiment in the server
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: bookmarkId
-        in: path
-        description: The unique identifier of the bookmark to delete
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: expUUID
+          in: path
+          description: The UUID of the experiment in the server
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: bookmarkId
+          in: path
+          description: The unique identifier of the bookmark to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         200:
           description: Returns the deleted bookmark
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Bookmark'
+                $ref: "#/components/schemas/Bookmark"
         404:
           description: No such trace or bookmark
           content:
@@ -538,25 +539,25 @@ paths:
   /experiments/{expUUID}/outputs/data/{outputID}/tree:
     post:
       tags:
-      - Data Tree
+        - Data Tree
       summary: API to get a data tree.
       description: Unique entry point for output providers,
         to get the tree of visible entries
       operationId: getDataTreeEntry
       parameters:
-      - name: expUUID
-        in: path
-        description: UUID of the experiment to query
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputID
-        in: path
-        description: ID of the output provider to query
-        required: true
-        schema:
-          type: string
+        - name: expUUID
+          in: path
+          description: UUID of the experiment to query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: outputID
+          in: path
+          description: ID of the output provider to query
+          required: true
+          schema:
+            type: string
       requestBody:
         description: Query parameters to fetch the data tree.
           When 'requested_times' is absent the tree for the full range is returned. When present it specifies a range as [start, end].
@@ -587,11 +588,11 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/GenericResponse'
+                  - $ref: "#/components/schemas/GenericResponse"
                   - type: object
                     properties:
                       model:
-                        $ref: '#/components/schemas/EntryModel'
+                        $ref: "#/components/schemas/EntryModel"
         404:
           description: Experiment or output provider not found
           content:
@@ -601,25 +602,25 @@ paths:
   /experiments/{expUUID}/outputs/XY/{outputID}/tree:
     post:
       tags:
-      - XY
+        - XY
       summary: API to get the XY tree.
       description: Unique entry point for output providers,
         to get the tree of visible entries
       operationId: getXYEntry
       parameters:
-      - name: expUUID
-        in: path
-        description: UUID of the experiment to query
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputID
-        in: path
-        description: ID of the output provider to query
-        required: true
-        schema:
-          type: string
+        - name: expUUID
+          in: path
+          description: UUID of the experiment to query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: outputID
+          in: path
+          description: ID of the output provider to query
+          required: true
+          schema:
+            type: string
       requestBody:
         description: Query parameters to fetch the XY tree.
           When 'requested_times' is absent the tree for the full range is returned. When present it specifies a range as [start, end].
@@ -650,11 +651,11 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/GenericResponse'
+                  - $ref: "#/components/schemas/GenericResponse"
                   - type: object
                     properties:
                       model:
-                        $ref: '#/components/schemas/EntryModel'
+                        $ref: "#/components/schemas/EntryModel"
         404:
           description: Experiment or output provider not found
           content:
@@ -664,25 +665,25 @@ paths:
   /experiments/{expUUID}/outputs/XY/{outputID}/xy:
     post:
       tags:
-      - XY
+        - XY
       summary: API to get the XY model.
       description: Unique endpoint for all xy models,
         ensures that the same template is followed for all endpoints.
       operationId: getXY
       parameters:
-      - name: expUUID
-        in: path
-        description: UUID of the experiment to query
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputID
-        in: path
-        description: ID of the output provider to query
-        required: true
-        schema:
-          type: string
+        - name: expUUID
+          in: path
+          description: UUID of the experiment to query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: outputID
+          in: path
+          description: ID of the output provider to query
+          required: true
+          schema:
+            type: string
       requestBody:
         description: Query parameters to fetch the XY model.
           The array 'requested_times' is the explicit array of requested sample times.
@@ -722,11 +723,11 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/GenericResponse'
+                  - $ref: "#/components/schemas/GenericResponse"
                   - type: object
                     properties:
                       model:
-                        $ref: '#/components/schemas/XYModel'
+                        $ref: "#/components/schemas/XYModel"
         404:
           description: Trace not found
           content:
@@ -742,40 +743,40 @@ paths:
   /experiments/{expUUID}/outputs/XY/{outputID}/tooltip:
     get:
       tags:
-      - XY
+        - XY
       summary: API to get the XY tooltips.
       description: Endpoint to retrieve tooltips for XY
       operationId: getXYTooltip
       parameters:
-      - name: expUUID
-        in: path
-        description: UUID of the experiment to query
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputID
-        in: path
-        description: ID of the output provider to query
-        required: true
-        schema:
-          type: string
-      - name: xValue
-        in: query
-        description: The xValue for which to get the tooltip
-        required: true
-        schema:
-          type: integer
-      - name: yValue
-        in: query
-        description: The yValue for which to get the tooltip
-        schema:
-          type: number
-      - name: entryId
-        in: query
-        description: The entryId or seriesId for which to get the tooltip
-        schema:
-          type: integer
+        - name: expUUID
+          in: path
+          description: UUID of the experiment to query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: outputID
+          in: path
+          description: ID of the output provider to query
+          required: true
+          schema:
+            type: string
+        - name: xValue
+          in: query
+          description: The xValue for which to get the tooltip
+          required: true
+          schema:
+            type: integer
+        - name: yValue
+          in: query
+          description: The yValue for which to get the tooltip
+          schema:
+            type: number
+        - name: entryId
+          in: query
+          description: The entryId or seriesId for which to get the tooltip
+          schema:
+            type: integer
       responses:
         200:
           description: Returns a list of tooltip keys to values
@@ -799,25 +800,25 @@ paths:
   /experiments/{expUUID}/outputs/timeGraph/{outputID}/tree:
     post:
       tags:
-      - TimeGraph
+        - TimeGraph
       summary: API to get the Time Graph tree.
       description: Unique entry point for output providers,
         to get the tree of visible entries
       operationId: getTimeGraphEntry
       parameters:
-      - name: expUUID
-        in: path
-        description: UUID of the experiment to query
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputID
-        in: path
-        description: ID of the output provider to query
-        required: true
-        schema:
-          type: string
+        - name: expUUID
+          in: path
+          description: UUID of the experiment to query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: outputID
+          in: path
+          description: ID of the output provider to query
+          required: true
+          schema:
+            type: string
       requestBody:
         description: Query parameters to fetch the timegraph tree.
           When 'requested_times' is absent the tree for the full range is returned. When present it specifies a range as [start, end].
@@ -848,18 +849,18 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/GenericResponse'
+                  - $ref: "#/components/schemas/GenericResponse"
                   - type: object
                     properties:
                       model:
                         allOf:
-                          - $ref: '#/components/schemas/EntryModel'
+                          - $ref: "#/components/schemas/EntryModel"
                           - type: object
                             properties:
                               entries:
                                 type: array
                                 items:
-                                  $ref: '#/components/schemas/TimeGraphEntry'
+                                  $ref: "#/components/schemas/TimeGraphEntry"
         404:
           description: Experiment or output provider not found
           content:
@@ -869,25 +870,25 @@ paths:
   /experiments/{expUUID}/outputs/timeGraph/{outputID}/states:
     post:
       tags:
-      - TimeGraph
+        - TimeGraph
       summary: API to get the Time Graph states
       operationId: getTimeGraphStates
       description: Unique entry point for all TimeGraph states,
         ensures that the same template is followed for all views
       parameters:
-      - name: expUUID
-        in: path
-        description: UUID of the experiment to query
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputID
-        in: path
-        description: ID of the output provider to query
-        required: true
-        schema:
-          type: string
+        - name: expUUID
+          in: path
+          description: UUID of the experiment to query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: outputID
+          in: path
+          description: ID of the output provider to query
+          required: true
+          schema:
+            type: string
       requestBody:
         description: Query parameters to fetch the timegraph states.
           The array 'requested_times' is the explicit array of requested sample times.
@@ -927,11 +928,11 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/GenericResponse'
+                  - $ref: "#/components/schemas/GenericResponse"
                   - type: object
                     properties:
                       model:
-                        $ref: '#/components/schemas/TimeGraphModel'
+                        $ref: "#/components/schemas/TimeGraphModel"
         404:
           description: Experiment or output provider not found
           content:
@@ -941,25 +942,25 @@ paths:
   /experiments/{expUUID}/outputs/timeGraph/{outputID}/arrows:
     post:
       tags:
-      - TimeGraph
+        - TimeGraph
       summary: API to get the Time Graph arrows
       operationId: getTimeGraphArrows
       description: Unique entry point for all TimeGraph models,
         ensures that the same template is followed for all models
       parameters:
-      - name: expUUID
-        in: path
-        description: UUID of the experiment to query
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputID
-        in: path
-        description: ID of the output provider to query
-        required: true
-        schema:
-          type: string
+        - name: expUUID
+          in: path
+          description: UUID of the experiment to query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: outputID
+          in: path
+          description: ID of the output provider to query
+          required: true
+          schema:
+            type: string
       requestBody:
         description: Query parameters to fetch the timegraph arrows.
           The array 'requested_times' is the explicit array of requested sample times.
@@ -992,13 +993,13 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/GenericResponse'
+                  - $ref: "#/components/schemas/GenericResponse"
                   - type: object
                     properties:
                       model:
                         type: array
                         items:
-                          $ref: '#/components/schemas/TimeGraphArrow'
+                          $ref: "#/components/schemas/TimeGraphArrow"
         404:
           description: Experiment or output provider not found
           content:
@@ -1008,24 +1009,24 @@ paths:
   /experiments/{expUUID}/outputs/timeGraph/{outputID}/tooltip:
     post:
       tags:
-      - TimeGraph
+        - TimeGraph
       summary: API to get a Time Graph tooltip.
       description: Endpoint to retrieve tooltips for time graph
       operationId: getTimeGraphTooltip
       parameters:
-      - name: expUUID
-        in: path
-        description: UUID of the experiment to query
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputID
-        in: path
-        description: ID of the output provider to query
-        required: true
-        schema:
-          type: string
+        - name: expUUID
+          in: path
+          description: UUID of the experiment to query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: outputID
+          in: path
+          description: ID of the output provider to query
+          required: true
+          schema:
+            type: string
       requestBody:
         description: Query parameters to fetch the timegraph tooltip.
           The array 'requested_times' is an array with a single timestamp.
@@ -1049,7 +1050,7 @@ paths:
                       items:
                         type: integer
                     requested_element:
-                      $ref: '#/components/schemas/Element'
+                      $ref: "#/components/schemas/Element"
                   required:
                     - requested_times
                     - requested_items
@@ -1062,7 +1063,8 @@ paths:
                 parameters:
                   requested_times: [111200000]
                   requested_items: [1]
-                  requested_element: {elementType: state, time: 111100000, duration: 100000}
+                  requested_element:
+                    { elementType: state, time: 111100000, duration: 100000 }
       responses:
         200:
           description: Returns a list of tooltip keys to values
@@ -1086,33 +1088,34 @@ paths:
   /experiments/{expUUID}/outputs/timeGraph/{outputID}/navigate/states:
     post:
       tags:
-      - TimeGraph
+        - TimeGraph
       summary: Tentative API for TimeGraph navigation
       operationId: navigateStates
       description: Endpoint to retrieve the next / previous corresponding states
       parameters:
-      - name: expUUID
-        in: path
-        description: UUID of the experiment to query
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputID
-        in: path
-        description: ID of the output provider to query
-        required: true
-        schema:
-          type: string
-      - name: direction
-        in: query
-        description: Direction of the navigation
-        required: true
-        schema:
-          type: string
-          enum: [next, previous]
+        - name: expUUID
+          in: path
+          description: UUID of the experiment to query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: outputID
+          in: path
+          description: ID of the output provider to query
+          required: true
+          schema:
+            type: string
+        - name: direction
+          in: query
+          description: Direction of the navigation
+          required: true
+          schema:
+            type: string
+            enum: [next, previous]
       requestBody:
-        description: Query parameters to fetch the next / previous timegraph state.
+        description:
+          Query parameters to fetch the next / previous timegraph state.
           The 'requested_times' array contains the currently selected time.
           The 'requested_times' array contains the currently selected entryId.
         required: true
@@ -1150,7 +1153,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/GenericResponse'
+                  - $ref: "#/components/schemas/GenericResponse"
                   - type: object
                     properties:
                       desiredTime:
@@ -1162,28 +1165,28 @@ paths:
                       model:
                         type: array
                         items:
-                          $ref: '#/components/schemas/TimeGraphModel'
+                          $ref: "#/components/schemas/TimeGraphModel"
   /experiments/{expUUID}/outputs/table/{outputID}/columns:
     post:
       tags:
-      - Virtual Tables
+        - Virtual Tables
       summary: API to get table columns.
       description: Unique entry point for output providers, to get the column entries.
       operationId: getEventsTableEntry
       parameters:
-      - name: expUUID
-        in: path
-        description: UUID of the experiment to query
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputID
-        in: path
-        description: ID of the output provider to query
-        required: true
-        schema:
-          type: string
+        - name: expUUID
+          in: path
+          description: UUID of the experiment to query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: outputID
+          in: path
+          description: ID of the output provider to query
+          required: true
+          schema:
+            type: string
       requestBody:
         description: Query parameters to fetch the table columns.
         required: true
@@ -1199,8 +1202,7 @@ paths:
               required:
                 - parameters
               example:
-                parameters:
-                  {}
+                parameters: {}
       responses:
         200:
           description: Returns a list of table headers.
@@ -1208,13 +1210,13 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/GenericResponse'
+                  - $ref: "#/components/schemas/GenericResponse"
                 type: object
                 properties:
                   model:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ColumnHeaderEntry'
+                      $ref: "#/components/schemas/ColumnHeaderEntry"
         404:
           description: Experiment or output provider not found
           content:
@@ -1224,23 +1226,23 @@ paths:
   /experiments/{expUUID}/outputs/table/{outputID}/lines:
     post:
       tags:
-      - Virtual Tables
+        - Virtual Tables
       summary: API to get virtual table lines
       operationId: getLines
       parameters:
-      - name: expUUID
-        in: path
-        description: The UUID of the experiment in the server
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputID
-        in: path
-        description: The name of the table provider to query
-        required: true
-        schema:
-          type: string
+        - name: expUUID
+          in: path
+          description: The UUID of the experiment in the server
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: outputID
+          in: path
+          description: The name of the table provider to query
+          required: true
+          schema:
+            type: string
       requestBody:
         description: Query parameters to fetch the table lines.
           One of 'requested_table_index' or 'requested_times' should be present. If 'requested_table_index' is used it is the starting index of the lines to be returned. If 'requested_times' is used it should contain an array with a single timestamp and the returned lines starting at the given timestamp (or the nearest following) will be returned.
@@ -1290,7 +1292,7 @@ paths:
                   requested_table_index: 0
                   requested_table_count: 100
                   requested_table_column_ids: [0, 1, 2]
-                  requested_search_expression: {"1": "cpu.*"}
+                  requested_search_expression: { "1": "cpu.*" }
                   requested_search_direction: "NEXT"
       responses:
         200:
@@ -1299,11 +1301,11 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/GenericResponse'
+                  - $ref: "#/components/schemas/GenericResponse"
                   - type: object
                     properties:
                       model:
-                        $ref: '#/components/schemas/TableModel'
+                        $ref: "#/components/schemas/TableModel"
         400:
           description: Bad request, the top index and size must be larger than 0
           content:
@@ -1325,23 +1327,23 @@ paths:
   /experiments/{expUUID}/outputs/{outputID}/style:
     post:
       tags:
-      - Styles
+        - Styles
       summary: API to get the style map associated to this experiment and output
       operationId: getStyles
       parameters:
-      - name: expUUID
-        in: path
-        description: The UUID of the experiment in the server
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputID
-        in: path
-        description: The name of the output provider to query
-        required: true
-        schema:
-          type: string
+        - name: expUUID
+          in: path
+          description: The UUID of the experiment in the server
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: outputID
+          in: path
+          description: The name of the output provider to query
+          required: true
+          schema:
+            type: string
       requestBody:
         description: Query parameters to fetch the style map.
         required: true
@@ -1357,29 +1359,28 @@ paths:
               required:
                 - parameters
               example:
-                parameters:
-                  {}
+                parameters: {}
       responses:
         200:
           description: Style model that can be used jointly with OutputElementStyle to retrieve specific style values
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OutputStyleModel'
+                $ref: "#/components/schemas/OutputStyleModel"
   /experiments/{expUUID}/outputs/markerSets:
     get:
       tags:
-      - Annotations
+        - Annotations
       summary: API to get marker sets available for this experiment
       operationId: getMarkerSets
       parameters:
-      - name: expUUID
-        in: path
-        description: The UUID of the experiment in the server
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: expUUID
+          in: path
+          description: The UUID of the experiment in the server
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         200:
           description: List of marker sets
@@ -1388,59 +1389,59 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/MarkerSet'
+                  $ref: "#/components/schemas/MarkerSet"
   /experiments/{expUUID}/outputs/{outputID}/annotations:
     get:
       tags:
-      - Annotations
+        - Annotations
       summary: API to get annotation categories associated to this experiment and output
       operationId: getAnnotationCategories
       parameters:
-      - name: expUUID
-        in: path
-        description: The UUID of the experiment in the server
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputID
-        in: path
-        description: The name of the output provider to query
-        required: true
-        schema:
-          type: string
-      - name: markerSetId
-        in: query
-        description: The optional requested marker set's id
-        required: false
-        schema:
-          type: string
+        - name: expUUID
+          in: path
+          description: The UUID of the experiment in the server
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: outputID
+          in: path
+          description: The name of the output provider to query
+          required: true
+          schema:
+            type: string
+        - name: markerSetId
+          in: query
+          description: The optional requested marker set's id
+          required: false
+          schema:
+            type: string
       responses:
         200:
           description: Annotation categories model
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AnnotationCategoriesModel'
+                $ref: "#/components/schemas/AnnotationCategoriesModel"
     post:
       tags:
-      - Annotations
+        - Annotations
       summary: API to get the annotations associated to this experiment and output
       operationId: getAnnotations
       parameters:
-      - name: expUUID
-        in: path
-        description: The UUID of the experiment in the server
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputID
-        in: path
-        description: The name of the output provider to query
-        required: true
-        schema:
-          type: string
+        - name: expUUID
+          in: path
+          description: The UUID of the experiment in the server
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: outputID
+          in: path
+          description: The name of the output provider to query
+          required: true
+          schema:
+            type: string
       requestBody:
         description: Query parameters to fetch the annotations.
           The array 'requested_times' is the explicit array of requested sample times.
@@ -1480,21 +1481,21 @@ paths:
                 parameters:
                   requested_times: [111200000, 111300000, 111400000, 111500000]
                   requested_items: [1, 2]
-                  requested_marker_set: 'markerSetId'
-                  requested_marker_categories: ['category1', 'category2']
+                  requested_marker_set: "markerSetId"
+                  requested_marker_categories: ["category1", "category2"]
       responses:
         200:
           description: Annotation model
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AnnotationModel'
+                $ref: "#/components/schemas/AnnotationModel"
   /filters:
     get:
       summary: Get the list of filters available.
       operationId: getFilters
       tags:
-      - Filters
+        - Filters
       responses:
         200:
           description: List of filters available.
@@ -1503,12 +1504,12 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Filter'
+                  $ref: "#/components/schemas/Filter"
     post:
       summary: Create a new filter.
       operationId: addFilter
       tags:
-      - Filters
+        - Filters
       requestBody:
         required: true
         content:
@@ -1544,41 +1545,41 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Filter'
+                $ref: "#/components/schemas/Filter"
   /filters/{filterID}:
     get:
       summary: Get the filter with the given ID.
       operationId: getFilter
       tags:
-      - Filters
+        - Filters
       parameters:
-      - name: filterID
-        description: Filter ID
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int32
+        - name: filterID
+          description: Filter ID
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
       responses:
         200:
           description: The filter
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Filter'
+                $ref: "#/components/schemas/Filter"
     put:
       summary: Update the given filter.
       operationId: updateFilter
       tags:
-      - Filters
+        - Filters
       parameters:
-      - name: filterID
-        description: Filter ID
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int32
+        - name: filterID
+          description: Filter ID
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
       requestBody:
         required: true
         content:
@@ -1610,48 +1611,48 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Filter'
+                $ref: "#/components/schemas/Filter"
     delete:
       summary: Delete the given filter
       operationId: deleteFilter
       tags:
-      - Filters
+        - Filters
       parameters:
-      - name: filterID
-        description: Filter ID
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int32
+        - name: filterID
+          description: Filter ID
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
       responses:
         200:
           description: The deleted filter
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Filter'
+                $ref: "#/components/schemas/Filter"
         204:
           description: There was no filter with this ID to delete
   /symbols/{hostID}/{PID}:
     post:
       tags:
-      - Symbols
+        - Symbols
       summary: Import/Upload a symbol provider.
       operationId: addSymbolProvider
       parameters:
-      - name: hostID
-        in: path
-        description: Host ID for the symbol provider
-        required: true
-        schema:
-          type: string
-      - name: PID
-        in: path
-        description: PID for the symbol provider
-        required: true
-        schema:
-          type: string
+        - name: hostID
+          in: path
+          description: Host ID for the symbol provider
+          required: true
+          schema:
+            type: string
+        - name: PID
+          in: path
+          description: PID for the symbol provider
+          required: true
+          schema:
+            type: string
       requestBody:
         description: URL to the symbol provider, not required if the symbol provider is uploaded directly to the endpoint.
         required: true
@@ -1670,22 +1671,22 @@ paths:
           description: "Not acceptable: cannot read this symbol provider type"
     get:
       tags:
-      - Symbols
+        - Symbols
       summary: Gets the symbol providers
       operationId: getSymbols
       parameters:
-      - name: hostID
-        in: path
-        description: The host's ID
-        required: true
-        schema:
-          type: string
-      - name: PID
-        in: path
-        description: Process ID
-        required: true
-        schema:
-          type: string
+        - name: hostID
+          in: path
+          description: The host's ID
+          required: true
+          schema:
+            type: string
+        - name: PID
+          in: path
+          description: Process ID
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: Returns the Symbol providers for this query.
@@ -1696,7 +1697,7 @@ paths:
       summary: Get the list of trace types supported by this server.
       operationId: getTraceTypes
       tags:
-      - Features
+        - Features
       responses:
         200:
           description: List of the trace types supported by this server.
@@ -1722,7 +1723,7 @@ paths:
     get:
       summary: Get the list of outputs supported by this server.
       tags:
-      - Features
+        - Features
       responses:
         200:
           description: List of the output types supported by this server.
@@ -1748,7 +1749,7 @@ paths:
     get:
       summary: Get the health status of this server
       tags:
-      - Diagnostic
+        - Diagnostic
       responses:
         200:
           description: The trace server is running and ready to receive requests
@@ -1761,7 +1762,7 @@ paths:
                     description: The status of the server
                     type: string
                     enum:
-                    - "UP"
+                      - "UP"
         503:
           description: The trace server is unavailable or in maintenance and cannot receive requests
           content:
@@ -1773,7 +1774,7 @@ paths:
                     description: The status of the server
                     type: string
                     enum:
-                    - "DOWN"
+                      - "DOWN"
 components:
   schemas:
     TraceModel:
@@ -1841,7 +1842,7 @@ components:
           description: The traces encapsulated by this experiment
           type: array
           items:
-            $ref: '#/components/schemas/TraceModel'
+            $ref: "#/components/schemas/TraceModel"
     Bookmark:
       type: object
       properties:
@@ -1927,7 +1928,7 @@ components:
         lines:
           type: array
           items:
-            $ref: '#/components/schemas/LineModel'
+            $ref: "#/components/schemas/LineModel"
     LineModel:
       type: object
       properties:
@@ -1952,7 +1953,7 @@ components:
           description: Tags for the entire line
           type: integer
           format: int32
-          $ref: '#/components/schemas/Tags'
+          $ref: "#/components/schemas/Tags"
     ColumnHeaderEntry:
       type: object
       properties:
@@ -1992,7 +1993,7 @@ components:
         series:
           type: array
           items:
-            $ref: '#/components/schemas/XYSeries'
+            $ref: "#/components/schemas/XYSeries"
       required:
         - title
         - series
@@ -2007,9 +2008,9 @@ components:
           type: integer
           format: int64
         xAxis:
-          $ref: '#/components/schemas/XYAxis'
+          $ref: "#/components/schemas/XYAxis"
         yAxis:
-          $ref: '#/components/schemas/XYAxis'
+          $ref: "#/components/schemas/XYAxis"
         xValues:
           description: series' X values
           type: array
@@ -2029,7 +2030,7 @@ components:
             type: integer
             format: int32
         style:
-          $ref: '#/components/schemas/OutputElementStyle'
+          $ref: "#/components/schemas/OutputElementStyle"
       required:
         - seriesName
         - seriesId
@@ -2059,10 +2060,10 @@ components:
         rows:
           type: array
           items:
-            $ref: '#/components/schemas/TimeGraphRow'
+            $ref: "#/components/schemas/TimeGraphRow"
     TimeGraphEntry:
       allOf:
-        - $ref: '#/components/schemas/Entry'
+        - $ref: "#/components/schemas/Entry"
         - type: object
           properties:
             start:
@@ -2085,7 +2086,8 @@ components:
           type: integer
           format: int64
         label:
-          description: Text label to apply to this TimeGraphState if resolution permits.
+          description:
+            Text label to apply to this TimeGraphState if resolution permits.
             Optional, no label is applied if absent.
           type: string
         tags:
@@ -2093,7 +2095,7 @@ components:
           type: integer
           format: int32
         style:
-          $ref: '#/components/schemas/OutputElementStyle'
+          $ref: "#/components/schemas/OutputElementStyle"
       required:
         - start
         - end
@@ -2108,7 +2110,7 @@ components:
           description: List of the time graph entry states associated to this entry and zoom level.
           type: array
           items:
-            $ref: '#/components/schemas/TimeGraphState'
+            $ref: "#/components/schemas/TimeGraphState"
       required:
         - entryId
         - states
@@ -2132,7 +2134,7 @@ components:
           type: integer
           format: int64
         style:
-          $ref: '#/components/schemas/OutputElementStyle'
+          $ref: "#/components/schemas/OutputElementStyle"
       required:
         - start
         - end
@@ -2176,9 +2178,9 @@ components:
       type: object
       properties:
         output:
-          $ref: '#/components/schemas/OutputDescriptor'
+          $ref: "#/components/schemas/OutputDescriptor"
         status:
-          $ref: '#/components/schemas/ResponseStatus'
+          $ref: "#/components/schemas/ResponseStatus"
         statusMessage:
           type: string
     Entry:
@@ -2203,7 +2205,7 @@ components:
           description: Whether or not this entry has data
           type: boolean
         style:
-          $ref: '#/components/schemas/OutputElementStyle'
+          $ref: "#/components/schemas/OutputElementStyle"
       required:
         - labels
         - id
@@ -2213,11 +2215,11 @@ components:
         entries:
           type: array
           items:
-            $ref: '#/components/schemas/Entry'
+            $ref: "#/components/schemas/Entry"
         headers:
           type: array
           items:
-            $ref: '#/components/schemas/EntryHeader'
+            $ref: "#/components/schemas/EntryHeader"
       required:
         - entries
     OutputStyleModel:
@@ -2227,19 +2229,20 @@ components:
         styles:
           properties:
             styleKey1:
-              $ref: '#/components/schemas/OutputElementStyle'
+              $ref: "#/components/schemas/OutputElementStyle"
             styleKey2:
-              $ref: '#/components/schemas/OutputElementStyle'
+              $ref: "#/components/schemas/OutputElementStyle"
     OutputElementStyle:
       type: object
-      description: Represents the style on an element (ex. Entry, TimeGraphState, ...) returned by any output. 
+      description:
+        Represents the style on an element (ex. Entry, TimeGraphState, ...) returned by any output.
         Supports style inheritance. To avoid having too many styles, the element style can have a parent style and will have all the same style property values as the parent and can add or override style properties.
       properties:
         parentKey:
           description: Parent style key or empty if there is no parent. The parent key should match a style key defined in the style model and is used for style inheritance. A comma-delimited list of parent style keys can be used for style composition, the last one taking precedence.
           type: string
         values:
-            $ref: '#/components/schemas/StyleProperty'
+          $ref: "#/components/schemas/StyleProperty"
     StyleProperty:
       type: object
       description: Style values or empty map if there is no values.
@@ -2330,7 +2333,7 @@ components:
           type: string
           description: text label of this annotation
         style:
-          $ref: '#/components/schemas/OutputElementStyle'
+          $ref: "#/components/schemas/OutputElementStyle"
       required:
         - time
         - duration
@@ -2345,7 +2348,7 @@ components:
           additionalProperties:
             type: array
             items:
-              $ref: '#/components/schemas/Annotation'
+              $ref: "#/components/schemas/Annotation"
     AnnotationCategoriesModel:
       type: object
       description: Model returned by outputs that contains annotation categories available for this output.
@@ -2387,4 +2390,3 @@ components:
       type: integer
       description: A bit masks to apply for tagging elements (e.g. table lines, states). This can be used by the server to indicate if a filter matches and what action to apply. Use 0 for no tags, 1 and 2 are reserved, 4 for 'BORDER' and 8 for 'HIGHLIGHT'.
       format: int64
-
