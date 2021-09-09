@@ -12,4 +12,4 @@ The specification is currently written in **OpenAPI 3.0** and can be pretty-visu
 
 The specification should be edited with the [swagger editor](https://swagger.io/swagger-editor/) which also handles validating that the OpenAPI specification is respected.
 
-Another option is the Swagger Viewer plug-in for VS Code.
+Another option is the [OpenAPI (Swagger) Editor extension](https://marketplace.visualstudio.com/items?itemName=42Crunch.vscode-openapi) for VS Code.
