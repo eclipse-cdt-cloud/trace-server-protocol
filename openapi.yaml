@@ -1,0 +1,638 @@
+openapi: 3.0.1
+paths:
+  /experiments/{expUUID}/outputs/{outputId}/annotations:
+    get:
+      operationId: getAnnotationCategories
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: markerSetId
+        in: query
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+    post:
+      operationId: getAnnotations
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryParameters'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /experiments/{expUUID}/outputs/timeGraph/{outputId}/arrows:
+    post:
+      operationId: getArrows
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryParameters'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /experiments/{expUUID}/outputs/table/{outputId}/columns:
+    post:
+      operationId: getColumns
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryParameters'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /experiments/{expUUID}/outputs/table/{outputId}/lines:
+    post:
+      operationId: getLines
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryParameters'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /experiments/{expUUID}/outputs/markerSets:
+    get:
+      operationId: getMarkerSets
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /experiments/{expUUID}/outputs/{outputId}:
+    get:
+      operationId: getProvider
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /experiments/{expUUID}/outputs:
+    get:
+      operationId: getOutputs
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /experiments/{expUUID}/outputs/timeGraph/{outputId}/states:
+    post:
+      operationId: getStates
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryParameters'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /experiments/{expUUID}/outputs/{outputId}/style:
+    post:
+      operationId: getStyles
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryParameters'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /experiments/{expUUID}/outputs/timeGraph/{outputId}/tooltip:
+    post:
+      operationId: getTimeGraphTooltip
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/QueryParameters'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /experiments/{expUUID}/outputs/timeGraph/{outputId}/tree:
+    post:
+      operationId: getTimeGraphTree
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryParameters'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /experiments/{expUUID}/outputs/XY/{outputId}/xy:
+    post:
+      operationId: getXY
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryParameters'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /experiments/{expUUID}/outputs/XY/{outputId}/tooltip:
+    get:
+      operationId: getXYTooltip
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: xValue
+        in: query
+        schema:
+          type: integer
+          format: int64
+      - name: yValue
+        in: query
+        schema:
+          type: integer
+          format: int64
+      - name: entryId
+        in: query
+        schema:
+          type: integer
+          format: int64
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /experiments/{expUUID}/outputs/XY/{outputId}/tree:
+    post:
+      operationId: getXYTree
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryParameters'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /experiments/{expUUID}:
+    get:
+      operationId: getExperiment
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+    delete:
+      operationId: deleteExperiment
+      parameters:
+      - name: expUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /experiments:
+    get:
+      operationId: getExperiments
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+    post:
+      operationId: postExperiment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryParameters'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /filters:
+    get:
+      operationId: getFilters
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+    post:
+      operationId: createFilter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /filters/{filterId}:
+    get:
+      operationId: getFilter
+      parameters:
+      - name: filterId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+    put:
+      operationId: updateFilter
+      parameters:
+      - name: filterId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+    delete:
+      operationId: deleteFilter
+      parameters:
+      - name: filterId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /health:
+    get:
+      operationId: getHealthStatus
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /traces/{uuid}:
+    get:
+      operationId: getTrace
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+    delete:
+      operationId: deleteTrace
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /traces:
+    get:
+      operationId: getTraces
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+    post:
+      operationId: putTrace
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryParameters'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+  /xml/{name}:
+    delete:
+      operationId: deleteXml
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+  /xml:
+    get:
+      operationId: getXml
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
+    put:
+      operationId: putXml
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: object
+              properties:
+                path:
+                  type: string
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+    post:
+      operationId: postXml
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: object
+              properties:
+                path:
+                  type: string
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+  /application.wadl/{path}:
+    get:
+      operationId: getExternalGrammar
+      parameters:
+      - name: path
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/xml: {}
+  /application.wadl:
+    get:
+      operationId: getWadl
+      responses:
+        default:
+          description: default response
+          content:
+            application/vnd.sun.wadl+xml: {}
+            application/xml: {}
+components:
+  schemas:
+    Filter:
+      type: object
+      properties:
+        tags:
+          type: integer
+          format: int32
+        startTime:
+          type: integer
+          format: int64
+        endTime:
+          type: integer
+          format: int64
+        expression:
+          type: string
+        name:
+          type: string
+        id:
+          type: integer
+          format: int64
+    QueryParameters:
+      type: object
+      properties:
+        parameters:
+          type: object
+          additionalProperties:
+            type: object
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Filter'
