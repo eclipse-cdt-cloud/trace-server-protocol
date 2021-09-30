@@ -6,11 +6,11 @@ This protocol is built to decouple the backend and frontend of trace analysers, 
 
 The protocol is meant to be RESTful, over HTTP.
 
-The specification is currently written in **OpenAPI 3.0** and can be pretty-visualized in the [github pages](https://theia-ide.github.io/trace-server-protocol/).
+The specification is currently written in **OpenAPI 3.0** and can be pretty-visualized in the [github pages][6].
 
 ## HOW-TO
 
-The specification should be edited with the [OpenAPI (Swagger) Editor extension](https://marketplace.visualstudio.com/items?itemName=42Crunch.vscode-openapi) for VS Code.
+The specification should be edited with the [OpenAPI (Swagger) Editor extension][8] for VS Code.
 
 The latter extension is assumed for consistent formatting of the `./API.yaml` file over time.
 
@@ -18,7 +18,7 @@ The latter extension is assumed for consistent formatting of the `./API.yaml` fi
 
 Above, `API.yaml` has been the manually documented TSP version up until now.
 
-* That version is the one shown by the default [github pages](https://theia-ide.github.io/trace-server-protocol/).
+* That version is the one shown by the default [github pages][6].
 * That version does not fully match what [Incubator][3]'s trace-server currently supports.
   * Some TSP endpoints differ or are missing in trace-server, despite its use to help refine the protocol.
   * That trace-server being the TSP reference implementation, among potential other ones.
@@ -28,7 +28,7 @@ In the meantime, Swagger has recently been added to trace-server.
 
 * Below is how to generate the alternate TSP version, according to Swagger in trace-server.
 * This alternate version is to be gradually augmented based on what has been manually documented through `API.yaml`.
-* [Swagger github pages](https://theia-ide.github.io/trace-server-protocol/swagger/) show this alternate version to grow.
+* [Swagger github pages][7] show this alternate version to grow.
 * `API.yaml` should gradually become the wanted version of the TSP, as this alternate one shows the reference TSP.
 * Such reference and future (forecasted) TSP versions will be documented accordingly as these yaml files evolve.
 
@@ -47,3 +47,6 @@ In the meantime, Swagger has recently been added to trace-server.
 [3]: https://projects.eclipse.org/projects/tools.tracecompass.incubator/developer
 [4]: http://localhost:8080/tsp/api/openapi.yaml
 [5]: https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Integration-and-configuration#openapiresource
+[6]: https://theia-ide.github.io/trace-server-protocol/
+[7]: https://theia-ide.github.io/trace-server-protocol/swagger/
+[8]: https://marketplace.visualstudio.com/items?itemName=42Crunch.vscode-openapi
