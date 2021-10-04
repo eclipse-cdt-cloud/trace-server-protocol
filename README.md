@@ -38,6 +38,7 @@ In the meantime, Swagger has recently been added to trace-server.
    * Launch with `all workspace and enabled target plug-ins`.
 1. Browse [to here][4] ([swagger][5]) or so to generate server's TSP.
 1. Bring the resulting file over; e.g.: `mv ~/Downloads/openapi.yaml .`
+1. Update the latter with its license information: `./openapi`
 1. The resulting git diff may then be pushed for review, at will.
 1. `openapi.yaml` might be missing an `info` property similar to `API.yaml`'s (yet to introduce).
 
