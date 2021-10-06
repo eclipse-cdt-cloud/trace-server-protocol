@@ -30,9 +30,39 @@ info:
 servers:
 - url: https://localhost:8080/tsp/api
   variables: {}
+tags:
+- name: Annotations
+  description: Retrieve annotations for different outputs.
+- name: Bookmarks
+  description: How to bookmark areas of interest in the trace.
+- name: Diagnostic
+  description: Refer to the server's status.
+- name: Data Tree
+  description: Learn about querying generic data tree models.
+- name: Experiments
+  description: "How to manage experiments on your server; an experiment represents\
+    \ a collection of traces, which can produce output models."
+- name: Features
+  description: Discover the features which are available on a given server.
+- name: Filters
+  description: How to filter and query.
+- name: Styles
+  description: Retrieve styles for different outputs.
+- name: TimeGraph
+  description: Learn about querying Time Graph models.
+- name: Traces
+  description: How to manage physical traces on your server.
+- name: Virtual Tables
+  description: Learn about querying virtual table models (e.g. Events Table).
+- name: XML
+  description: Learn about querying XML analyses.
+- name: XY
+  description: Learn about querying XY models.
 paths:
   /experiments/{expUUID}/outputs/{outputId}/annotations:
     get:
+      tags:
+      - Annotations
       operationId: getAnnotationCategories
       parameters:
       - name: expUUID
@@ -56,6 +86,8 @@ paths:
           content:
             application/json: {}
     post:
+      tags:
+      - Annotations
       operationId: getAnnotations
       parameters:
       - name: expUUID
@@ -81,6 +113,8 @@ paths:
             application/json: {}
   /experiments/{expUUID}/outputs/timeGraph/{outputId}/arrows:
     post:
+      tags:
+      - TimeGraph
       operationId: getArrows
       parameters:
       - name: expUUID
@@ -106,6 +140,8 @@ paths:
             application/json: {}
   /experiments/{expUUID}/outputs/table/{outputId}/columns:
     post:
+      tags:
+      - Virtual Tables
       operationId: getColumns
       parameters:
       - name: expUUID
@@ -131,6 +167,8 @@ paths:
             application/json: {}
   /experiments/{expUUID}/outputs/table/{outputId}/lines:
     post:
+      tags:
+      - Virtual Tables
       operationId: getLines
       parameters:
       - name: expUUID
@@ -156,6 +194,8 @@ paths:
             application/json: {}
   /experiments/{expUUID}/outputs/markerSets:
     get:
+      tags:
+      - Annotations
       operationId: getMarkerSets
       parameters:
       - name: expUUID
@@ -171,6 +211,8 @@ paths:
             application/json: {}
   /experiments/{expUUID}/outputs/{outputId}:
     get:
+      tags:
+      - Experiments
       operationId: getProvider
       parameters:
       - name: expUUID
@@ -191,6 +233,8 @@ paths:
             application/json: {}
   /experiments/{expUUID}/outputs:
     get:
+      tags:
+      - Experiments
       operationId: getOutputs
       parameters:
       - name: expUUID
@@ -206,6 +250,8 @@ paths:
             application/json: {}
   /experiments/{expUUID}/outputs/timeGraph/{outputId}/states:
     post:
+      tags:
+      - TimeGraph
       operationId: getStates
       parameters:
       - name: expUUID
@@ -231,6 +277,8 @@ paths:
             application/json: {}
   /experiments/{expUUID}/outputs/{outputId}/style:
     post:
+      tags:
+      - Styles
       operationId: getStyles
       parameters:
       - name: expUUID
@@ -256,6 +304,8 @@ paths:
             application/json: {}
   /experiments/{expUUID}/outputs/timeGraph/{outputId}/tooltip:
     post:
+      tags:
+      - TimeGraph
       operationId: getTimeGraphTooltip
       parameters:
       - name: expUUID
@@ -281,6 +331,8 @@ paths:
             application/json: {}
   /experiments/{expUUID}/outputs/timeGraph/{outputId}/tree:
     post:
+      tags:
+      - TimeGraph
       operationId: getTimeGraphTree
       parameters:
       - name: expUUID
@@ -306,6 +358,8 @@ paths:
             application/json: {}
   /experiments/{expUUID}/outputs/XY/{outputId}/xy:
     post:
+      tags:
+      - XY
       operationId: getXY
       parameters:
       - name: expUUID
@@ -331,6 +385,8 @@ paths:
             application/json: {}
   /experiments/{expUUID}/outputs/XY/{outputId}/tooltip:
     get:
+      tags:
+      - XY
       operationId: getXYTooltip
       parameters:
       - name: expUUID
@@ -366,6 +422,8 @@ paths:
             application/json: {}
   /experiments/{expUUID}/outputs/XY/{outputId}/tree:
     post:
+      tags:
+      - XY
       operationId: getXYTree
       parameters:
       - name: expUUID
@@ -391,6 +449,8 @@ paths:
             application/json: {}
   /experiments/{expUUID}:
     get:
+      tags:
+      - Experiments
       operationId: getExperiment
       parameters:
       - name: expUUID
@@ -405,6 +465,8 @@ paths:
           content:
             application/json: {}
     delete:
+      tags:
+      - Experiments
       operationId: deleteExperiment
       parameters:
       - name: expUUID
@@ -420,6 +482,8 @@ paths:
             application/json: {}
   /experiments:
     get:
+      tags:
+      - Experiments
       operationId: getExperiments
       responses:
         default:
@@ -427,6 +491,8 @@ paths:
           content:
             application/json: {}
     post:
+      tags:
+      - Experiments
       operationId: postExperiment
       requestBody:
         content:
@@ -440,6 +506,8 @@ paths:
             application/json: {}
   /filters:
     get:
+      tags:
+      - Filters
       operationId: getFilters
       responses:
         default:
@@ -447,6 +515,8 @@ paths:
           content:
             application/json: {}
     post:
+      tags:
+      - Filters
       operationId: createFilter
       requestBody:
         content:
@@ -460,6 +530,8 @@ paths:
             application/json: {}
   /filters/{filterId}:
     get:
+      tags:
+      - Filters
       operationId: getFilter
       parameters:
       - name: filterId
@@ -473,6 +545,8 @@ paths:
           content:
             application/json: {}
     put:
+      tags:
+      - Filters
       operationId: updateFilter
       parameters:
       - name: filterId
@@ -491,6 +565,8 @@ paths:
           content:
             application/json: {}
     delete:
+      tags:
+      - Filters
       operationId: deleteFilter
       parameters:
       - name: filterId
@@ -505,6 +581,8 @@ paths:
             application/json: {}
   /health:
     get:
+      tags:
+      - Diagnostic
       operationId: getHealthStatus
       responses:
         default:
@@ -513,6 +591,8 @@ paths:
             application/json: {}
   /traces/{uuid}:
     get:
+      tags:
+      - Traces
       operationId: getTrace
       parameters:
       - name: uuid
@@ -527,6 +607,8 @@ paths:
           content:
             application/json: {}
     delete:
+      tags:
+      - Traces
       operationId: deleteTrace
       parameters:
       - name: uuid
@@ -542,6 +624,8 @@ paths:
             application/json: {}
   /traces:
     get:
+      tags:
+      - Traces
       operationId: getTraces
       responses:
         default:
@@ -549,6 +633,8 @@ paths:
           content:
             application/json: {}
     post:
+      tags:
+      - Traces
       operationId: putTrace
       requestBody:
         content:
@@ -562,6 +648,8 @@ paths:
             application/json: {}
   /xml/{name}:
     delete:
+      tags:
+      - XML
       operationId: deleteXml
       parameters:
       - name: name
@@ -576,6 +664,8 @@ paths:
             '*/*': {}
   /xml:
     get:
+      tags:
+      - XML
       operationId: getXml
       responses:
         default:
@@ -583,6 +673,8 @@ paths:
           content:
             application/json: {}
     put:
+      tags:
+      - XML
       operationId: putXml
       requestBody:
         content:
@@ -598,6 +690,8 @@ paths:
           content:
             '*/*': {}
     post:
+      tags:
+      - XML
       operationId: postXml
       requestBody:
         content:
@@ -642,14 +736,14 @@ components:
       properties:
         expression:
           type: string
-        tags:
-          type: integer
-          format: int32
         name:
           type: string
         id:
           type: integer
           format: int64
+        tags:
+          type: integer
+          format: int32
         startTime:
           type: integer
           format: int64
