@@ -14,6 +14,18 @@ The specification should be edited with the [OpenAPI (Swagger) Editor extension]
 
 The latter extension is assumed for consistent formatting of the `./API.yaml` file over time.
 
+### Setup
+
+To initialize a local virtual environment, type the following commands in the root directory:
+
+```shell
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+The virtual environment can be replaced with another local setup.
+
 ### Alternate TSP version
 
 Above, `API.yaml` has been the manually documented TSP version up until now.
@@ -39,6 +51,7 @@ In the meantime, Swagger has recently been added to trace-server.
 1. Browse [to here][4] ([swagger][5]) or so to generate server's TSP.
 1. Bring the resulting file over; e.g.: `mv ~/Downloads/openapi.yaml .`
 1. Update the latter with its license information: `./openapi`
+1. Remove the default Eclipse Jersey's WADL paths: `./openapi.py`
 1. The resulting git diff may then be pushed for review, at will.
 
 [1] org.eclipse.tracecompass.incubator.trace.server.jersey.rest.core

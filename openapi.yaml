@@ -706,29 +706,6 @@ paths:
           description: default response
           content:
             '*/*': {}
-  /application.wadl/{path}:
-    get:
-      operationId: getExternalGrammar
-      parameters:
-      - name: path
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        default:
-          description: default response
-          content:
-            application/xml: {}
-  /application.wadl:
-    get:
-      operationId: getWadl
-      responses:
-        default:
-          description: default response
-          content:
-            application/vnd.sun.wadl+xml: {}
-            application/xml: {}
 components:
   schemas:
     Filter:
