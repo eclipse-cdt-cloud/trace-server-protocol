@@ -50,8 +50,7 @@ In the meantime, Swagger has recently been added to trace-server.
    * Launch with `all workspace and enabled target plug-ins`.
 1. Browse [to here][4] ([swagger][5]) or so to generate server's TSP.
 1. Bring the resulting file over; e.g.: `mv ~/Downloads/openapi.yaml .`
-1. Update the latter with its license information: `./openapi`
-1. Remove the default Eclipse Jersey's WADL paths: `./openapi.py`
+1. Update the latter with its license information and remove Jersey's WADL: `./openapi.py`
 1. The resulting git diff may then be pushed for review, at will.
 
 [1] org.eclipse.tracecompass.incubator.trace.server.jersey.rest.core
