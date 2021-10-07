@@ -29,8 +29,15 @@ import re
 NAME = "openapi"
 FILE = NAME + ".yaml"
 TEMP = NAME + ".tmp"
+LICS = NAME + ".license"
 
 tmp = open(TEMP, 'w')
+
+# shutil copy didn't work locally on macOS.
+with open(LICS) as license:
+    for line in license:
+        tmp.write(line)
+
 wadl = False
 with open(FILE) as yaml:
     for line in yaml:

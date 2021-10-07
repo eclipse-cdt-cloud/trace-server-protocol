@@ -1,5 +1,0 @@
-#!/bin/bash
-
-cp openapi.license openapi.tmp && \
-cat openapi.yaml >> openapi.tmp && \
-mv openapi.tmp openapi.yaml
