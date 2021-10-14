@@ -63,54 +63,87 @@ paths:
     get:
       tags:
       - Annotations
+      summary: API to get annotation categories associated to this experiment and
+        output
       operationId: getAnnotationCategories
       parameters:
       - name: expUUID
         in: path
+        description: The UUID of the experiment in the server
         required: true
         schema:
           type: string
           format: uuid
       - name: outputId
         in: path
+        description: The name of the output provider to query
         required: true
         schema:
           type: string
       - name: markerSetId
         in: query
+        description: The optional requested marker set's id
         schema:
           type: string
       responses:
-        default:
-          description: default response
+        "200":
+          description: Annotation categories model
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnotationCategoriesModel'
     post:
       tags:
       - Annotations
+      summary: API to get the annotations associated to this experiment and output
       operationId: getAnnotations
       parameters:
       - name: expUUID
         in: path
+        description: The UUID of the experiment in the server
         required: true
         schema:
           type: string
           format: uuid
       - name: outputId
         in: path
+        description: The name of the output provider to query
         required: true
         schema:
           type: string
       requestBody:
+        description: "Query parameters to fetch the annotations. The array 'requested_times'\
+          \ is the explicit array of requested sample times. The array 'requested_items'\
+          \ is the list of entryId being requested. The string 'requested_marker_set'\
+          \ is the optional requested marker set's id. The array 'requested_marker_categories'\
+          \ is the list of requested annotation categories; if absent, all annotations\
+          \ are returned."
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/QueryParameters'
+            example:
+              parameters:
+                requested_times:
+                - 111200000
+                - 111300000
+                - 111400000
+                - 111500000
+                requested_items:
+                - 1
+                - 2
+                requested_marker_set: markerSetId
+                requested_marker_categories:
+                - category1
+                - category2
+        required: true
       responses:
-        default:
-          description: default response
+        "200":
+          description: Annotation model
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnotationModel'
   /experiments/{expUUID}/outputs/timeGraph/{outputId}/arrows:
     post:
       tags:
@@ -196,19 +229,25 @@ paths:
     get:
       tags:
       - Annotations
+      summary: API to get marker sets available for this experiment
       operationId: getMarkerSets
       parameters:
       - name: expUUID
         in: path
+        description: The UUID of the experiment in the server
         required: true
         schema:
           type: string
           format: uuid
       responses:
-        default:
-          description: default response
+        "200":
+          description: List of marker sets
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MarkerSet'
   /experiments/{expUUID}/outputs/{outputId}:
     get:
       tags:
@@ -708,33 +747,97 @@ paths:
             '*/*': {}
 components:
   schemas:
-    Filter:
+    AnnotationCategoriesModel:
       type: object
       properties:
-        expression:
+        annotationCategories:
+          type: array
+          description: Array of all the categories
+          items:
+            type: string
+      description: Model returned by outputs that contains annotation categories available
+        for this output
+    Annotation:
+      required:
+      - duration
+      - entryId
+      - time
+      - type
+      type: object
+      properties:
+        time:
+          type: integer
+          description: Time of this annotation
+          format: int64
+        entryId:
+          type: integer
+          description: Entry's unique ID or -1 if annotation not associated with an
+            entry
+          format: int64
+        label:
           type: string
-        name:
+          description: Text label of this annotation
+        type:
           type: string
-        id:
+          description: Type of annotation indicating its location
+          enum:
+          - CHART
+          - TREE
+        duration:
           type: integer
+          description: Duration of this annotation
           format: int64
-        tags:
-          type: integer
-          format: int32
-        startTime:
-          type: integer
-          format: int64
-        endTime:
-          type: integer
-          format: int64
+        style:
+          $ref: '#/components/schemas/OutputElementStyle'
+      description: An annotation is used to mark an interesting area at a given time
+        or time range
+    AnnotationModel:
+      type: object
+      properties:
+        annotations:
+          type: object
+          additionalProperties:
+            type: array
+            description: Map of annotations where the keys are categories
+            items:
+              $ref: '#/components/schemas/Annotation'
+          description: Map of annotations where the keys are categories
+      description: Model returned by outputs that contains annotations per category
+    OutputElementStyle:
+      type: object
+      properties:
+        parentKey:
+          type: string
+          description: "Parent style key or empty if there is no parent. The parent\
+            \ key should match a style key defined in the style model and is used\
+            \ for style inheritance. A comma-delimited list of parent style keys can\
+            \ be used for style composition, the last one taking precedence."
+        styleValues:
+          type: object
+          additionalProperties:
+            type: object
+      description: "Represents the style on an element (ex. Entry, TimeGraphState,\
+        \ ...) returned by any output. Supports style inheritance. To avoid having\
+        \ too many styles, the element style can have a parent style and will have\
+        \ all the same style property values as the parent, and can add or override\
+        \ style properties."
     QueryParameters:
+      required:
+      - parameters
       type: object
       properties:
         parameters:
           type: object
           additionalProperties:
             type: object
-        filters:
-          type: array
-          items:
-            $ref: '#/components/schemas/Filter'
+    MarkerSet:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of this marker set
+        id:
+          type: string
+          description: ID of this marker set
+      description: A marker set is used to represent a set of annotations that can
+        be fetched
