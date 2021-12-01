@@ -69,14 +69,14 @@ paths:
       parameters:
       - name: expUUID
         in: path
-        description: The UUID of the experiment in the server
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
           format: uuid
       - name: outputId
         in: path
-        description: The name of the output provider to query
+        description: ID of the output provider to query
         required: true
         schema:
           type: string
@@ -100,14 +100,14 @@ paths:
       parameters:
       - name: expUUID
         in: path
-        description: The UUID of the experiment in the server
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
           format: uuid
       - name: outputId
         in: path
-        description: The name of the output provider to query
+        description: ID of the output provider to query
         required: true
         schema:
           type: string
@@ -121,7 +121,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IQueryParameters'
+              $ref: '#/components/schemas/IAnnotationsQueryParameters'
             example:
               parameters:
                 requested_times:
@@ -148,56 +148,95 @@ paths:
     post:
       tags:
       - TimeGraph
+      summary: API to get the Time Graph arrows
+      description: "Unique entry point for all TimeGraph models, ensures that the\
+        \ same template is followed for all models"
       operationId: getArrows
       parameters:
       - name: expUUID
         in: path
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
           format: uuid
       - name: outputId
         in: path
+        description: ID of the output provider to query
         required: true
         schema:
           type: string
       requestBody:
+        description: Query parameters to fetch the timegraph arrows. The array 'requested_times'
+          is the explicit array of requested sample times.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/QueryParameters'
+              $ref: '#/components/schemas/IArrowsQueryParameters'
+            example:
+              parameters:
+                requested_times:
+                - 111200000
+                - 111300000
+                - 111400000
+                - 111500000
+        required: true
       responses:
-        default:
-          description: default response
+        "200":
+          description: Returns a sampled list of TimeGraph arrows
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ITimeGraphArrowsResponse'
+        "404":
+          description: Experiment or output provider not found
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments/{expUUID}/outputs/table/{outputId}/columns:
     post:
       tags:
       - Virtual Tables
+      summary: API to get table columns
+      description: "Unique entry point for output providers, to get the column entries"
       operationId: getColumns
       parameters:
       - name: expUUID
         in: path
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
           format: uuid
       - name: outputId
         in: path
+        description: ID of the output provider to query
         required: true
         schema:
           type: string
       requestBody:
+        description: Query parameters to fetch the table columns
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/QueryParameters'
+              $ref: '#/components/schemas/IColumnsQueryParameters'
+            example:
+              parameters: {}
+        required: true
       responses:
-        default:
-          description: default response
+        "200":
+          description: Returns a list of table headers
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ITableColumnHeadersResponse'
+        "404":
+          description: Experiment or output provider not found
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments/{expUUID}/outputs/table/{outputId}/lines:
     post:
       tags:
@@ -234,7 +273,7 @@ paths:
       parameters:
       - name: expUUID
         in: path
-        description: The UUID of the experiment in the server
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
@@ -840,7 +879,7 @@ components:
             \ key should match a style key defined in the style model and is used\
             \ for style inheritance. A comma-delimited list of parent style keys can\
             \ be used for style composition, the last one taking precedence."
-        styleValues:
+        values:
           type: object
           additionalProperties:
             type: object
@@ -883,7 +922,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Filter'
-    IParameters:
+    IAnnotationsParameters:
       required:
       - requested_times
       type: object
@@ -904,13 +943,101 @@ components:
           type: array
           items:
             type: string
-    IQueryParameters:
+    IAnnotationsQueryParameters:
       required:
       - parameters
       type: object
       properties:
         parameters:
-          $ref: '#/components/schemas/IParameters'
+          $ref: '#/components/schemas/IAnnotationsParameters'
+    ITimeGraphArrow:
+      required:
+      - targetId
+      - end
+      - sourceId
+      - start
+      type: object
+      properties:
+        start:
+          type: integer
+          description: Start time for this arrow
+          format: int64
+        sourceId:
+          type: integer
+          description: Source entry's unique ID
+          format: int64
+        targetId:
+          type: integer
+          description: Target entry's unique ID
+          format: int64
+        style:
+          $ref: '#/components/schemas/IOutputElementStyle'
+        end:
+          type: integer
+          description: End time for this arrow
+          format: int64
+    ITimeGraphArrowsResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/IGenericResponse'
+      - type: object
+        properties:
+          model:
+            type: array
+            items:
+              $ref: '#/components/schemas/ITimeGraphArrow'
+    IArrowsParameters:
+      required:
+      - requested_times
+      type: object
+      properties:
+        requested_times:
+          type: array
+          items:
+            type: integer
+            format: int64
+    IArrowsQueryParameters:
+      required:
+      - parameters
+      type: object
+      properties:
+        parameters:
+          $ref: '#/components/schemas/IArrowsParameters'
+    ITableColumnHeader:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the column
+        name:
+          type: string
+          description: Displayed name for this column
+        id:
+          type: integer
+          description: Unique id to identify this column in the backend
+          format: int64
+        type:
+          type: string
+          description: Type of data associated to this column
+    ITableColumnHeadersResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/IGenericResponse'
+      - type: object
+        properties:
+          model:
+            type: array
+            items:
+              $ref: '#/components/schemas/ITableColumnHeader'
+    IColumnsParameters:
+      type: object
+    IColumnsQueryParameters:
+      required:
+      - parameters
+      type: object
+      properties:
+        parameters:
+          $ref: '#/components/schemas/IColumnsParameters'
     IMarkerSet:
       type: object
       properties:
