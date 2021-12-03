@@ -241,29 +241,78 @@ paths:
     post:
       tags:
       - Virtual Tables
+      summary: API to get virtual table lines
       operationId: getLines
       parameters:
       - name: expUUID
         in: path
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
           format: uuid
       - name: outputId
         in: path
+        description: ID of the output provider to query
         required: true
         schema:
           type: string
       requestBody:
+        description: "Query parameters to fetch the table lines. One of 'requested_table_index'\
+          \ or 'requested_times' should be present. If 'requested_table_index' is\
+          \ used it is the starting index of the lines to be returned. If 'requested_times'\
+          \ is used it should contain an array with a single timestamp. The returned\
+          \ lines starting at the given timestamp (or the nearest following) will\
+          \ be returned. The 'requested_table_count' is the number of lines that should\
+          \ be returned. When 'requested_table_column_ids' is absent all columns are\
+          \ returned. When present it is the array of requested columnIds. Use 'table_search_expressions'\
+          \ for search providing a map of <columnId, regular expression>. Returned\
+          \ lines that match the search expression will be tagged. Use 'table_search_direction'\
+          \ to specify search direction [NEXT, PREVIOUS]. If present, 'requested_table_count'\
+          \ events are returned starting from the first matching event. Matching and\
+          \ not matching events are returned. Matching events will be tagged. If no\
+          \ matches are found, an empty list will be returned."
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/QueryParameters'
+              $ref: '#/components/schemas/ILinesQueryParameters'
+            example:
+              parameters:
+                requested_table_index: 0
+                requested_table_count: 100
+                requested_table_column_ids:
+                - 0
+                - 1
+                - 2
+                table_search_expressions:
+                  "1": cpu.*
+                table_search_direction: NEXT
+        required: true
       responses:
-        default:
-          description: default response
+        "200":
+          description: Returns a table model with a 2D array of strings and metadata
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IVirtualTableResponse'
+        "400":
+          description: "Bad request, the top index and size must be larger than 0"
+          content:
+            application/json:
+              schema:
+                type: string
+        "404":
+          description: Experiment or output provider not found
+          content:
+            application/json:
+              schema:
+                type: string
+        "500":
+          description: Error reading the experiment
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments/{expUUID}/outputs/markerSets:
     get:
       tags:
@@ -289,41 +338,64 @@ paths:
     get:
       tags:
       - Experiments
+      summary: Get the output descriptor for this experiment and output
       operationId: getProvider
       parameters:
       - name: expUUID
         in: path
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
           format: uuid
       - name: outputId
         in: path
+        description: ID of the output provider to query
         required: true
         schema:
           type: string
       responses:
-        default:
-          description: default response
+        "200":
+          description: Returns the output provider descriptor
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDataProvider'
+        "404":
+          description: Experiment or output provider not found
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments/{expUUID}/outputs:
     get:
       tags:
       - Experiments
-      operationId: getOutputs
+      summary: Get the list of outputs for this experiment
+      operationId: getProviders
       parameters:
       - name: expUUID
         in: path
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
           format: uuid
       responses:
-        default:
-          description: default response
+        "200":
+          description: Returns a list of output provider descriptors
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IDataProvider'
+        "404":
+          description: No such trace
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments/{expUUID}/outputs/timeGraph/{outputId}/states:
     post:
       tags:
@@ -1038,6 +1110,106 @@ components:
       properties:
         parameters:
           $ref: '#/components/schemas/IColumnsParameters'
+    IVirtualTableCell:
+      type: object
+      properties:
+        tags:
+          type: integer
+          description: Specific tags for this cell. A value of 0 should be handled
+            as none (no tags)
+          format: int32
+        content:
+          type: string
+          description: Content of the cell for this line
+    IVirtualTableLine:
+      type: object
+      properties:
+        tags:
+          type: integer
+          description: "Tags for the entire line. A bit mask to apply for tagging\
+            \ elements (e.g. table lines, states). This can be used by the server\
+            \ to indicate if a filter matches and what action to apply. Use 0 for\
+            \ no tags, 1 and 2 are reserved, 4 for 'BORDER' and 8 for 'HIGHLIGHT'."
+          format: int32
+        cells:
+          type: array
+          description: The content of the cells for this line. This array matches
+            the column ids returned above
+          items:
+            $ref: '#/components/schemas/IVirtualTableCell'
+        index:
+          type: integer
+          description: The index of this line in the virtual table
+          format: int64
+    IVirtualTableModel:
+      type: object
+      properties:
+        lowIndex:
+          type: integer
+          description: Index in the virtual table of the first returned event
+          format: int64
+        columnIds:
+          type: array
+          description: The array of column ids that are returned. They should match
+            the content of the lines' content
+          items:
+            type: integer
+            format: int64
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/IVirtualTableLine'
+        size:
+          type: integer
+          description: "Number of events. If filtered, the size will be the number\
+            \ of events that match the filters"
+          format: int64
+    IVirtualTableResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/IGenericResponse'
+      - type: object
+        properties:
+          model:
+            $ref: '#/components/schemas/IVirtualTableModel'
+    ILinesParameters:
+      required:
+      - requested_table_count
+      type: object
+      properties:
+        table_search_direction:
+          type: string
+          description: "Search next or previous item (e.g. event, state etc.)"
+          enum:
+          - NEXT
+          - PREVIOUS
+        table_search_expressions:
+          type: object
+          additionalProperties:
+            type: string
+        requested_table_column_ids:
+          type: array
+          items:
+            type: integer
+            format: int64
+        requested_table_count:
+          type: integer
+          format: int32
+        requested_table_index:
+          type: integer
+          format: int64
+        requested_times:
+          type: array
+          items:
+            type: integer
+            format: int64
+    ILinesQueryParameters:
+      required:
+      - parameters
+      type: object
+      properties:
+        parameters:
+          $ref: '#/components/schemas/ILinesParameters'
     IMarkerSet:
       type: object
       properties:
@@ -1059,3 +1231,28 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/IMarkerSet'
+    IDataProvider:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Describes the output provider's features
+        name:
+          type: string
+          description: The human readable name
+        id:
+          type: string
+          description: The output provider's ID
+        type:
+          type: string
+          description: "Type of data returned by this output. Serves as a hint to\
+            \ determine what kind of view should be used for this output (ex. XY,\
+            \ Time Graph, Table, etc..). Providers of type TREE_TIME_XY and TIME_GRAPH\
+            \ can be grouped under the same time axis. Providers of type DATA_TREE\
+            \ only provide a tree with columns and don't have any XY nor time graph\
+            \ data associated with it."
+          enum:
+          - TABLE
+          - TREE_TIME_XY
+          - TIME_GRAPH
+          - DATA_TREE
