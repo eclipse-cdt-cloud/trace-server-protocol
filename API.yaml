@@ -215,7 +215,7 @@ paths:
           description: No such experiment
     put:
       summary: Update an experiment's content and name.
-      operationId: putExperiment
+      operationId: updateExperiment
       tags:
         - Experiments
       parameters:
@@ -226,12 +226,6 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: name
-          in: query
-          description: The name to give this experiment
-          required: true
-          schema:
-            type: string
       requestBody:
         description: Additional information to update an experiment
         required: false
@@ -240,6 +234,9 @@ paths:
             schema:
               type: object
               properties:
+                name:
+                   description: The name to give this experiment
+                   type: string
                 expTypeID:
                   description: Type ID to apply to this experiment
                   type: string
@@ -257,14 +254,6 @@ paths:
                         description: Time offset to apply to this trace
                         type: integer
                         format: int64
-                      action:
-                        description: Action to perform on the given trace (add or remove from the experiment)
-                        type: string
-                        enum: [add, remove]
-                        default: add
-                    required:
-                      - traceUUID
-                      - action
       responses:
         200:
           description: The Experiment was successfully modified
