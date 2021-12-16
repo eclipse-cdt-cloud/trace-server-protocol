@@ -400,29 +400,56 @@ paths:
     post:
       tags:
       - TimeGraph
+      summary: API to get the Time Graph states
+      description: "Unique entry point for all TimeGraph states, ensures that the\
+        \ same template is followed for all views"
       operationId: getStates
       parameters:
       - name: expUUID
         in: path
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
           format: uuid
       - name: outputId
         in: path
+        description: ID of the output provider to query
         required: true
         schema:
           type: string
       requestBody:
+        description: Query parameters to fetch the timegraph states. The array 'requested_times'
+          is the explicit array of requested sample times. The array 'requested_items'
+          is the list of entryId being requested.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/QueryParameters'
+              $ref: '#/components/schemas/IStatesQueryParameters'
+            example:
+              parameters:
+                requested_times:
+                - 111200000
+                - 111300000
+                - 111400000
+                - 111500000
+                requested_items:
+                - 1
+                - 2
+        required: true
       responses:
-        default:
-          description: default response
+        "200":
+          description: Returns a list of time graph rows
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ITimeGraphStatesResponse'
+        "404":
+          description: Experiment or output provider not found
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments/{expUUID}/outputs/{outputId}/style:
     post:
       tags:
@@ -454,29 +481,56 @@ paths:
     post:
       tags:
       - TimeGraph
+      summary: API to get a Time Graph tooltip
+      description: Endpoint to retrieve tooltips for time graph
       operationId: getTimeGraphTooltip
       parameters:
       - name: expUUID
         in: path
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
           format: uuid
       - name: outputId
         in: path
+        description: ID of the output provider to query
         required: true
         schema:
           type: string
       requestBody:
+        description: Query parameters to fetch the timegraph tooltip. The array 'requested_times'
+          is an array with a single timestamp. The array 'requested_items' is an array
+          with a single entryId being requested.  The object 'requested_element' is
+          the element for which the tooltip is requested.
         content:
-          '*/*':
+          application/json:
             schema:
-              $ref: '#/components/schemas/QueryParameters'
+              $ref: '#/components/schemas/ITooltipQueryParameters'
+            example:
+              parameters:
+                requested_times:
+                - 111200000
+                requested_items:
+                - 1
+                requested_element:
+                  elementType: state
+                  time: 111100000
+                  duration: 100000
+        required: true
       responses:
-        default:
-          description: default response
+        "200":
+          description: Returns a list of tooltip keys to values
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ITimeGraphTooltipResponse'
+        "404":
+          description: Experiment or output provider not found
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments/{expUUID}/outputs/timeGraph/{outputId}/tree:
     post:
       tags:
@@ -1256,3 +1310,156 @@ components:
           - TREE_TIME_XY
           - TIME_GRAPH
           - DATA_TREE
+    ITimeGraphModel:
+      type: object
+      properties:
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/ITimeGraphRowModel'
+    ITimeGraphRowModel:
+      required:
+      - entryId
+      - states
+      type: object
+      properties:
+        states:
+          type: array
+          description: List of the time graph entry states associated to this entry
+            and zoom level
+          items:
+            $ref: '#/components/schemas/ITimeGraphState'
+        entryId:
+          type: integer
+          description: The entry to map this state list to
+          format: int64
+    ITimeGraphState:
+      required:
+      - end
+      - start
+      type: object
+      properties:
+        label:
+          type: string
+          description: "Text label to apply to this TimeGraphState if resolution permits.\
+            \ Optional, no label is applied if absent"
+        tags:
+          type: integer
+          description: Tags to apply on this state. A value of 0 should be handled
+            as none (no tags)
+          format: int32
+        style:
+          $ref: '#/components/schemas/IOutputElementStyle'
+        start:
+          type: integer
+          description: Start time for this state
+          format: int64
+        end:
+          type: integer
+          description: End time for this state
+          format: int64
+    ITimeGraphStatesResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/IGenericResponse'
+      - type: object
+        properties:
+          model:
+            $ref: '#/components/schemas/ITimeGraphModel'
+    IStatesParameters:
+      required:
+      - requested_items
+      - requested_times
+      type: object
+      properties:
+        requested_times:
+          type: array
+          items:
+            type: integer
+            format: int64
+        requested_items:
+          type: array
+          items:
+            type: integer
+            format: int32
+    IStatesQueryParameters:
+      required:
+      - parameters
+      type: object
+      properties:
+        parameters:
+          $ref: '#/components/schemas/IStatesParameters'
+    ITimeGraphTooltip:
+      type: object
+      properties:
+        value:
+          type: string
+        key:
+          type: string
+    ITimeGraphTooltipResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/IGenericResponse'
+      - type: object
+        properties:
+          model:
+            type: array
+            items:
+              $ref: '#/components/schemas/ITimeGraphTooltip'
+    IElement:
+      required:
+      - duration
+      - elementType
+      - time
+      type: object
+      properties:
+        destinationId:
+          type: integer
+          description: Destination entry's unique ID (arrow)
+          format: int64
+        entryId:
+          type: integer
+          description: "Entry's unique ID (annotation, arrow)"
+          format: int64
+        time:
+          type: integer
+          description: Element's start time
+          format: int64
+        elementType:
+          type: string
+          description: The type of element
+          enum:
+          - STATE
+          - ANNOTATION
+          - ARROW
+        duration:
+          type: integer
+          description: Element's duration
+          format: int64
+      description: An element model to be identified
+    ITooltipParameters:
+      required:
+      - requested_element
+      - requested_items
+      - requested_times
+      type: object
+      properties:
+        requested_times:
+          type: array
+          items:
+            type: integer
+            format: int64
+        requested_items:
+          type: array
+          items:
+            type: integer
+            format: int32
+        requested_element:
+          $ref: '#/components/schemas/IElement'
+    ITooltipQueryParameters:
+      required:
+      - parameters
+      type: object
+      properties:
+        parameters:
+          $ref: '#/components/schemas/ITooltipParameters'
