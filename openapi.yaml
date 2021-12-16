@@ -535,29 +535,53 @@ paths:
     post:
       tags:
       - TimeGraph
+      summary: API to get the Time Graph tree
+      description: "Unique entry point for output providers, to get the tree of visible\
+        \ entries"
       operationId: getTimeGraphTree
       parameters:
       - name: expUUID
         in: path
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
           format: uuid
       - name: outputId
         in: path
+        description: ID of the output provider to query
         required: true
         schema:
           type: string
       requestBody:
+        description: "Query parameters to fetch the timegraph tree. When 'requested_times'\
+          \ is absent the tree for the full range is returned. When present it specifies\
+          \ a range as [start, end]."
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/QueryParameters'
+              $ref: '#/components/schemas/ITreeQueryParameters'
+            example:
+              parameters:
+                requested_times:
+                - 111111111
+                - 222222222
+        required: true
       responses:
-        default:
-          description: default response
+        "200":
+          description: "Returns a list of Time Graph entries. The returned model must\
+            \ be consistent, parentIds must refer to a parent which exists in the\
+            \ model."
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ITimeGraphTreeResponse'
+        "404":
+          description: Experiment or output provider not found
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments/{expUUID}/outputs/XY/{outputId}/xy:
     post:
       tags:
@@ -1463,3 +1487,103 @@ components:
       properties:
         parameters:
           $ref: '#/components/schemas/ITooltipParameters'
+    ITimeGraphEntry:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ITreeDataModel'
+      - type: object
+        properties:
+          start:
+            type: integer
+            description: Beginning of the range for which this entry exists
+            format: int64
+          end:
+            type: integer
+            description: End of the range for which this entry exists
+            format: int64
+    ITimeGraphTreeModel:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ITreeEntryModel'
+      - type: object
+        properties:
+          entries:
+            type: array
+            items:
+              $ref: '#/components/schemas/ITimeGraphEntry'
+    ITimeGraphTreeResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/IGenericResponse'
+      - type: object
+        properties:
+          model:
+            $ref: '#/components/schemas/ITimeGraphTreeModel'
+    ITreeColumnHeader:
+      required:
+      - name
+      type: object
+      properties:
+        tooltip:
+          type: string
+          description: "Displayed tooltip for this header. Optional, no tooltip is\
+            \ applied if absent."
+        name:
+          type: string
+          description: Displayed name for this header
+    ITreeDataModel:
+      required:
+      - id
+      - labels
+      type: object
+      properties:
+        parentId:
+          type: integer
+          description: "Unique id to identify this parent's entry, optional if this\
+            \ entry does not have a parent."
+          format: int64
+        hasData:
+          type: boolean
+          description: Whether or not this entry has data
+        labels:
+          type: array
+          description: Array of cell labels to be displayed. The length of the array
+            and the index of each column need to correspond to the header array returned
+            in the tree model.
+          items:
+            type: string
+        style:
+          $ref: '#/components/schemas/IOutputElementStyle'
+        id:
+          type: integer
+          description: Unique id to identify this entry in the backend
+          format: int64
+      description: Base entry returned by tree endpoints
+    ITreeEntryModel:
+      required:
+      - entries
+      type: object
+      properties:
+        headers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ITreeColumnHeader'
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ITreeDataModel'
+    ITreeParameters:
+      type: object
+      properties:
+        requested_times:
+          type: array
+          items:
+            type: integer
+            format: int64
+    ITreeQueryParameters:
+      required:
+      - parameters
+      type: object
+      properties:
+        parameters:
+          $ref: '#/components/schemas/ITreeParameters'
