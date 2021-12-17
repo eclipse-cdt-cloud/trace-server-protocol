@@ -33,19 +33,11 @@ servers:
 tags:
 - name: Annotations
   description: Retrieve annotations for different outputs.
-- name: Bookmarks
-  description: How to bookmark areas of interest in the trace.
 - name: Diagnostic
   description: Refer to the server's status.
-- name: Data Tree
-  description: Learn about querying generic data tree models.
 - name: Experiments
   description: "How to manage experiments on your server; an experiment represents\
     \ a collection of traces, which can produce output models."
-- name: Features
-  description: Discover the features which are available on a given server.
-- name: Filters
-  description: How to filter and query.
 - name: Styles
   description: Retrieve styles for different outputs.
 - name: TimeGraph
@@ -652,43 +644,6 @@ paths:
             application/json:
               schema:
                 type: string
-  /experiments/{expUUID}/outputs/XY/{outputId}/tooltip:
-    get:
-      tags:
-      - XY
-      operationId: getXYTooltip
-      parameters:
-      - name: expUUID
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputId
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: xValue
-        in: query
-        schema:
-          type: integer
-          format: int64
-      - name: yValue
-        in: query
-        schema:
-          type: integer
-          format: int64
-      - name: entryId
-        in: query
-        schema:
-          type: integer
-          format: int64
-      responses:
-        default:
-          description: default response
-          content:
-            application/json: {}
   /experiments/{expUUID}/outputs/XY/{outputId}/tree:
     post:
       tags:
@@ -768,81 +723,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/QueryParameters'
-      responses:
-        default:
-          description: default response
-          content:
-            application/json: {}
-  /filters:
-    get:
-      tags:
-      - Filters
-      operationId: getFilters
-      responses:
-        default:
-          description: default response
-          content:
-            application/json: {}
-    post:
-      tags:
-      - Filters
-      operationId: createFilter
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        default:
-          description: default response
-          content:
-            application/json: {}
-  /filters/{filterId}:
-    get:
-      tags:
-      - Filters
-      operationId: getFilter
-      parameters:
-      - name: filterId
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        default:
-          description: default response
-          content:
-            application/json: {}
-    put:
-      tags:
-      - Filters
-      operationId: updateFilter
-      parameters:
-      - name: filterId
-        in: path
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        default:
-          description: default response
-          content:
-            application/json: {}
-    delete:
-      tags:
-      - Filters
-      operationId: deleteFilter
-      parameters:
-      - name: filterId
-        in: path
-        required: true
-        schema:
-          type: string
       responses:
         default:
           description: default response
