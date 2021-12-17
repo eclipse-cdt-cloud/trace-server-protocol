@@ -220,7 +220,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IColumnsQueryParameters'
+              $ref: '#/components/schemas/IOptionalQueryParameters'
             example:
               parameters: {}
         required: true
@@ -425,7 +425,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IStatesQueryParameters'
+              $ref: '#/components/schemas/IRequestedQueryParameters'
             example:
               parameters:
                 requested_times:
@@ -475,7 +475,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IStylesQueryParameters'
+              $ref: '#/components/schemas/IOptionalQueryParameters'
             example:
               parameters: {}
         required: true
@@ -621,7 +621,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IXYQueryParameters'
+              $ref: '#/components/schemas/IRequestedQueryParameters'
             example:
               parameters:
                 requested_times:
@@ -1222,15 +1222,15 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/ITableColumnHeader'
-    IColumnsParameters:
+    IOptionalParameters:
       type: object
-    IColumnsQueryParameters:
+    IOptionalQueryParameters:
       required:
       - parameters
       type: object
       properties:
         parameters:
-          $ref: '#/components/schemas/IColumnsParameters'
+          $ref: '#/components/schemas/IOptionalParameters'
     IVirtualTableCell:
       type: object
       properties:
@@ -1433,7 +1433,7 @@ components:
         properties:
           model:
             $ref: '#/components/schemas/ITimeGraphModel'
-    IStatesParameters:
+    IRequestedParameters:
       required:
       - requested_items
       - requested_times
@@ -1449,13 +1449,13 @@ components:
           items:
             type: integer
             format: int32
-    IStatesQueryParameters:
+    IRequestedQueryParameters:
       required:
       - parameters
       type: object
       properties:
         parameters:
-          $ref: '#/components/schemas/IStatesParameters'
+          $ref: '#/components/schemas/IRequestedParameters'
     IOutputStyleModel:
       type: object
       properties:
@@ -1473,15 +1473,6 @@ components:
         properties:
           model:
             $ref: '#/components/schemas/IOutputStyleModel'
-    IStylesParameters:
-      type: object
-    IStylesQueryParameters:
-      required:
-      - parameters
-      type: object
-      properties:
-        parameters:
-          $ref: '#/components/schemas/IStylesParameters'
     ITimeGraphTooltip:
       type: object
       properties:
@@ -1704,26 +1695,3 @@ components:
         properties:
           model:
             $ref: '#/components/schemas/IXYModel'
-    IXYParameters:
-      required:
-      - requested_items
-      - requested_times
-      type: object
-      properties:
-        requested_items:
-          type: array
-          items:
-            type: integer
-            format: int32
-        requested_times:
-          type: array
-          items:
-            type: integer
-            format: int64
-    IXYQueryParameters:
-      required:
-      - parameters
-      type: object
-      properties:
-        parameters:
-          $ref: '#/components/schemas/IXYParameters'
