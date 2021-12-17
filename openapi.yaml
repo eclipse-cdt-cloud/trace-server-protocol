@@ -454,29 +454,39 @@ paths:
     post:
       tags:
       - Styles
+      summary: API to get the style map associated to this experiment and output
       operationId: getStyles
       parameters:
       - name: expUUID
         in: path
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
           format: uuid
       - name: outputId
         in: path
+        description: ID of the output provider to query
         required: true
         schema:
           type: string
       requestBody:
+        description: Query parameters to fetch the style map
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/QueryParameters'
+              $ref: '#/components/schemas/IStylesQueryParameters'
+            example:
+              parameters: {}
+        required: true
       responses:
-        default:
-          description: default response
+        "200":
+          description: Style model that can be used jointly with OutputElementStyle
+            to retrieve specific style values
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IStylesResponse'
   /experiments/{expUUID}/outputs/timeGraph/{outputId}/tooltip:
     post:
       tags:
@@ -1413,6 +1423,32 @@ components:
       properties:
         parameters:
           $ref: '#/components/schemas/IStatesParameters'
+    IOutputStyleModel:
+      type: object
+      properties:
+        styles:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/IOutputElementStyle'
+      description: Map of styles specific to an output where values give hints on
+        the style. The keys are strings that can be used in OutputElementStyle
+    IStylesResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/IGenericResponse'
+      - type: object
+        properties:
+          model:
+            $ref: '#/components/schemas/IOutputStyleModel'
+    IStylesParameters:
+      type: object
+    IStylesQueryParameters:
+      required:
+      - parameters
+      type: object
+      properties:
+        parameters:
+          $ref: '#/components/schemas/IStylesParameters'
     ITimeGraphTooltip:
       type: object
       properties:
