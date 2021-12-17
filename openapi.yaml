@@ -596,29 +596,62 @@ paths:
     post:
       tags:
       - XY
+      summary: API to get the XY model
+      description: "Unique endpoint for all xy models, ensures that the same template\
+        \ is followed for all endpoints."
       operationId: getXY
       parameters:
       - name: expUUID
         in: path
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
           format: uuid
       - name: outputId
         in: path
+        description: ID of the output provider to query
         required: true
         schema:
           type: string
       requestBody:
+        description: Query parameters to fetch the XY model. The array 'requested_times'
+          is the explicit array of requested sample times. The array 'requested_items'
+          is the list of entryId or seriesId being requested.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/QueryParameters'
+              $ref: '#/components/schemas/IXYQueryParameters'
+            example:
+              parameters:
+                requested_times:
+                - 111200000
+                - 111300000
+                - 111400000
+                - 111500000
+                requested_items:
+                - 1
+                - 2
+        required: true
       responses:
-        default:
-          description: default response
+        "200":
+          description: Return the queried XYResponse
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IXYResponse'
+        "404":
+          description: No such trace
+          content:
+            application/json:
+              schema:
+                type: string
+        "405":
+          description: Analysis not possible for this trace
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments/{expUUID}/outputs/XY/{outputId}/tooltip:
     get:
       tags:
@@ -1623,3 +1656,74 @@ components:
       properties:
         parameters:
           $ref: '#/components/schemas/ITreeParameters'
+    ISeriesModel:
+      required:
+      - seriesId
+      - seriesName
+      - xValues
+      - yValues
+      type: object
+      properties:
+        seriesId:
+          type: integer
+          description: Series' ID
+          format: int64
+        seriesName:
+          type: string
+          description: Series' name
+        xValues:
+          type: array
+          description: Series' X values
+          items:
+            type: integer
+            format: int64
+        yValues:
+          type: array
+          description: Series' Y values
+          items:
+            type: integer
+            format: int64
+    IXYModel:
+      required:
+      - series
+      - title
+      type: object
+      properties:
+        series:
+          type: array
+          items:
+            $ref: '#/components/schemas/ISeriesModel'
+        title:
+          type: string
+          description: Title of the model
+    IXYResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/IGenericResponse'
+      - type: object
+        properties:
+          model:
+            $ref: '#/components/schemas/IXYModel'
+    IXYParameters:
+      required:
+      - requested_items
+      - requested_times
+      type: object
+      properties:
+        requested_items:
+          type: array
+          items:
+            type: integer
+            format: int32
+        requested_times:
+          type: array
+          items:
+            type: integer
+            format: int64
+    IXYQueryParameters:
+      required:
+      - parameters
+      type: object
+      properties:
+        parameters:
+          $ref: '#/components/schemas/IXYParameters'
