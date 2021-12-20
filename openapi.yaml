@@ -648,29 +648,52 @@ paths:
     post:
       tags:
       - XY
+      summary: API to get the XY tree
+      description: "Unique entry point for output providers, to get the tree of visible\
+        \ entries"
       operationId: getXYTree
       parameters:
       - name: expUUID
         in: path
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
           format: uuid
       - name: outputId
         in: path
+        description: ID of the output provider to query
         required: true
         schema:
           type: string
       requestBody:
+        description: "Query parameters to fetch the XY tree. When 'requested_times'\
+          \ is absent the tree for the full range is returned. When present it specifies\
+          \ a range as [start, end]."
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/QueryParameters'
+              $ref: '#/components/schemas/ITreeQueryParameters'
+            example:
+              parameters:
+                requested_times:
+                - 111111111
+                - 222222222
+        required: true
       responses:
-        default:
-          description: default response
+        "200":
+          description: "Returns a list of XY entries. The returned model must be consistent,\
+            \ parentIds must refer to a parent which exists in the model."
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IXYTreeResponse'
+        "404":
+          description: Experiment or output provider not found
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments/{expUUID}:
     get:
       tags:
@@ -1575,3 +1598,11 @@ components:
         properties:
           model:
             $ref: '#/components/schemas/IXYModel'
+    IXYTreeResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/IGenericResponse'
+      - type: object
+        properties:
+          model:
+            $ref: '#/components/schemas/ITreeEntryModel'
