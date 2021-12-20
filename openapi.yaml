@@ -698,59 +698,88 @@ paths:
     get:
       tags:
       - Experiments
+      summary: Get the model object for an experiment
       operationId: getExperiment
       parameters:
       - name: expUUID
         in: path
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
           format: uuid
       responses:
-        default:
-          description: default response
+        "200":
+          description: Return the experiment model
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IExperiment'
+        "404":
+          description: No such experiment
+          content:
+            application/json:
+              schema:
+                type: string
     delete:
       tags:
       - Experiments
+      summary: Remove an experiment from the server
       operationId: deleteExperiment
       parameters:
       - name: expUUID
         in: path
+        description: UUID of the experiment to query
         required: true
         schema:
           type: string
           format: uuid
       responses:
-        default:
-          description: default response
+        "200":
+          description: "The trace was successfully deleted, return the deleted experiment."
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IExperiment'
+        "404":
+          description: No such experiment
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments:
     get:
       tags:
       - Experiments
+      summary: Get the list of experiments on the server
       operationId: getExperiments
       responses:
-        default:
-          description: default response
+        "200":
+          description: Returns a list of experiments
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IExperiment'
     post:
       tags:
       - Experiments
+      summary: Create a new experiment on the server
       operationId: postExperiment
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/QueryParameters'
+              $ref: '#/components/schemas/IExperimentQueryParameters'
+        required: true
       responses:
-        default:
-          description: default response
+        "200":
+          description: The experiment was successfully created
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IExperiment'
   /health:
     get:
       tags:
@@ -1606,3 +1635,85 @@ components:
         properties:
           model:
             $ref: '#/components/schemas/ITreeEntryModel'
+    IExperiment:
+      type: object
+      properties:
+        nbEvents:
+          type: integer
+          description: Current number of indexed events in the experiment
+          format: int64
+        indexingStatus:
+          type: string
+          description: Status of the experiment indexing
+          enum:
+          - RUNNING
+          - COMPLETED
+          - CLOSED
+        traces:
+          type: array
+          description: The traces encapsulated by this experiment
+          items:
+            $ref: '#/components/schemas/ITrace'
+        start:
+          type: integer
+          description: The experiment's start time
+          format: int64
+        end:
+          type: integer
+          description: The experiment's end time
+          format: int64
+        name:
+          type: string
+          description: User defined name for the experiment
+        UUID:
+          type: string
+          description: The experiment's unique identifier
+          format: uuid
+    ITrace:
+      type: object
+      properties:
+        nbEvents:
+          type: integer
+          description: Current number of indexed events in the trace
+          format: int64
+        indexingStatus:
+          type: string
+          description: Status of the trace indexing
+          enum:
+          - RUNNING
+          - COMPLETED
+          - CLOSED
+        start:
+          type: integer
+          description: The trace's start time
+          format: int64
+        end:
+          type: integer
+          description: The trace's end time
+          format: int64
+        name:
+          type: string
+          description: User defined name for the trace
+        path:
+          type: string
+          description: Path to the trace on the server's file system
+        UUID:
+          type: string
+          description: The trace's unique identifier
+          format: uuid
+    IExperimentQueryParameters:
+      required:
+      - name
+      - traces
+      type: object
+      properties:
+        traces:
+          type: array
+          description: The unique identifiers of the traces to encapsulate in this
+            experiment
+          items:
+            type: string
+            format: uuid
+        name:
+          type: string
+          description: The name to give this experiment
