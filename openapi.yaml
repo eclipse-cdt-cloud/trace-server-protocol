@@ -800,59 +800,114 @@ paths:
     get:
       tags:
       - Traces
+      summary: Get the model object for a trace
       operationId: getTrace
       parameters:
       - name: uuid
         in: path
+        description: UUID of the trace to query
         required: true
         schema:
           type: string
           format: uuid
       responses:
-        default:
-          description: default response
+        "200":
+          description: Return the trace model
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ITrace'
+        "404":
+          description: No such trace
+          content:
+            application/json:
+              schema:
+                type: string
     delete:
       tags:
       - Traces
+      summary: Remove a trace from the server and disk
       operationId: deleteTrace
       parameters:
       - name: uuid
         in: path
+        description: UUID of the trace to query
         required: true
         schema:
           type: string
           format: uuid
       responses:
-        default:
-          description: default response
+        "200":
+          description: The trace was successfully deleted
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ITrace'
+        "404":
+          description: No such trace
+          content:
+            application/json:
+              schema:
+                type: string
   /traces:
     get:
       tags:
       - Traces
+      summary: Get the list of physical traces imported on the server
       operationId: getTraces
       responses:
-        default:
-          description: default response
+        "200":
+          description: Returns a list of traces
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ITrace'
     post:
       tags:
       - Traces
+      summary: Import a trace
+      description: Import a trace to the trace server. Return some base information
+        once imported.
       operationId: putTrace
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/QueryParameters'
+              $ref: '#/components/schemas/ITraceQueryParameters'
+        required: true
       responses:
-        default:
-          description: default response
+        "200":
+          description: The trace has been successfully added to the trace server
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ITrace'
+        "404":
+          description: No such trace
+          content:
+            application/json:
+              schema:
+                type: string
+        "406":
+          description: Cannot read this trace type
+          content:
+            application/json:
+              schema:
+                type: string
+        "409":
+          description: There was already a trace with this name
+          content:
+            application/json:
+              schema:
+                type: string
+        "501":
+          description: Trace type not supported
+          content:
+            application/json:
+              schema:
+                type: string
   /xml/{name}:
     delete:
       tags:
@@ -1731,3 +1786,19 @@ components:
           description: The status of the server
           enum:
           - UP
+    ITraceQueryParameters:
+      required:
+      - URI
+      type: object
+      properties:
+        typeID:
+          type: string
+          description: "The trace type's ID, to force the use of a parser / disambiguate\
+            \ the trace type"
+        name:
+          type: string
+          description: "The name of the trace in the server, to override the default\
+            \ name"
+        URI:
+          type: string
+          description: URI of the trace
