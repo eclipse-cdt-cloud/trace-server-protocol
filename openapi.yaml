@@ -46,8 +46,6 @@ tags:
   description: How to manage physical traces on your server.
 - name: Virtual Tables
   description: Learn about querying virtual table models (e.g. Events Table).
-- name: XML
-  description: Learn about querying XML analyses.
 - name: XY
   description: Learn about querying XY models.
 paths:
@@ -908,66 +906,6 @@ paths:
             application/json:
               schema:
                 type: string
-  /xml/{name}:
-    delete:
-      tags:
-      - XML
-      operationId: deleteXml
-      parameters:
-      - name: name
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        default:
-          description: default response
-          content:
-            '*/*': {}
-  /xml:
-    get:
-      tags:
-      - XML
-      operationId: getXml
-      responses:
-        default:
-          description: default response
-          content:
-            application/json: {}
-    put:
-      tags:
-      - XML
-      operationId: putXml
-      requestBody:
-        content:
-          '*/*':
-            schema:
-              type: object
-              properties:
-                path:
-                  type: string
-      responses:
-        default:
-          description: default response
-          content:
-            '*/*': {}
-    post:
-      tags:
-      - XML
-      operationId: postXml
-      requestBody:
-        content:
-          '*/*':
-            schema:
-              type: object
-              properties:
-                path:
-                  type: string
-      responses:
-        default:
-          description: default response
-          content:
-            '*/*': {}
 components:
   schemas:
     IAnnotationCategoriesModel:
