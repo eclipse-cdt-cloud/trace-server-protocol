@@ -784,12 +784,18 @@ paths:
     get:
       tags:
       - Diagnostic
+      summary: Get the health status of this server
       operationId: getHealthStatus
       responses:
-        default:
-          description: default response
+        "200":
+          description: The trace server is running and ready to receive requests
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IServerStatus'
+        "503":
+          description: The trace server is unavailable or in maintenance and cannot
+            receive requests
   /traces/{uuid}:
     get:
       tags:
@@ -1717,3 +1723,11 @@ components:
         name:
           type: string
           description: The name to give this experiment
+    IServerStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          description: The status of the server
+          enum:
+          - UP
