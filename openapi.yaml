@@ -1016,36 +1016,6 @@ components:
         \ too many styles, the element style can have a parent style and will have\
         \ all the same style property values as the parent, and can add or override\
         \ style properties."
-    Filter:
-      type: object
-      properties:
-        startTime:
-          type: integer
-          format: int64
-        expression:
-          type: string
-        tags:
-          type: integer
-          format: int32
-        endTime:
-          type: integer
-          format: int64
-        name:
-          type: string
-        id:
-          type: integer
-          format: int64
-    QueryParameters:
-      type: object
-      properties:
-        parameters:
-          type: object
-          additionalProperties:
-            type: object
-        filters:
-          type: array
-          items:
-            $ref: '#/components/schemas/Filter'
     IAnnotationsParameters:
       required:
       - requested_times
