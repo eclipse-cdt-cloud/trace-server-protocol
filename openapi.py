@@ -39,6 +39,8 @@ with open(TEMP, 'w', encoding=UTF8) as tmp:
     with open(LICS, encoding=UTF8) as license_text:
         for line in license_text:
             tmp.write(line)
+    FILTER = False
+    QUERY_P = False
     WADL = False
     with open(FILE, encoding=UTF8) as yaml:
         for line in yaml:
@@ -49,6 +51,15 @@ with open(TEMP, 'w', encoding=UTF8) as tmp:
                 # wadl stops if no longer within a wadl path:
                 WADL = not re.match(r'^\S+:$', line)
             if not WADL:
-                tmp.write(line)
+                if QUERY_P:
+                    # previous line was a QueryParameters one, maybe this one is too:
+                    QUERY_P = re.match(r'^\s\s\s\s\s\stype: object$', line)
+                else:
+                    # if QueryParameters lines, will remove these:
+                    QUERY_P = re.match(r'^\s\s\s\sQueryParameters:$', line)
+                # if Filter lines present unexpectedly, cancel QueryParameters removal:
+                FILTER = FILTER or re.match(r'^\s\s\s\sFilter:$', line)
+                if not QUERY_P or FILTER:
+                    tmp.write(line)
 
 os.rename(TEMP, FILE)
