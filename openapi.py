@@ -35,8 +35,8 @@ UTF8 = "utf-8"
 tmp = open(TEMP, 'w', encoding=UTF8)
 
 # shutil copy didn't work locally on macOS.
-with open(LICS, encoding=UTF8) as license:
-    for line in license:
+with open(LICS, encoding=UTF8) as license_text:
+    for line in license_text:
         tmp.write(line)
 
 wadl = False
