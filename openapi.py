@@ -34,23 +34,21 @@ TEMP = NAME + ".tmp"
 LICS = NAME + ".license"
 UTF8 = "utf-8"
 
-tmp = open(TEMP, 'w', encoding=UTF8)
-
 # shutil copy didn't work locally on macOS.
-with open(LICS, encoding=UTF8) as license_text:
-    for line in license_text:
-        tmp.write(line)
-
-WADL = False
-with open(FILE, encoding=UTF8) as yaml:
-    for line in yaml:
-        if re.match(r'^\s\s/.+:$', line):
-            # line is a path; check if wadl to remove it:
-            WADL = "application.wadl" in line
-        elif WADL:
-            # wadl stops if no longer within a wadl path:
-            WADL = not re.match(r'^\S+:$', line)
-        if not WADL:
+with open(TEMP, 'w', encoding=UTF8) as tmp:
+    with open(LICS, encoding=UTF8) as license_text:
+        for line in license_text:
             tmp.write(line)
+    WADL = False
+    with open(FILE, encoding=UTF8) as yaml:
+        for line in yaml:
+            if re.match(r'^\s\s/.+:$', line):
+                # line is a path; check if wadl to remove it:
+                WADL = "application.wadl" in line
+            elif WADL:
+                # wadl stops if no longer within a wadl path:
+                WADL = not re.match(r'^\S+:$', line)
+            if not WADL:
+                tmp.write(line)
 
 os.rename(TEMP, FILE)
