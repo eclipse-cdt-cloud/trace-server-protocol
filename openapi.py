@@ -30,16 +30,17 @@ NAME = "openapi"
 FILE = NAME + ".yaml"
 TEMP = NAME + ".tmp"
 LICS = NAME + ".license"
+UTF8 = "utf-8"
 
-tmp = open(TEMP, 'w')
+tmp = open(TEMP, 'w', encoding=UTF8)
 
 # shutil copy didn't work locally on macOS.
-with open(LICS) as license:
+with open(LICS, encoding=UTF8) as license:
     for line in license:
         tmp.write(line)
 
 wadl = False
-with open(FILE) as yaml:
+with open(FILE, encoding=UTF8) as yaml:
     for line in yaml:
         if re.match(r'^\s\s/.+:$', line):
             # line is a path; check if wadl to remove it:
