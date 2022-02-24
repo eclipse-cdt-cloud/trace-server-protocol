@@ -45,9 +45,8 @@ In the meantime, Swagger has recently been added to trace-server.
 * Such reference and future (forecasted) TSP versions will be documented accordingly as these yaml files evolve.
 
 1. Import all [TC][tracecompass] and [incubator][incubator] projects in Eclipse; branch, Target Platform and API Baseline set to `master`.
-1. Run trace-server or project [1] below as Eclipse Application configured this way (or similar):
-   * `-Xms512m -Xmx1g`.
-   * Launch with `all workspace and enabled target plug-ins`.
+1. Open `traceserver.product` file in plug-in `org.eclipse.tracecompass.incubator.trace.server.product`
+1. Click on the `Run` button on the top right corner of the opened `traceserver.product`
 1. Browse [to here][apiyaml] ([swagger][swagger]) or so to generate server's TSP.
 1. Bring the resulting file over; e.g.: `mv ~/Downloads/openapi.yaml .`
 1. Update the latter with its license information and remove extra information: `./openapi.py`
