@@ -66,6 +66,6 @@ Swagger has recently been added to the Trace Compass trace-server (reference imp
 [swagger]: https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Integration-and-configuration#openapiresource
 [tcServer]: https://download.eclipse.org/tracecompass.incubator/trace-server/rcp/
 [tracecompass]: https://projects.eclipse.org/projects/tools.tracecompass/developer
-[tspClient]: https://github.com/theia-ide/tsp-typescript-client
-[tspGhPages]: https://theia-ide.github.io/trace-server-protocol/
+[tspClient]: https://github.com/eclipse-cdt-cloud/tsp-typescript-client
+[tspGhPages]: https://eclipse-cdt-cloud.github.io/trace-server-protocol/
 [vscodeOpenapi]: https://marketplace.visualstudio.com/items?itemName=42Crunch.vscode-openapi
