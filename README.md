@@ -60,7 +60,7 @@ Swagger has recently been added to the Trace Compass trace-server (reference imp
 1. Make sure to transfer the diffs to `API-proposed.yaml` as well.
 1. `openapi.yaml` should not be merged to the repository and can be deleted when not needed anymore.
 
-[apiProposed]: https://theia-ide.github.io/trace-server-protocol/proposed/
+[apiProposed]: https://eclipse-cdt-cloud.github.io/trace-server-protocol/proposed/
 [apiyaml]: http://localhost:8080/tsp/api/openapi.yaml
 [incubator]: https://projects.eclipse.org/projects/tools.tracecompass.incubator/developer
 [swagger]: https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Integration-and-configuration#openapiresource
