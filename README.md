@@ -8,6 +8,8 @@ The protocol is meant to be RESTful, over HTTP.
 
 The specification is currently written in **OpenAPI 3.0** and can be pretty-visualized in the [github pages][tspGhPages].
 
+**👋 Want to help?** Read our [contributor guide][contributing].
+
 ## Current version
 
 The current version of the specification is currently implemented and supported in the [Trace Compass trace-server][tcServer] (reference implementation) and what is currently supported by the [tsp-typescript-client][tspClient].
@@ -62,6 +64,7 @@ Swagger has recently been added to the Trace Compass trace-server (reference imp
 
 [apiProposed]: https://eclipse-cdt-cloud.github.io/trace-server-protocol/proposed/
 [apiyaml]: http://localhost:8080/tsp/api/openapi.yaml
+[contributing]: CONTRIBUTING.md
 [incubator]: https://projects.eclipse.org/projects/tools.tracecompass.incubator/developer
 [swagger]: https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Integration-and-configuration#openapiresource
 [tcServer]: https://download.eclipse.org/tracecompass.incubator/trace-server/rcp/
