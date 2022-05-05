@@ -2435,6 +2435,7 @@ components:
       required:
       - seriesId
       - seriesName
+      - style
       - xValues
       - yValues
       type: object
@@ -2446,6 +2447,8 @@ components:
         seriesName:
           type: string
           description: Series' name
+        style:
+          $ref: '#/components/schemas/OutputElementStyle'
         xValues:
           type: array
           description: Series' X values
@@ -2458,6 +2461,7 @@ components:
           items:
             type: integer
             format: int64
+      description: This model includes the series output style values.
     XYModel:
       required:
       - series
