@@ -1773,6 +1773,7 @@ components:
       properties:
         series:
           type: array
+          description: The collection of series
           items:
             $ref: '#/components/schemas/SeriesModel'
         title:
