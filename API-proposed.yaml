@@ -2209,6 +2209,8 @@ components:
           type: integer
           description: End time for this state
           format: int64
+      description: "If state holds a single applicable value and no style(s), that\
+        \ value is this object's parent key"
     TimeGraphStatesResponse:
       type: object
       allOf:
