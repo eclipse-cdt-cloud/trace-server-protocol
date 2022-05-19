@@ -120,8 +120,8 @@ paths:
         schema:
           type: string
       requestBody:
-        description: "Query parameters to fetch the annotations. The array 'requested_times'\
-          \ is the explicit array of requested sample times. The array 'requested_items'\
+        description: "Query parameters to fetch the annotations. The object 'requested_timerange'\
+          \ is the requested time range and number of samples. The array 'requested_items'\
           \ is the list of entryId being requested. The string 'requested_marker_set'\
           \ is the optional requested marker set's id. The array 'requested_marker_categories'\
           \ is the list of requested annotation categories; if absent, all annotations\
@@ -132,11 +132,10 @@ paths:
               $ref: '#/components/schemas/AnnotationsQueryParameters'
             example:
               parameters:
-                requested_times:
-                - 111200000
-                - 111300000
-                - 111400000
-                - 111500000
+                requested_timerange:
+                  start: 111111111
+                  end: 222222222
+                  nbTimes: 1920
                 requested_items:
                 - 1
                 - 2
@@ -193,19 +192,18 @@ paths:
         schema:
           type: string
       requestBody:
-        description: Query parameters to fetch the timegraph arrows. The array 'requested_times'
-          is the explicit array of requested sample times.
+        description: Query parameters to fetch the timegraph arrows. The object 'requested_timerange'
+          is the requested time range and number of samples.
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ArrowsQueryParameters'
             example:
               parameters:
-                requested_times:
-                - 111200000
-                - 111300000
-                - 111400000
-                - 111500000
+                requested_timerange:
+                  start: 111111111
+                  end: 222222222
+                  nbTimes: 1920
         required: true
       responses:
         "200":
@@ -481,8 +479,8 @@ paths:
         schema:
           type: string
       requestBody:
-        description: Query parameters to fetch the timegraph states. The array 'requested_times'
-          is the explicit array of requested sample times. The array 'requested_items'
+        description: Query parameters to fetch the timegraph states. The object 'requested_timerange'
+          is the requested time range and number of samples. The array 'requested_items'
           is the list of entryId being requested.
         content:
           application/json:
@@ -490,11 +488,10 @@ paths:
               $ref: '#/components/schemas/RequestedQueryParameters'
             example:
               parameters:
-                requested_times:
-                - 111200000
-                - 111300000
-                - 111400000
-                - 111500000
+                requested_timerange:
+                  start: 111111111
+                  end: 222222222
+                  nbTimes: 1920
                 requested_items:
                 - 1
                 - 2
@@ -668,18 +665,18 @@ paths:
         schema:
           type: string
       requestBody:
-        description: "Query parameters to fetch the timegraph tree. When 'requested_times'\
-          \ is absent the tree for the full range is returned. When present it specifies\
-          \ a range as [start, end]."
+        description: Query parameters to fetch the timegraph tree. The object 'requested_timerange'
+          specifies the requested time range. When absent the tree for the full range
+          is returned.
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/TreeQueryParameters'
             example:
               parameters:
-                requested_times:
-                - 111111111
-                - 222222222
+                requested_timerange:
+                  start: 111111111
+                  end: 222222222
         required: true
       responses:
         "200":
@@ -731,8 +728,8 @@ paths:
         schema:
           type: string
       requestBody:
-        description: Query parameters to fetch the XY model. The array 'requested_times'
-          is the explicit array of requested sample times. The array 'requested_items'
+        description: Query parameters to fetch the XY model. The object 'requested_timerange'
+          is the requested time range and number of samples. The array 'requested_items'
           is the list of entryId or seriesId being requested.
         content:
           application/json:
@@ -740,11 +737,10 @@ paths:
               $ref: '#/components/schemas/RequestedQueryParameters'
             example:
               parameters:
-                requested_times:
-                - 111200000
-                - 111300000
-                - 111400000
-                - 111500000
+                requested_timerange:
+                  start: 111111111
+                  end: 222222222
+                  nbTimes: 1920
                 requested_items:
                 - 1
                 - 2
@@ -797,18 +793,18 @@ paths:
         schema:
           type: string
       requestBody:
-        description: "Query parameters to fetch the XY tree. When 'requested_times'\
-          \ is absent the tree for the full range is returned. When present it specifies\
-          \ a range as [start, end]."
+        description: Query parameters to fetch the XY tree. The object 'requested_timerange'
+          specifies the requested time range. When absent the tree for the full range
+          is returned.
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/TreeQueryParameters'
             example:
               parameters:
-                requested_times:
-                - 111111111
-                - 222222222
+                requested_timerange:
+                  start: 111111111
+                  end: 222222222
         required: true
       responses:
         "200":
@@ -1204,18 +1200,13 @@ components:
         \ too many styles, the element style can have a parent style and will have\
         \ all the same style property values as the parent, and can add or override\
         \ style properties."
-    QueryParameters:
-      type: object
     AnnotationsParameters:
       required:
-      - requested_times
+      - requested_timerange
       type: object
       properties:
-        requested_times:
-          type: array
-          items:
-            type: integer
-            format: int64
+        requested_timerange:
+          $ref: '#/components/schemas/TimeRange'
         requested_items:
           type: array
           items:
@@ -1234,6 +1225,26 @@ components:
       properties:
         parameters:
           $ref: '#/components/schemas/AnnotationsParameters'
+    TimeRange:
+      required:
+      - end
+      - start
+      type: object
+      properties:
+        nbTimes:
+          type: integer
+          description: The number of timestamps to be sampled (1-65536) in the given
+            range
+          format: int32
+        start:
+          type: integer
+          description: The start of the time range
+          format: int64
+        end:
+          type: integer
+          description: The end of the time range
+          format: int64
+      description: A time range with optional number of timestamps to be sampled
     TimeGraphArrow:
       required:
       - end
@@ -1272,14 +1283,11 @@ components:
               $ref: '#/components/schemas/TimeGraphArrow'
     ArrowsParameters:
       required:
-      - requested_times
+      - requested_timerange
       type: object
       properties:
-        requested_times:
-          type: array
-          items:
-            type: integer
-            format: int64
+        requested_timerange:
+          $ref: '#/components/schemas/TimeRange'
     ArrowsQueryParameters:
       required:
       - parameters
@@ -1527,14 +1535,11 @@ components:
     RequestedParameters:
       required:
       - requested_items
-      - requested_times
+      - requested_timerange
       type: object
       properties:
-        requested_times:
-          type: array
-          items:
-            type: integer
-            format: int64
+        requested_timerange:
+          $ref: '#/components/schemas/TimeRange'
         requested_items:
           type: array
           items:
@@ -1891,7 +1896,7 @@ components:
           - UP
     TraceQueryParameters:
       required:
-      - URI
+      - uri
       type: object
       properties:
         name:
@@ -1902,6 +1907,6 @@ components:
           type: string
           description: "The trace type's ID, to force the use of a parser / disambiguate\
             \ the trace type"
-        URI:
+        uri:
           type: string
           description: URI of the trace
