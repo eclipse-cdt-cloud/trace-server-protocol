@@ -1653,6 +1653,24 @@ components:
             type: integer
             description: Beginning of the range for which this entry exists
             format: int64
+          metadata:
+            type: object
+            additionalProperties:
+              type: array
+              description: Optional metadata map for domain specific data for matching data
+                across data providers. Keys for the same data shall be the same across
+                data providers. Only values of type Number or String are allowed.
+                For each key all values shall have the same type.
+              items:
+                type: object
+                description: Optional metadata map for domain specific data for matching data
+                  across data providers. Keys for the same data shall be the same
+                  across data providers. Only values of type Number or String are
+                  allowed. For each key all values shall have the same type.
+            description: Optional metadata map for domain specific data for matching data across
+              data providers. Keys for the same data shall be the same across data
+              providers. Only values of type Number or String are allowed. For each
+              key all values shall have the same type.
           end:
             type: integer
             description: End of the range for which this entry exists
