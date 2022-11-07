@@ -481,11 +481,16 @@ paths:
       requestBody:
         description: Query parameters to fetch the timegraph states. The object 'requested_timerange'
           is the requested time range and number of samples. The array 'requested_items'
-          is the list of entryId being requested.
+          is the list of entryId being requested. The boolean optional 'is_full_search' if is true
+          then the full time range between the first and last requested timestamp should be searched
+          for filter matches. The map 'filter_expressions_map' where the key 1 is DIMMED and 4 is EXCLUDED,
+          and the value is array of queries for searching or it may be some logical parameters like "duration>10ms",
+          "thread=1" or "process=ls".
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/RequestedQueryParameters'
+              $ref: '#/components/schemas/RequestedFilterQueryParameters'
             example:
               parameters:
                 requested_timerange:
@@ -495,6 +500,12 @@ paths:
                 requested_items:
                 - 1
                 - 2
+              filterQueryParameters:
+                is_full_search: true
+                filter_expressions_map:
+                  "1":
+                  - query_for_search
+                  - duration>10ms
         required: true
       responses:
         "200":
@@ -1552,6 +1563,30 @@ components:
       properties:
         parameters:
           $ref: '#/components/schemas/RequestedParameters'
+    RequestedFilterParameters:
+      required:
+      - is_full_search
+      - filter_expressions_map
+      type: object
+      properties:
+        is_full_search:
+          type: boolean
+        filter_expressions_map:
+          type: object
+          properties:
+            key:
+              type: string
+              description: where the key 1 is DIMMED and 4 is EXCLUDED
+            value:
+              type: array
+              description: search queries
+    RequestedFilterQueryParameters:
+      required:
+      - parameters
+      type: object
+      properties:
+        parameters:
+          $ref: '#/components/schemas/RequestedFilterParameters'
     OutputStyleModel:
       type: object
       properties:
