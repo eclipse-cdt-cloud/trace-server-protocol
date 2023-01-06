@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2018, 2022 Ericsson
+# Copyright (c) 2018, 2023 Ericsson
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -2507,6 +2507,26 @@ components:
         properties:
           model:
             $ref: '#/components/schemas/XYModel'
+    XYTreeEntry:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/TreeDataModel'
+      - type: object
+        properties:
+          isDefault:
+            type: boolean
+            description: Optional flag to indicate whether or not the entry is a default
+              entry and its xy data should be fetched by default.
+    XYTreeEntryModel:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/TreeEntryModel'
+      - type: object
+        properties:
+          entries:
+            type: array
+            items:
+              $ref: '#/components/schemas/XYTreeEntry'
     XYTreeResponse:
       type: object
       allOf:
@@ -2514,7 +2534,7 @@ components:
       - type: object
         properties:
           model:
-            $ref: '#/components/schemas/TreeEntryModel'
+            $ref: '#/components/schemas/XYTreeEntryModel'
     Experiment:
       type: object
       properties:
