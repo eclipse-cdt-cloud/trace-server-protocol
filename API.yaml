@@ -1489,6 +1489,19 @@ components:
       - states
       type: object
       properties:
+        startTime:
+          description: Start time of the row, assumed to be 0
+          type: integer
+          format: int64
+        labels:
+          description: Labels used in the row, assumed to be empty
+          type: array
+          format: string
+        styles:
+          description: Styles used in the row, assumed to be empty
+          type: array
+          items:
+            $ref: "#/components/schemas/OutputElementStyle"
         states:
           type: array
           description: List of the time graph entry states associated to this entry
@@ -1501,8 +1514,8 @@ components:
           format: int64
     TimeGraphState:
       required:
-      - end
-      - start
+      - d
+      - s
       type: object
       properties:
         tags:
@@ -1510,19 +1523,22 @@ components:
           description: Tags to apply on this state. A value of 0 should be handled
             as none (no tags)
           format: int32
-        start:
+        s:
           type: integer
-          description: Start time for this state
+          description: Start time for this state, offset by the row start time
           format: int64
         style:
-          $ref: '#/components/schemas/OutputElementStyle'
-        label:
-          type: string
-          description: "Text label to apply to this TimeGraphState if resolution permits.\
-            \ Optional, no label is applied if absent"
-        end:
+          description: Index of the style for the row entry
           type: integer
-          description: End time for this state
+          format: int32
+        l:
+          type: integer
+          format: int32
+          description: "Index of the text label to apply to this TimeGraphState if resolution permits.\
+            \ Optional, no label is applied if absent"
+        d:
+          type: integer
+          description: Duration for this state
           format: int64
     TimeGraphStatesResponse:
       type: object
