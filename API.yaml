@@ -285,6 +285,69 @@ paths:
             application/json:
               schema:
                 type: string
+  /experiments/{expUUID}/outputs/data/{outputId}/tree:
+    post:
+      tags:
+      - Data Tree
+      summary: API to get the data tree
+      description: "Unique entry point for output providers, to get the tree of visible\
+        \ entries"
+      operationId: getDataTree
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        description: ID of the output provider to query
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Query parameters to fetch the data tree entries. The object 'requested_timerange'
+          specifies the requested time range. When absent the tree for the full range
+          is returned.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TreeQueryParameters'
+            example:
+              parameters:
+                requested_timerange:
+                  start: 111111111
+                  end: 222222222
+        required: true
+      responses:
+        "200":
+          description: "Returns a list of data tree entries. The returned model must\
+            \ be consistent, parentIds must refer to a parent which exists in the\
+            \ model."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/XYTreeResponse'
+        "400":
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                type: string
+        "404":
+          description: Experiment or output provider not found
+          content:
+            application/json:
+              schema:
+                type: string
+        "405":
+          description: Analysis cannot run
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments/{expUUID}/outputs/table/{outputId}/lines:
     post:
       tags:
