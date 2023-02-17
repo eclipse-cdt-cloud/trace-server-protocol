@@ -1764,6 +1764,17 @@ components:
         name:
           type: string
           description: Displayed name for this header
+        dataType:
+          type: string
+          description: "Data type of column. Optional, data type STRING is applied\
+            \ if absent."
+          enum:
+          - NUMBER
+          - BINARY_NUMBER
+          - TIMESTAMP
+          - DURATION
+          - STRING
+          - TIME_RANGE
         tooltip:
           type: string
           description: "Displayed tooltip for this header. Optional, no tooltip is\
