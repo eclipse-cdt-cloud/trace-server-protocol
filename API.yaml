@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2018, 2022 Ericsson
+# Copyright (c) 2018, 2023 Ericsson
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -481,11 +481,15 @@ paths:
       requestBody:
         description: Query parameters to fetch the timegraph states. The object 'requested_timerange'
           is the requested time range and number of samples. The array 'requested_items'
-          is the list of entryId being requested. The boolean optional 'is_full_search' if is true
-          then the full time range between the first and last requested timestamp should be searched
-          for filter matches. The map 'filter_expressions_map' where the key 1 is DIMMED and 4 is EXCLUDED,
-          and the value is array of queries for searching or it may be some logical parameters like "duration>10ms",
-          "thread=1" or "process=ls".
+          is the list of entryId being requested. The object 'filter_query_parameters' contains
+          requests for search/filter queries. The array 'filter_expressions_map' is the list of
+          query requests, where the key 1 is DIMMED and 4 is EXCLUDED, and the value is an array of
+          the desired search query ("thread=1" or "process=ls" or "duration>10ms"). The 'strategy'
+          flag is an optional parameter within 'filter_query_parameters', and if omitted then 
+          'sampled' search would be the default value. If 'strategy' is set to 'deep' then the full
+          time range  between the first and last requested timestamp should be searched for filter
+          matches. For timegraphs, only one matching state per gap in requested timestamps need be
+          returned in the response.
         content:
           application/json:
             schema:
@@ -500,12 +504,12 @@ paths:
                 requested_items:
                 - 1
                 - 2
-              filterQueryParameters:
-                is_full_search: true
-                filter_expressions_map:
-                  "1":
-                  - query_for_search
-                  - duration>10ms
+                filter_query_parameters:
+                  strategy: "deep",
+                  filter_expressions_map:
+                    1:
+                    - query_for_search
+                    - duration>10ms
         required: true
       responses:
         "200":
@@ -1565,21 +1569,20 @@ components:
           $ref: '#/components/schemas/RequestedParameters'
     RequestedFilterParameters:
       required:
-      - is_full_search
       - filter_expressions_map
       type: object
       properties:
-        is_full_search:
-          type: boolean
+        strategy:
+          type: string
         filter_expressions_map:
           type: object
           properties:
             key:
-              type: string
+              type: number
               description: where the key 1 is DIMMED and 4 is EXCLUDED
-            value:
-              type: array
-              description: search queries
+              value:
+                type: array
+                description: search queries
     RequestedFilterQueryParameters:
       required:
       - parameters
