@@ -196,9 +196,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ConfigurationSourceType'
+                $ref: '#/components/schemas/ConfigurationSourceType'
   /config/types:
     get:
       tags:
@@ -1442,17 +1440,33 @@ components:
               to show more details to users of the configuration instance.
           description: Optional informational parameters to return. Can be used to
             show more details to users of the configuration instance.
+    ConfigurationParameterDescriptor:
+      type: object
+      properties:
+        dataType:
+          type: string
+          description: The data type hint of the configuration parameter
+        keyName:
+          type: string
+          description: The unique key name of the configuration parameter
+        required:
+          type: boolean
+          description: A flag indicating whether the configuration parameter is required
+            or not
+        description:
+          type: string
+          description: Describes the configuration parameter
+      description: A list of configuration parameter descriptors to be passed when
+        creating or updating a configuration instance of this type.
     ConfigurationSourceType:
       type: object
       properties:
-        queryParameterKeys:
+        parameterDescriptors:
           type: array
-          description: A list of query parameter keys to be passed when creating configuration
-            instance of this type. Use 'path' key for file URIs
+          description: A list of configuration parameter descriptors to be passed
+            when creating or updating a configuration instance of this type.
           items:
-            type: string
-            description: A list of query parameter keys to be passed when creating
-              configuration instance of this type. Use 'path' key for file URIs
+            $ref: '#/components/schemas/ConfigurationParameterDescriptor'
         description:
           type: string
           description: Describes the configuration source type
