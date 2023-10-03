@@ -37,6 +37,8 @@ tags:
   description: How to manage configuration source types and configurations.
 - name: Diagnostic
   description: Refer to the server's status.
+- name: Data Tree
+  description: Learn about querying data tree models (e.g. for statistics).
 - name: Experiments
   description: "How to manage experiments on your server; an experiment represents\
     \ a collection of traces, which can produce output models."
