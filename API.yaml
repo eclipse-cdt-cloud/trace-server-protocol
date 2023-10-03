@@ -34,24 +34,24 @@ tags:
 - name: Annotations
   description: Retrieve annotations for different outputs.
 - name: Configurations
-  description: How to manage configuration source types and configurations.
+  description: Manage configuration source types and configurations.
 - name: Diagnostic
-  description: Refer to the server's status.
+  description: Retrieve the server's status.
 - name: Data Tree
-  description: Learn about querying data tree models (e.g. for statistics).
+  description: Query data tree models (e.g. for statistics).
 - name: Experiments
-  description: "How to manage experiments on your server; an experiment represents\
-    \ a collection of traces, which can produce output models."
+  description: "Manage experiments on your server; an experiment represents a collection\
+    \ of traces, which can produce output models."
 - name: Styles
   description: Retrieve styles for different outputs.
 - name: TimeGraph
-  description: Learn about querying Time Graph models.
+  description: Query Time Graph models.
 - name: Traces
-  description: How to manage physical traces on your server.
+  description: Manage physical traces on your server.
 - name: Virtual Tables
-  description: Learn about querying virtual table models (e.g. Events Table).
+  description: Query virtual table models (e.g. Events Table).
 - name: XY
-  description: Learn about querying XY models.
+  description: Query XY chart models.
 paths:
   /config/types/{typeId}/configs/{configId}:
     get:
