@@ -1159,6 +1159,33 @@ paths:
             application/json:
               schema:
                 type: string
+  /experiments/{expUUID}:close:
+    put:
+      tags:
+      - Experiments
+      summary: Close experiment to dispose allocated resources.
+      operationId: closeExperiment
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Return the model of the closed experiment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+        "404":
+          description: No such experiment
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments/{expUUID}:
     get:
       tags:
