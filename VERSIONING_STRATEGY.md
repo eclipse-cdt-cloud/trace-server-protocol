@@ -1,7 +1,7 @@
 # TSP Versioning Strategy
 
 At the moment, TSP is not yet at version 1.0.0.
-As such, we are expecting breaking changes to occur quite often until we reach V1.
+APIs will be added and updated until we reach that version, which might include making some breaking changes.
 
 Once we do achieve such a milestone, a versioning and deprecation strategy will need to be implemented to maintain and update the TSP. This document will outline this strategy and why certain choices where made regarding the versioning of the TSP.
 
@@ -64,4 +64,4 @@ Best use: complex scenarios.
 
 ## Decision Taken
 
-Once the TSP is stable enough for Version 1.0.0, we will proceed with URL versioning as it is the industry standard and it offers the most visibility for users. In due time, a deprecation strategy will be formulated to avoid having to support multiple versions of the API, which can lead to duplicated code in the codebase.
+Once the TSP is stable enough for Version 1.0.0, we will proceed with URL versioning for the major version as it is the industry standard and it offers the most visibility for users. In addition, an endpoint will be added to get the actual semantic version (major.minor.patch) of the TSP. Finally, a deprecation strategy will be formulated to avoid having to support multiple versions of the API, which can lead to duplicated code in the codebase.
