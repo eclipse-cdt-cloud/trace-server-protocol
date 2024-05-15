@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2018, 2023 Ericsson
+# Copyright (c) 2018, 2024 Ericsson
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -42,6 +42,9 @@ tags:
 - name: Experiments
   description: "Manage experiments on your server; an experiment represents a collection\
     \ of traces, which can produce output models."
+- name: Identifier
+  description: Retrieve information about the server and the system it is running
+    on.
 - name: Styles
   description: Retrieve styles for different outputs.
 - name: TimeGraph
@@ -1286,6 +1289,19 @@ paths:
         "503":
           description: The trace server is unavailable or in maintenance and cannot
             receive requests
+  /identifier:
+    get:
+      tags:
+      - Identifier
+      summary: Retrieves system and server information
+      operationId: getSystemInfo
+      responses:
+        "200":
+          description: Successfully retrieved the system and server information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerInfoResponse'
   /traces/{uuid}:
     get:
       tags:
@@ -2373,6 +2389,43 @@ components:
           description: The status of the server
           enum:
           - UP
+    ServerInfoResponse:
+      required:
+      - os
+      - productId
+      - version
+      type: object
+      properties:
+        version:
+          type: string
+          description: Version in the format Major.Minor.Micro
+        buildTime:
+          type: string
+          description: "Build time or qualifier of the server version, if available"
+        cpuCount:
+          type: integer
+          description: Number of CPUs available
+          format: int32
+        maxMemory:
+          type: integer
+          description: Maximum memory available to the JVM in bytes
+          format: int64
+        launcherName:
+          type: string
+          description: "Name of the launcher used, if available"
+        os:
+          type: string
+          description: Operating system name
+        osArch:
+          type: string
+          description: Architecture of the operating system
+        osVersion:
+          type: string
+          description: Operating system version
+        productId:
+          type: string
+          description: Product identifier for the trace server
+      description: System Information Response
     TraceQueryParameters:
       required:
       - uri
