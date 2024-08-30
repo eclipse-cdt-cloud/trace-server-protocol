@@ -1475,25 +1475,34 @@ components:
           type: string
           description: Describes the configuration parameter
       description: A list of configuration parameter descriptors to be passed when
-        creating or updating a configuration instance of this type.
+        creating or updating a configuration instance of this type. Use this instead
+        of schema. Omit if not used.
     ConfigurationSourceType:
       type: object
       properties:
         parameterDescriptors:
           type: array
           description: A list of configuration parameter descriptors to be passed
-            when creating or updating a configuration instance of this type.
+            when creating or updating a configuration instance of this type. Use this
+            instead of schema. Omit if not used.
           items:
             $ref: '#/components/schemas/ConfigurationParameterDescriptor'
         description:
           type: string
           description: Describes the configuration source type
+        schema:
+          $ref: '#/components/schemas/OptionalSchema'
         name:
           type: string
           description: The human readable name
         id:
           type: string
           description: The unique ID of the configuration source type
+    OptionalSchema:
+      type: object
+      description: A JSON object that describes a schema for parameters that the front-end
+        needs to provide with corresponding values. Use this for complex parameter
+        descriptions instead of parameterDescriptors. Omit if not used.
     ConfigurationQueryParameters:
       required:
       - parameters
