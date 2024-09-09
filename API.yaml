@@ -1510,12 +1510,9 @@ components:
       properties:
         parameters:
           type: object
-          additionalProperties:
-            type: object
-            description: Parameters as specified in corresponding ConfigurationTypeDescriptor.
-              Use key `path` for file URI string values.
-          description: Parameters as specified in corresponding ConfigurationTypeDescriptor.
-            Use key `path` for file URI string values.
+          description: "Parameters as JSON object as specified in the schema of the\
+            \ corresponding ConfigurationTypeDescriptor or as a Map<String, Object>.\
+            \ Use key `path` for file URI string values."
     AnnotationCategoriesModel:
       type: object
       properties:
