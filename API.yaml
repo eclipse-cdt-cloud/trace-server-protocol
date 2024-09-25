@@ -1547,20 +1547,6 @@ components:
       - type
       type: object
       properties:
-        type:
-          type: string
-          description: Type of annotation indicating its location
-          enum:
-          - CHART
-          - TREE
-        time:
-          type: integer
-          description: Time of this annotation
-          format: int64
-        duration:
-          type: integer
-          description: Duration of this annotation
-          format: int64
         style:
           $ref: '#/components/schemas/OutputElementStyle'
         entryId:
@@ -1571,6 +1557,20 @@ components:
         label:
           type: string
           description: Text label of this annotation
+        time:
+          type: integer
+          description: Time of this annotation
+          format: int64
+        duration:
+          type: integer
+          description: Duration of this annotation
+          format: int64
+        type:
+          type: string
+          description: Type of annotation indicating its location
+          enum:
+          - CHART
+          - TREE
       description: An annotation is used to mark an interesting area at a given time
         or time range
     AnnotationModel:
@@ -1622,17 +1622,17 @@ components:
       properties:
         requested_timerange:
           $ref: '#/components/schemas/TimeRange'
+        requested_marker_categories:
+          type: array
+          items:
+            type: string
+        requested_marker_set:
+          type: string
         requested_items:
           type: array
           items:
             type: integer
             format: int32
-        requested_marker_set:
-          type: string
-        requested_marker_categories:
-          type: array
-          items:
-            type: string
     AnnotationsQueryParameters:
       required:
       - parameters
@@ -1646,15 +1646,15 @@ components:
       - start
       type: object
       properties:
+        start:
+          type: integer
+          description: The start of the time range
+          format: int64
         nbTimes:
           type: integer
           description: The number of timestamps to be sampled (1-65536) in the given
             range
           format: int32
-        start:
-          type: integer
-          description: The start of the time range
-          format: int64
         end:
           type: integer
           description: The end of the time range
@@ -1668,10 +1668,6 @@ components:
       - targetId
       type: object
       properties:
-        targetId:
-          type: integer
-          description: Target entry's unique ID
-          format: int64
         start:
           type: integer
           description: Start time for this arrow
@@ -1681,6 +1677,10 @@ components:
         sourceId:
           type: integer
           description: Source entry's unique ID
+          format: int64
+        targetId:
+          type: integer
+          description: Target entry's unique ID
           format: int64
         end:
           type: integer
@@ -1713,6 +1713,9 @@ components:
     TableColumnHeader:
       type: object
       properties:
+        description:
+          type: string
+          description: Description of the column
         name:
           type: string
           description: Displayed name for this column
@@ -1723,9 +1726,6 @@ components:
         type:
           type: string
           description: Type of data associated to this column
-        description:
-          type: string
-          description: Description of the column
     TableColumnHeadersResponse:
       type: object
       allOf:
@@ -1745,24 +1745,133 @@ components:
       properties:
         parameters:
           $ref: '#/components/schemas/OptionalParameters'
+    TreeColumnHeader:
+      required:
+      - name
+      type: object
+      properties:
+        dataType:
+          type: string
+          description: "Data type of column. Optional, data type STRING is applied\
+            \ if absent."
+          enum:
+          - NUMBER
+          - BINARY_NUMBER
+          - TIMESTAMP
+          - DURATION
+          - STRING
+          - TIME_RANGE
+        tooltip:
+          type: string
+          description: "Displayed tooltip for this header. Optional, no tooltip is\
+            \ applied if absent."
+        name:
+          type: string
+          description: Displayed name for this header
+    TreeDataModel:
+      required:
+      - id
+      - labels
+      type: object
+      properties:
+        style:
+          $ref: '#/components/schemas/OutputElementStyle'
+        parentId:
+          type: integer
+          description: "Unique id to identify this parent's entry, optional if this\
+            \ entry does not have a parent."
+          format: int64
+        hasData:
+          type: boolean
+          description: Whether or not this entry has data
+        labels:
+          type: array
+          description: Array of cell labels to be displayed. The length of the array
+            and the index of each column need to correspond to the header array returned
+            in the tree model.
+          items:
+            type: string
+        id:
+          type: integer
+          description: Unique id to identify this entry in the backend
+          format: int64
+      description: Base entry returned by tree endpoints
+    TreeEntryModel:
+      required:
+      - entries
+      type: object
+      properties:
+        headers:
+          type: array
+          items:
+            $ref: '#/components/schemas/TreeColumnHeader'
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/TreeDataModel'
+    XYTreeEntry:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/TreeDataModel'
+      - type: object
+        properties:
+          isDefault:
+            type: boolean
+            description: Optional flag to indicate whether or not the entry is a default
+              entry and its xy data should be fetched by default.
+    XYTreeEntryModel:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/TreeEntryModel'
+      - type: object
+        properties:
+          entries:
+            type: array
+            items:
+              $ref: '#/components/schemas/XYTreeEntry'
+    XYTreeResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/GenericResponse'
+      - type: object
+        properties:
+          model:
+            $ref: '#/components/schemas/XYTreeEntryModel'
+    TreeParameters:
+      type: object
+      properties:
+        requested_times:
+          type: array
+          items:
+            type: integer
+            format: int64
+    TreeQueryParameters:
+      required:
+      - parameters
+      type: object
+      properties:
+        parameters:
+          $ref: '#/components/schemas/TreeParameters'
     VirtualTableCell:
       type: object
       properties:
-        content:
-          type: string
-          description: Content of the cell for this line
         tags:
           type: integer
           description: Specific tags for this cell. A value of 0 should be handled
             as none (no tags)
           format: int32
+        content:
+          type: string
+          description: Content of the cell for this line
     VirtualTableLine:
       type: object
       properties:
-        index:
-          type: integer
-          description: The index of this line in the virtual table
-          format: int64
+        cells:
+          type: array
+          description: The content of the cells for this line. This array matches
+            the column ids returned above
+          items:
+            $ref: '#/components/schemas/VirtualTableCell'
         tags:
           type: integer
           description: "Tags for the entire line. A bit mask to apply for tagging\
@@ -1770,19 +1879,20 @@ components:
             \ to indicate if a filter matches and what action to apply. Use 0 for\
             \ no tags, 1 and 2 are reserved, 4 for 'BORDER' and 8 for 'HIGHLIGHT'."
           format: int32
-        cells:
-          type: array
-          description: The content of the cells for this line. This array matches
-            the column ids returned above
-          items:
-            $ref: '#/components/schemas/VirtualTableCell'
+        index:
+          type: integer
+          description: The index of this line in the virtual table
+          format: int64
     VirtualTableModel:
       type: object
       properties:
-        size:
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/VirtualTableLine'
+        lowIndex:
           type: integer
-          description: "Number of events. If filtered, the size will be the number\
-            \ of events that match the filters"
+          description: Index in the virtual table of the first returned event
           format: int64
         columnIds:
           type: array
@@ -1791,14 +1901,11 @@ components:
           items:
             type: integer
             format: int64
-        lowIndex:
+        size:
           type: integer
-          description: Index in the virtual table of the first returned event
+          description: "Number of events. If filtered, the size will be the number\
+            \ of events that match the filters"
           format: int64
-        lines:
-          type: array
-          items:
-            $ref: '#/components/schemas/VirtualTableLine'
     VirtualTableResponse:
       type: object
       allOf:
@@ -1869,6 +1976,9 @@ components:
     DataProvider:
       type: object
       properties:
+        description:
+          type: string
+          description: Describes the output provider's features
         name:
           type: string
           description: The human readable name
@@ -1888,9 +1998,6 @@ components:
           - TREE_TIME_XY
           - TIME_GRAPH
           - DATA_TREE
-        description:
-          type: string
-          description: Describes the output provider's features
     TimeGraphModel:
       type: object
       properties:
@@ -1920,11 +2027,6 @@ components:
       - start
       type: object
       properties:
-        tags:
-          type: integer
-          description: Tags to apply on this state. A value of 0 should be handled
-            as none (no tags)
-          format: int32
         start:
           type: integer
           description: Start time for this state
@@ -1935,6 +2037,11 @@ components:
           type: string
           description: "Text label to apply to this TimeGraphState if resolution permits.\
             \ Optional, no label is applied if absent"
+        tags:
+          type: integer
+          description: Tags to apply on this state. A value of 0 should be handled
+            as none (no tags)
+          format: int32
         end:
           type: integer
           description: End time for this state
@@ -1952,6 +2059,13 @@ components:
       - filter_expressions_map
       type: object
       properties:
+        strategy:
+          type: string
+          description: Optional parameter that enables the full search (deep search)
+            or not
+          enum:
+          - SAMPLED
+          - DEEP
         filter_expressions_map:
           type: object
           additionalProperties:
@@ -1967,13 +2081,6 @@ components:
           description: "The key of this map can be \"1\" (means DIMMED) or \"4\" (means\
             \ EXCLUDED) and the value is an array of the desired search query (e.g.\
             \ {\"1\": [\"openat\", \"duration>10ms\"]})"
-        strategy:
-          type: string
-          description: Optional parameter that enables the full search (deep search)
-            or not
-          enum:
-          - SAMPLED
-          - DEEP
       description: FilterQueryParameters is used to support search and filter expressions
         for timegraph views
     RequestedParameters:
@@ -2039,6 +2146,14 @@ components:
       - time
       type: object
       properties:
+        destinationId:
+          type: integer
+          description: Destination entry's unique ID (arrow)
+          format: int64
+        entryId:
+          type: integer
+          description: "Entry's unique ID (annotation, arrow)"
+          format: int64
         time:
           type: integer
           description: Element's start time
@@ -2054,14 +2169,6 @@ components:
           type: integer
           description: Element's duration
           format: int64
-        entryId:
-          type: integer
-          description: "Entry's unique ID (annotation, arrow)"
-          format: int64
-        destinationId:
-          type: integer
-          description: Destination entry's unique ID (arrow)
-          format: int64
       description: An element model to be identified
     TooltipParameters:
       required:
@@ -2070,18 +2177,18 @@ components:
       - requested_times
       type: object
       properties:
-        requested_element:
-          $ref: '#/components/schemas/Element'
-        requested_times:
-          type: array
-          items:
-            type: integer
-            format: int64
         requested_items:
           type: array
           items:
             type: integer
             format: int32
+        requested_times:
+          type: array
+          items:
+            type: integer
+            format: int64
+        requested_element:
+          $ref: '#/components/schemas/Element'
     TooltipQueryParameters:
       required:
       - parameters
@@ -2095,28 +2202,28 @@ components:
       - $ref: '#/components/schemas/TreeDataModel'
       - type: object
         properties:
-          start:
-            type: integer
-            description: Beginning of the range for which this entry exists
-            format: int64
           metadata:
             type: object
             additionalProperties:
               type: array
-              description: Optional metadata map for domain specific data for matching data
-                across data providers. Keys for the same data shall be the same across
-                data providers. Only values of type Number or String are allowed.
+              description: Optional metadata map for domain specific data for matching
+                data across data providers. Keys for the same data shall be the same
+                across data providers. Only values of type Number or String are allowed.
                 For each key all values shall have the same type.
               items:
                 type: object
-                description: Optional metadata map for domain specific data for matching data
-                  across data providers. Keys for the same data shall be the same
-                  across data providers. Only values of type Number or String are
-                  allowed. For each key all values shall have the same type.
-            description: Optional metadata map for domain specific data for matching data across
-              data providers. Keys for the same data shall be the same across data
-              providers. Only values of type Number or String are allowed. For each
-              key all values shall have the same type.
+                description: Optional metadata map for domain specific data for matching
+                  data across data providers. Keys for the same data shall be the
+                  same across data providers. Only values of type Number or String
+                  are allowed. For each key all values shall have the same type.
+            description: Optional metadata map for domain specific data for matching
+              data across data providers. Keys for the same data shall be the same
+              across data providers. Only values of type Number or String are allowed.
+              For each key all values shall have the same type.
+          start:
+            type: integer
+            description: Beginning of the range for which this entry exists
+            format: int64
           end:
             type: integer
             description: End of the range for which this entry exists
@@ -2139,85 +2246,6 @@ components:
         properties:
           model:
             $ref: '#/components/schemas/TimeGraphTreeModel'
-    TreeColumnHeader:
-      required:
-      - name
-      type: object
-      properties:
-        name:
-          type: string
-          description: Displayed name for this header
-        dataType:
-          type: string
-          description: "Data type of column. Optional, data type STRING is applied\
-            \ if absent."
-          enum:
-          - NUMBER
-          - BINARY_NUMBER
-          - TIMESTAMP
-          - DURATION
-          - STRING
-          - TIME_RANGE
-        tooltip:
-          type: string
-          description: "Displayed tooltip for this header. Optional, no tooltip is\
-            \ applied if absent."
-    TreeDataModel:
-      required:
-      - id
-      - labels
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Unique id to identify this entry in the backend
-          format: int64
-        hasData:
-          type: boolean
-          description: Whether or not this entry has data
-        style:
-          $ref: '#/components/schemas/OutputElementStyle'
-        parentId:
-          type: integer
-          description: "Unique id to identify this parent's entry, optional if this\
-            \ entry does not have a parent."
-          format: int64
-        labels:
-          type: array
-          description: Array of cell labels to be displayed. The length of the array
-            and the index of each column need to correspond to the header array returned
-            in the tree model.
-          items:
-            type: string
-      description: Base entry returned by tree endpoints
-    TreeEntryModel:
-      required:
-      - entries
-      type: object
-      properties:
-        entries:
-          type: array
-          items:
-            $ref: '#/components/schemas/TreeDataModel'
-        headers:
-          type: array
-          items:
-            $ref: '#/components/schemas/TreeColumnHeader'
-    TreeParameters:
-      type: object
-      properties:
-        requested_times:
-          type: array
-          items:
-            type: integer
-            format: int64
-    TreeQueryParameters:
-      required:
-      - parameters
-      type: object
-      properties:
-        parameters:
-          $ref: '#/components/schemas/TreeParameters'
     SeriesModel:
       required:
       - seriesId
@@ -2227,6 +2255,8 @@ components:
       - yValues
       type: object
       properties:
+        style:
+          $ref: '#/components/schemas/OutputElementStyle'
         seriesId:
           type: integer
           description: Series' ID
@@ -2234,8 +2264,6 @@ components:
         seriesName:
           type: string
           description: Series' name
-        style:
-          $ref: '#/components/schemas/OutputElementStyle'
         xValues:
           type: array
           description: Series' X values
@@ -2271,40 +2299,9 @@ components:
         properties:
           model:
             $ref: '#/components/schemas/XYModel'
-    XYTreeEntry:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/TreeDataModel'
-      - type: object
-        properties:
-          isDefault:
-            type: boolean
-            description: Optional flag to indicate whether or not the entry is a default
-              entry and its xy data should be fetched by default.
-    XYTreeEntryModel:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/TreeEntryModel'
-      - type: object
-        properties:
-          entries:
-            type: array
-            items:
-              $ref: '#/components/schemas/XYTreeEntry'
-    XYTreeResponse:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/GenericResponse'
-      - type: object
-        properties:
-          model:
-            $ref: '#/components/schemas/XYTreeEntryModel'
     Experiment:
       type: object
       properties:
-        name:
-          type: string
-          description: User defined name for the experiment
         traces:
           type: array
           description: The traces encapsulated by this experiment
@@ -2329,6 +2326,9 @@ components:
           type: integer
           description: The experiment's end time
           format: int64
+        name:
+          type: string
+          description: User defined name for the experiment
         UUID:
           type: string
           description: The experiment's unique identifier
@@ -2336,12 +2336,6 @@ components:
     Trace:
       type: object
       properties:
-        name:
-          type: string
-          description: User defined name for the trace
-        path:
-          type: string
-          description: Path to the trace on the server's file system
         nbEvents:
           type: integer
           description: Current number of indexed events in the trace
@@ -2361,6 +2355,18 @@ components:
           type: integer
           description: The trace's end time
           format: int64
+        name:
+          type: string
+          description: User defined name for the trace
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The trace's properties
+          description: The trace's properties
+        path:
+          type: string
+          description: Path to the trace on the server's file system
         UUID:
           type: string
           description: The trace's unique identifier
@@ -2371,9 +2377,6 @@ components:
       - traces
       type: object
       properties:
-        name:
-          type: string
-          description: The name to give this experiment
         traces:
           type: array
           description: The unique identifiers of the traces to encapsulate in this
@@ -2381,6 +2384,9 @@ components:
           items:
             type: string
             format: uuid
+        name:
+          type: string
+          description: The name to give this experiment
     ServerStatus:
       type: object
       properties:
@@ -2396,12 +2402,21 @@ components:
       - version
       type: object
       properties:
-        version:
+        productId:
           type: string
-          description: Version in the format Major.Minor.Micro
+          description: Product identifier for the trace server
         buildTime:
           type: string
           description: "Build time or qualifier of the server version, if available"
+        os:
+          type: string
+          description: Operating system name
+        osArch:
+          type: string
+          description: Architecture of the operating system
+        osVersion:
+          type: string
+          description: Operating system version
         cpuCount:
           type: integer
           description: Number of CPUs available
@@ -2413,32 +2428,23 @@ components:
         launcherName:
           type: string
           description: "Name of the launcher used, if available"
-        os:
+        version:
           type: string
-          description: Operating system name
-        osArch:
-          type: string
-          description: Architecture of the operating system
-        osVersion:
-          type: string
-          description: Operating system version
-        productId:
-          type: string
-          description: Product identifier for the trace server
+          description: Version in the format Major.Minor.Micro
       description: System Information Response
     TraceQueryParameters:
       required:
       - uri
       type: object
       properties:
-        name:
-          type: string
-          description: "The name of the trace in the server, to override the default\
-            \ name"
         typeID:
           type: string
           description: "The trace type's ID, to force the use of a parser / disambiguate\
             \ the trace type"
+        name:
+          type: string
+          description: "The name of the trace in the server, to override the default\
+            \ name"
         uri:
           type: string
           description: URI of the trace
