@@ -59,8 +59,6 @@ tags:
   description: Query XY chart models.
 - name: Bookmarks
   description: How to bookmark areas of interest in the trace.
-- name: Data Tree
-  description: Learn about querying generic data tree models.
 - name: Filters
   description: How to filter and query.
 - name: Features
