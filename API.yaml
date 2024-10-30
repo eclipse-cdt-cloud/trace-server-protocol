@@ -2569,12 +2569,6 @@ components:
     Trace:
       type: object
       properties:
-        name:
-          type: string
-          description: User defined name for the trace
-        path:
-          type: string
-          description: Path to the trace on the server's file system
         nbEvents:
           type: integer
           description: Current number of indexed events in the trace
@@ -2594,6 +2588,18 @@ components:
           type: integer
           description: The trace's end time
           format: int64
+        name:
+          type: string
+          description: User defined name for the trace
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+            description: The trace's properties
+          description: The trace's properties
+        path:
+          type: string
+          description: Path to the trace on the server's file system
         UUID:
           type: string
           description: The trace's unique identifier
