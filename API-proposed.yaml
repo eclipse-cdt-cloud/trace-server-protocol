@@ -45,6 +45,8 @@ tags:
 - name: Identifier
   description: Retrieve information about the server and the system it is running
     on.
+- name: Output Configurations
+  description: Manage configuration source types and configurations for given outputs.
 - name: Styles
   description: Retrieve styles for different outputs.
 - name: TimeGraph
@@ -311,6 +313,145 @@ paths:
             application/json:
               schema:
                 type: string
+  /experiments/{expUUID}/outputs/{outputId}:
+    get:
+      tags:
+      - Experiments
+      summary: Get the output descriptor for this experiment and output
+      operationId: getProvider
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        description: ID of the output provider to query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Returns the output provider descriptor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProvider'
+        "404":
+          description: Experiment or output provider not found
+          content:
+            application/json:
+              schema:
+                type: string
+    post:
+      tags:
+      - Output Configurations
+      summary: Get a derived data provider from a input configuration
+      operationId: createDataProvider
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        description: ID of the output provider to query
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Query parameters to create a configuration instance. Provide
+          all query parameter keys and values as specified in the corresponding configuration
+          source type.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OutputConfigurationQueryParameters'
+            example:
+              name: Follow My-thread
+              description: My-thread on even CPUs
+              typeId: my.config.source.type.id
+              parameters:
+                threads: My-thread
+                cpus:
+                - 0
+                - 2
+                - 4
+                - 6
+        required: true
+      responses:
+        "200":
+          description: Returns a list of output provider descriptors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DataProvider'
+        "400":
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                type: string
+        "404":
+          description: "Experiment, output provider or configuration type not found"
+          content:
+            application/json:
+              schema:
+                type: string
+  /experiments/{expUUID}/outputs/{outputId}/{derivedOutputId}:
+    delete:
+      tags:
+      - Output Configurations
+      summary: Delete a configuration instance of a given configuration type
+      operationId: deleteDerivedOutput
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        description: ID of the output provider to query
+        required: true
+        schema:
+          type: string
+      - name: derivedOutputId
+        in: path
+        description: ID of the output provider to query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The derived data provider (and it's configuration) was successfully
+            deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuration'
+        "400":
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                type: string
+        "404":
+          description: "Experiment, output provider or configuration type not found"
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments/{expUUID}/outputs/{outputId}/annotations:
     get:
       tags:
@@ -547,6 +688,88 @@ paths:
             application/json:
               schema:
                 type: string
+  /experiments/{expUUID}/outputs/{outputId}/configTypes/{typeId}:
+    get:
+      tags:
+      - Output Configurations
+      summary: Get a single configuration source type defined on the server for a
+        given data provider and experiment.
+      operationId: getConfigurationType_1
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        description: ID of the output provider to query
+        required: true
+        schema:
+          type: string
+      - name: typeId
+        in: path
+        description: The configuration source type ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Returns a single configuration source type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigurationSourceType'
+        "400":
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                type: string
+        "404":
+          description: "Experiment, output provider or configuration type not found"
+          content:
+            application/json:
+              schema:
+                type: string
+  /experiments/{expUUID}/outputs/{outputId}/configTypes:
+    get:
+      tags:
+      - Output Configurations
+      summary: Get the list of configuration types defined on the server for a given
+        output and experiment
+      operationId: getConfigurationTypes_1
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        description: ID of the output provider to query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Returns a list of configuration types that this output supports.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConfigurationSourceType'
+        "404":
+          description: "Experiment, output provider or configuration type not found"
+          content:
+            application/json:
+              schema:
+                type: string
   /experiments/{expUUID}/outputs/data/{outputId}/tree:
     post:
       tags:
@@ -713,39 +936,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MarkerSetsResponse'
-        "404":
-          description: Experiment or output provider not found
-          content:
-            application/json:
-              schema:
-                type: string
-  /experiments/{expUUID}/outputs/{outputId}:
-    get:
-      tags:
-      - Experiments
-      summary: Get the output descriptor for this experiment and output
-      operationId: getProvider
-      parameters:
-      - name: expUUID
-        in: path
-        description: UUID of the experiment to query
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: outputId
-        in: path
-        description: ID of the output provider to query
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Returns the output provider descriptor
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DataProvider'
         "404":
           description: Experiment or output provider not found
           content:
@@ -2223,6 +2413,51 @@ components:
               of the corresponding ConfigurationTypeDescriptor.
           description: Parameters as specified in the schema or list of ConfigurationParameterDescriptor
             of the corresponding ConfigurationTypeDescriptor.
+    DataProvider:
+      type: object
+      properties:
+        parentId:
+          type: string
+          description: Optional parent Id for grouping purposes for example of derived
+            data providers.
+        description:
+          type: string
+          description: Describes the output provider's features
+        name:
+          type: string
+          description: The human readable name
+        id:
+          type: string
+          description: The output provider's ID
+        type:
+          type: string
+          description: "Type of data returned by this output. Serves as a hint to\
+            \ determine what kind of view should be used for this output (ex. XY,\
+            \ Time Graph, Table, etc..). Providers of type TREE_TIME_XY and TIME_GRAPH\
+            \ can be grouped under the same time axis. Providers of type DATA_TREE\
+            \ only provide a tree with columns and don't have any XY nor time graph\
+            \ data associated with it. Providers of type NONE have no data to visualize.\
+            \ Can be used for grouping purposes and/or as data provider configurator."
+          enum:
+          - TABLE
+          - TREE_TIME_XY
+          - TIME_GRAPH
+          - DATA_TREE
+          - NONE
+        configuration:
+          $ref: '#/components/schemas/Configuration'
+    OutputConfigurationQueryParameters:
+      required:
+      - typeId
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ConfigurationQueryParameters'
+      - type: object
+        properties:
+          typeId:
+            type: string
+            description: TypeId of the configuration according to the corresponding
+              ConfigurationTypeDescriptor.
     AnnotationCategoriesModel:
       type: object
       properties:
@@ -2582,31 +2817,6 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/MarkerSet'
-    DataProvider:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The human readable name
-        id:
-          type: string
-          description: The output provider's ID
-        type:
-          type: string
-          description: "Type of data returned by this output. Serves as a hint to\
-            \ determine what kind of view should be used for this output (ex. XY,\
-            \ Time Graph, Table, etc..). Providers of type TREE_TIME_XY and TIME_GRAPH\
-            \ can be grouped under the same time axis. Providers of type DATA_TREE\
-            \ only provide a tree with columns and don't have any XY nor time graph\
-            \ data associated with it."
-          enum:
-          - TABLE
-          - TREE_TIME_XY
-          - TIME_GRAPH
-          - DATA_TREE
-        description:
-          type: string
-          description: Describes the output provider's features
     TimeGraphModel:
       type: object
       properties:
