@@ -26,7 +26,7 @@ info:
   license:
     name: Apache 2
     url: http://www.apache.org/licenses/
-  version: 0.1.0
+  version: 0.2.0
 servers:
 - url: https://localhost:8080/tsp/api
 tags:
@@ -2631,6 +2631,7 @@ components:
       required:
       - os
       - productId
+      - tspVersion
       - version
       type: object
       properties:
@@ -2660,6 +2661,9 @@ components:
         productId:
           type: string
           description: Product identifier for the trace server
+        tspVersion:
+          type: string
+          description: The TSP version that the trace server supports
         version:
           type: string
           description: Version in the format Major.Minor.Micro
