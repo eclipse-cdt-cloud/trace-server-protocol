@@ -125,6 +125,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ConfigurationQueryParameters'
             example:
+              name: test.xml
+              description: Configuration with test.xml
               parameters:
                 path: /home/user/test.xml
         required: true
@@ -278,6 +280,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ConfigurationQueryParameters'
             example:
+              name: test.xml
+              description: Configuration with test.xml
               parameters:
                 path: /home/user/test.xml
         required: true
@@ -2147,10 +2151,11 @@ components:
           type: object
           additionalProperties:
             type: object
-            description: Optional informational parameters to return. Can be used
-              to show more details to users of the configuration instance.
-          description: Optional informational parameters to return. Can be used to
-            show more details to users of the configuration instance.
+            description: Optional parameters representing the configuration parameters
+              used to create this configuration.
+          description: Optional parameters representing the configuration parameters
+            used to create this configuration.
+      description: Configuration instance describing user provided configuration parameters.
     ConfigurationParameterDescriptor:
       type: object
       properties:
@@ -2200,17 +2205,24 @@ components:
         not used.
     ConfigurationQueryParameters:
       required:
+      - name
       - parameters
       type: object
       properties:
+        description:
+          type: string
+          description: Optional description of the configuration.
+        name:
+          type: string
+          description: Unique name of the configuration.
         parameters:
           type: object
           additionalProperties:
             type: object
-            description: Parameters as specified in corresponding ConfigurationTypeDescriptor.
-              Use key `path` for file URI string values.
-          description: Parameters as specified in corresponding ConfigurationTypeDescriptor.
-            Use key `path` for file URI string values.
+            description: Parameters as specified in the schema or list of ConfigurationParameterDescriptor
+              of the corresponding ConfigurationTypeDescriptor.
+          description: Parameters as specified in the schema or list of ConfigurationParameterDescriptor
+            of the corresponding ConfigurationTypeDescriptor.
     AnnotationCategoriesModel:
       type: object
       properties:
