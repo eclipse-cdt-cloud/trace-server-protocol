@@ -347,7 +347,7 @@ paths:
       tags:
       - Output Configurations
       summary: Get a derived data provider from a input configuration
-      operationId: createDataProvider
+      operationId: createProvider
       parameters:
       - name: expUUID
         in: path
@@ -358,7 +358,7 @@ paths:
           format: uuid
       - name: outputId
         in: path
-        description: ID of the output provider to query
+        description: ID of the output provider to create a derived output from
         required: true
         schema:
           type: string
@@ -384,13 +384,11 @@ paths:
         required: true
       responses:
         "200":
-          description: Returns a list of output provider descriptors
+          description: Returns the derived data provider descriptor.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DataProvider'
+                $ref: '#/components/schemas/DataProvider'
         "400":
           description: Invalid query parameters
           content:
@@ -407,8 +405,8 @@ paths:
     delete:
       tags:
       - Output Configurations
-      summary: Delete a configuration instance of a given configuration type
-      operationId: deleteDerivedOutput
+      summary: Delete a derived output (and its configuration).
+      operationId: deleteDerivedProvider
       parameters:
       - name: expUUID
         in: path
@@ -419,24 +417,24 @@ paths:
           format: uuid
       - name: outputId
         in: path
-        description: ID of the output provider to query
+        description: ID of the parent output provider
         required: true
         schema:
           type: string
       - name: derivedOutputId
         in: path
-        description: ID of the output provider to query
+        description: ID of the derived output provider
         required: true
         schema:
           type: string
       responses:
         "200":
-          description: The derived data provider (and it's configuration) was successfully
-            deleted
+          description: Returns the deleted derived data provider descriptor. The derived
+            data provider (and its configuration) was successfully deleted.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Configuration'
+                $ref: '#/components/schemas/DataProvider'
         "400":
           description: Invalid query parameters
           content:
