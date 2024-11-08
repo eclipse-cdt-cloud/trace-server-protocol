@@ -1758,9 +1758,9 @@ components:
       - $ref: '#/components/schemas/ConfigurationQueryParameters'
       - type: object
         properties:
-          typeId:
+          sourceTypeId:
             type: string
-            description: TypeId of the configuration according to the corresponding
+            description: The type ID of the corresponding ConfigurationSourceType defined by this output.
               ConfigurationTypeDescriptor.
     AnnotationCategoriesModel:
       type: object
