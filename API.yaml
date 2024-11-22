@@ -26,12 +26,14 @@ info:
   license:
     name: Apache 2
     url: http://www.apache.org/licenses/
-  version: 0.2.0
+  version: 0.3.0
 servers:
 - url: https://localhost:8080/tsp/api
 tags:
 - name: Annotations
   description: Retrieve annotations for different outputs.
+- name: Bookmarks
+  description: Bookmark areas of interest in the experiment.
 - name: Configurations
   description: Manage configuration source types and configurations.
 - name: Diagnostic
@@ -57,6 +59,185 @@ tags:
 - name: XY
   description: Query XY chart models.
 paths:
+  /experiments/{expUUID}/bookmarks:
+    get:
+      tags:
+      - Bookmarks
+      summary: Get all bookmarks for an experiment
+      operationId: getBookmarks
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Returns the list of bookmarks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Bookmark'
+        "404":
+          description: No such experiment
+          content:
+            application/json:
+              schema:
+                type: string
+    post:
+      tags:
+      - Bookmarks
+      summary: Create a new bookmark in an experiment
+      operationId: createBookmark
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookmarkQueryParameters'
+        required: true
+      responses:
+        "200":
+          description: Bookmark created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bookmark'
+        "400":
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                type: string
+        "404":
+          description: No such experiment
+          content:
+            application/json:
+              schema:
+                type: string
+  /experiments/{expUUID}/bookmarks/{bookmarkUUID}:
+    get:
+      tags:
+      - Bookmarks
+      summary: Get a specific bookmark from an experiment
+      operationId: getBookmark
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: bookmarkUUID
+        in: path
+        description: Bookmark UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Returns the bookmark
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bookmark'
+        "404":
+          description: Experiment or bookmark not found
+          content:
+            application/json:
+              schema:
+                type: string
+    put:
+      tags:
+      - Bookmarks
+      summary: Update an existing bookmark in an experiment
+      operationId: updateBookmark
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: bookmarkUUID
+        in: path
+        description: Bookmark UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookmarkQueryParameters'
+        required: true
+      responses:
+        "200":
+          description: Bookmark updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bookmark'
+        "400":
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                type: string
+        "404":
+          description: Experiment or bookmark not found
+          content:
+            application/json:
+              schema:
+                type: string
+    delete:
+      tags:
+      - Bookmarks
+      summary: Delete a bookmark from an experiment
+      operationId: deleteBookmark
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: bookmarkUUID
+        in: path
+        description: Bookmark UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Bookmark deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bookmark'
+        "404":
+          description: Experiment or bookmark not found
+          content:
+            application/json:
+              schema:
+                type: string
   /config/types/{typeId}/configs/{configId}:
     get:
       tags:
@@ -1626,6 +1807,50 @@ paths:
                 type: string
 components:
   schemas:
+    Bookmark:
+      type: object
+      properties:
+        name:
+          type: string
+          description: User defined name for the bookmark
+        end:
+          type: integer
+          description: The bookmark's end time
+          format: int64
+        start:
+          type: integer
+          description: The bookmark's start time
+          format: int64
+        uuid:
+          type: string
+          description: The bookmark's unique identifier
+          format: uuid
+    BookmarkParameters:
+      required:
+      - end
+      - name
+      - start
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name to give this bookmark
+        end:
+          type: integer
+          description: The bookmark's end time
+          format: int64
+        start:
+          type: integer
+          description: The bookmark's start time
+          format: int64
+      description: The bookmark parameters
+    BookmarkQueryParameters:
+      required:
+      - parameters
+      type: object
+      properties:
+        parameters:
+          $ref: '#/components/schemas/BookmarkParameters'
     Configuration:
       type: object
       properties:
