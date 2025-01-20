@@ -2513,7 +2513,7 @@ components:
         \ If absent, all capabilities are 'false'."
     OutputConfigurationQueryParameters:
       required:
-      - typeId
+      - sourceTypeId
       type: object
       allOf:
       - $ref: '#/components/schemas/ConfigurationQueryParameters'
@@ -2521,8 +2521,8 @@ components:
         properties:
           sourceTypeId:
             type: string
-            description: The type ID of the corresponding ConfigurationSourceType defined by this output.
-              ConfigurationTypeDescriptor.
+            description: The type ID of the corresponding ConfigurationSourceType
+              defined by this output.
     AnnotationCategoriesModel:
       type: object
       properties:
