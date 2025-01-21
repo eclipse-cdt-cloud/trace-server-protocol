@@ -2496,6 +2496,21 @@ components:
           - NONE
         configuration:
           $ref: '#/components/schemas/Configuration'
+        capabilities:
+          $ref: '#/components/schemas/OutputCapabilities'
+    OutputCapabilities:
+      type: object
+      properties:
+        canDelete:
+          type: boolean
+          description: "Optional, whether this output (data provider) can be deleted.\
+            \ 'false' if absent."
+        canCreate:
+          type: boolean
+          description: "Optional, whether this output (data provider) can create derived\
+            \ outputs (data providers). 'false' if absent."
+      description: "Optional output capabilities, such as 'canCreate' and 'canDelete'.\
+        \ If absent, all capabilities are 'false'."
     OutputConfigurationQueryParameters:
       required:
       - typeId
