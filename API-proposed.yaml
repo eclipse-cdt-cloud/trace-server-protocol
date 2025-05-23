@@ -2621,16 +2621,24 @@ components:
         values:
           type: object
           additionalProperties:
-            type: object
-            description: Style values or empty map if there are no values. Keys and
-              values are defined in https://git.eclipse.org/r/plugins/gitiles/tracecompass/org.eclipse.tracecompass/+/refs/heads/master/tmf/org.eclipse.tracecompass.tmf.core/src/org/eclipse/tracecompass/tmf/core/model/StyleProperties.java
+            $ref: '#/components/schemas/StyleValue'
           description: Style values or empty map if there are no values. Keys and
-            values are defined in https://git.eclipse.org/r/plugins/gitiles/tracecompass/org.eclipse.tracecompass/+/refs/heads/master/tmf/org.eclipse.tracecompass.tmf.core/src/org/eclipse/tracecompass/tmf/core/model/StyleProperties.java
+            values are defined in https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/blob/master/tmf/org.eclipse.tracecompass.tmf.core/src/org/eclipse/tracecompass/tmf/core/model/StyleProperties.java
       description: "Represents the style on an element (ex. Entry, TimeGraphState,\
         \ ...) returned by any output. Supports style inheritance. To avoid having\
         \ too many styles, the element style can have a parent style and will have\
         \ all the same style property values as the parent, and can add or override\
         \ style properties."
+    StyleValue:
+      type: object
+      description: Supported types of a style value.
+      oneOf:
+      - type: string
+      - type: number
+        format: float
+      - type: integer
+        format: int32
+      - type: boolean
     AnnotationsParameters:
       required:
       - requested_timerange
