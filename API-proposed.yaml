@@ -26,7 +26,7 @@ info:
   license:
     name: Apache 2
     url: http://www.apache.org/licenses/
-  version: 0.3.0
+  version: 0.3.1
 servers:
 - url: https://localhost:8080/tsp/api
 tags:
@@ -2856,11 +2856,8 @@ components:
     TreeParameters:
       type: object
       properties:
-        requested_times:
-          type: array
-          items:
-            type: integer
-            format: int64
+        requested_timerange:
+          $ref: '#/components/schemas/TimeRange'
     TreeQueryParameters:
       required:
       - parameters
@@ -3265,8 +3262,8 @@ components:
           type: array
           description: Series' Y values
           items:
-            type: integer
-            format: int64
+            type: number
+            format: double
       description: This model includes the series output style values.
     XYModel:
       required:
@@ -3362,7 +3359,7 @@ components:
           type: string
           description: The trace's unique identifier
           format: uuid
-    ExperimentQueryParameters:
+    ExperimentParameters:
       required:
       - name
       - traces
@@ -3378,6 +3375,13 @@ components:
         name:
           type: string
           description: The name to give this experiment
+    ExperimentQueryParameters:
+      required:
+      - parameters
+      type: object
+      properties:
+        parameters:
+          $ref: '#/components/schemas/ExperimentParameters'
     ServerStatus:
       type: object
       properties:
@@ -3427,7 +3431,7 @@ components:
           type: string
           description: Version in the format Major.Minor.Micro
       description: System Information Response
-    TraceQueryParameters:
+    TraceParameters:
       required:
       - uri
       type: object
@@ -3443,6 +3447,13 @@ components:
         uri:
           type: string
           description: URI of the trace
+    TraceQueryParameters:
+      required:
+      - parameters
+      type: object
+      properties:
+        parameters:
+          $ref: '#/components/schemas/TraceParameters'
     Filter:
       type: object
       properties:
