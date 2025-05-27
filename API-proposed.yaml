@@ -2803,14 +2803,14 @@ components:
           description: Whether or not this entry has data
         parentId:
           type: integer
-          description: "Unique id to identify this parent's entry, optional if this\
-            \ entry does not have a parent."
+          description: "Optional unique ID to identify this entry's parent. If the\
+            \ parent ID is -1 or omitted, this entry has no parent."
           format: int64
         style:
           $ref: '#/components/schemas/OutputElementStyle'
         id:
           type: integer
-          description: Unique id to identify this entry in the backend
+          description: Unique ID to identify this entry in the backend
           format: int64
         labels:
           type: array
