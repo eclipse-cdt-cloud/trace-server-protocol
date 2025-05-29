@@ -2114,10 +2114,9 @@ components:
       oneOf:
       - type: string
       - type: number
-        format: float
+        format: double
       - type: integer
         format: int32
-      - type: boolean
     AnnotationsParameters:
       required:
       - requested_timerange
