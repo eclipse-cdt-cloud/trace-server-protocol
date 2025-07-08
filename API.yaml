@@ -1936,10 +1936,7 @@ components:
           description: Unique name of the configuration.
         parameters:
           type: object
-          additionalProperties:
-            type: object
-            description: Parameters as specified in the schema or list of ConfigurationParameterDescriptor
-              of the corresponding ConfigurationTypeDescriptor.
+          additionalProperties: true
           description: Parameters as specified in the schema or list of ConfigurationParameterDescriptor
             of the corresponding ConfigurationTypeDescriptor.
     DataProvider:
