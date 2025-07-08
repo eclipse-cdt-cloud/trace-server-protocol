@@ -81,7 +81,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Bookmark'
+                  $ref: "#/components/schemas/Bookmark"
         "404":
           description: No such experiment
           content:
@@ -105,7 +105,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BookmarkQueryParameters'
+              $ref: "#/components/schemas/BookmarkQueryParameters"
         required: true
       responses:
         "200":
@@ -113,7 +113,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Bookmark'
+                $ref: "#/components/schemas/Bookmark"
         "400":
           description: Invalid query parameters
           content:
@@ -153,7 +153,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Bookmark'
+                $ref: "#/components/schemas/Bookmark"
         "404":
           description: Experiment or bookmark not found
           content:
@@ -184,7 +184,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BookmarkQueryParameters'
+              $ref: "#/components/schemas/BookmarkQueryParameters"
         required: true
       responses:
         "200":
@@ -192,7 +192,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Bookmark'
+                $ref: "#/components/schemas/Bookmark"
         "400":
           description: Invalid query parameters
           content:
@@ -231,7 +231,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Bookmark'
+                $ref: "#/components/schemas/Bookmark"
         "404":
           description: Experiment or bookmark not found
           content:
@@ -263,7 +263,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Configuration'
+                $ref: "#/components/schemas/Configuration"
         "404":
           description: No such configuration source type or configuration instance
           content:
@@ -295,7 +295,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConfigurationQueryParameters'
+              $ref: "#/components/schemas/ConfigurationQueryParameters"
             example:
               name: test.xml
               description: Configuration with test.xml
@@ -308,7 +308,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Configuration'
+                $ref: "#/components/schemas/Configuration"
         "400":
           description: Invalid query parameters
           content:
@@ -352,7 +352,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Configuration'
+                $ref: "#/components/schemas/Configuration"
         "404":
           description: No such configuration source type or configuration instance
           content:
@@ -385,7 +385,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConfigurationSourceType'
+                $ref: "#/components/schemas/ConfigurationSourceType"
   /config/types:
     get:
       tags:
@@ -400,7 +400,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ConfigurationSourceType'
+                  $ref: "#/components/schemas/ConfigurationSourceType"
   /config/types/{typeId}/configs:
     get:
       tags:
@@ -423,7 +423,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Configuration'
+                  $ref: "#/components/schemas/Configuration"
         "404":
           description: No such configuration source type or configuration instance
           content:
@@ -450,7 +450,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConfigurationQueryParameters'
+              $ref: "#/components/schemas/ConfigurationQueryParameters"
             example:
               name: test.xml
               description: Configuration with test.xml
@@ -463,7 +463,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Configuration'
+                $ref: "#/components/schemas/Configuration"
         "400":
           description: Invalid query parameters
           content:
@@ -509,7 +509,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DataProvider'
+                $ref: "#/components/schemas/DataProvider"
         "404":
           description: Experiment or output provider not found
           content:
@@ -542,7 +542,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OutputConfigurationQueryParameters'
+              $ref: "#/components/schemas/OutputConfigurationQueryParameters"
             example:
               name: Follow My-thread
               description: My-thread on even CPUs
@@ -561,7 +561,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DataProvider'
+                $ref: "#/components/schemas/DataProvider"
         "400":
           description: Invalid query parameters
           content:
@@ -607,7 +607,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DataProvider'
+                $ref: "#/components/schemas/DataProvider"
         "400":
           description: Invalid query parameters
           content:
@@ -652,7 +652,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AnnotationCategoriesResponse'
+                $ref: "#/components/schemas/AnnotationCategoriesResponse"
         "400":
           description: Missing parameter outputId
           content:
@@ -700,7 +700,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AnnotationsQueryParameters'
+              $ref: "#/components/schemas/AnnotationsQueryParameters"
             example:
               parameters:
                 requested_timerange:
@@ -721,7 +721,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AnnotationResponse'
+                $ref: "#/components/schemas/AnnotationResponse"
         "400":
           description: Missing query parameters
           content:
@@ -768,7 +768,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ArrowsQueryParameters'
+              $ref: "#/components/schemas/ArrowsQueryParameters"
             example:
               parameters:
                 requested_timerange:
@@ -782,7 +782,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TimeGraphArrowsResponse'
+                $ref: "#/components/schemas/TimeGraphArrowsResponse"
         "400":
           description: Missing query parameters
           content:
@@ -827,7 +827,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OptionalQueryParameters'
+              $ref: "#/components/schemas/OptionalQueryParameters"
             example:
               parameters: {}
         required: true
@@ -837,7 +837,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TableColumnHeadersResponse'
+                $ref: "#/components/schemas/TableColumnHeadersResponse"
         "400":
           description: Invalid query parameters
           content:
@@ -889,7 +889,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConfigurationSourceType'
+                $ref: "#/components/schemas/ConfigurationSourceType"
         "400":
           description: Invalid query parameters
           content:
@@ -931,7 +931,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ConfigurationSourceType'
+                  $ref: "#/components/schemas/ConfigurationSourceType"
         "404":
           description: "Experiment, output provider or configuration type not found"
           content:
@@ -967,7 +967,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TreeQueryParameters'
+              $ref: "#/components/schemas/TreeQueryParameters"
             example:
               parameters:
                 requested_timerange:
@@ -982,7 +982,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/XYTreeResponse'
+                $ref: "#/components/schemas/XYTreeResponse"
         "400":
           description: Invalid query parameters
           content:
@@ -1039,7 +1039,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LinesQueryParameters'
+              $ref: "#/components/schemas/LinesQueryParameters"
             example:
               parameters:
                 requested_table_index: 0
@@ -1058,7 +1058,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VirtualTableResponse'
+                $ref: "#/components/schemas/VirtualTableResponse"
         "400":
           description: Invalid query parameters
           content:
@@ -1103,7 +1103,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MarkerSetsResponse'
+                $ref: "#/components/schemas/MarkerSetsResponse"
         "404":
           description: Experiment or output provider not found
           content:
@@ -1132,7 +1132,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DataProvider'
+                  $ref: "#/components/schemas/DataProvider"
         "404":
           description: Experiment or output provider not found
           content:
@@ -1181,7 +1181,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RequestedQueryParameters'
+              $ref: "#/components/schemas/RequestedQueryParameters"
             example:
               parameters:
                 requested_timerange:
@@ -1204,7 +1204,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TimeGraphStatesResponse'
+                $ref: "#/components/schemas/TimeGraphStatesResponse"
         "400":
           description: Missing query parameters
           content:
@@ -1248,7 +1248,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OptionalQueryParameters'
+              $ref: "#/components/schemas/OptionalQueryParameters"
             example:
               parameters: {}
         required: true
@@ -1259,7 +1259,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StylesResponse'
+                $ref: "#/components/schemas/StylesResponse"
         "400":
           description: Missing query parameters
           content:
@@ -1307,7 +1307,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TooltipQueryParameters'
+              $ref: "#/components/schemas/TooltipQueryParameters"
             example:
               parameters:
                 requested_times:
@@ -1325,7 +1325,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TimeGraphTooltipResponse'
+                $ref: "#/components/schemas/TimeGraphTooltipResponse"
         "400":
           description: Missing query parameters
           content:
@@ -1373,7 +1373,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TreeQueryParameters'
+              $ref: "#/components/schemas/TreeQueryParameters"
             example:
               parameters:
                 requested_timerange:
@@ -1388,7 +1388,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TimeGraphTreeResponse'
+                $ref: "#/components/schemas/TimeGraphTreeResponse"
         "400":
           description: Invalid query parameters
           content:
@@ -1436,7 +1436,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RequestedQueryParameters'
+              $ref: "#/components/schemas/RequestedQueryParameters"
             example:
               parameters:
                 requested_timerange:
@@ -1453,7 +1453,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/XYResponse'
+                $ref: "#/components/schemas/XYResponse"
         "400":
           description: Missing query parameters
           content:
@@ -1501,7 +1501,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TreeQueryParameters'
+              $ref: "#/components/schemas/TreeQueryParameters"
             example:
               parameters:
                 requested_timerange:
@@ -1515,7 +1515,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/XYTreeResponse'
+                $ref: "#/components/schemas/XYTreeResponse"
         "400":
           description: Invalid query parameters
           content:
@@ -1554,7 +1554,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Experiment'
+                $ref: "#/components/schemas/Experiment"
         "404":
           description: No such experiment
           content:
@@ -1580,7 +1580,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Experiment'
+                $ref: "#/components/schemas/Experiment"
         "404":
           description: No such experiment
           content:
@@ -1601,7 +1601,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Experiment'
+                  $ref: "#/components/schemas/Experiment"
     post:
       tags:
       - Experiments
@@ -1611,7 +1611,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ExperimentQueryParameters'
+              $ref: "#/components/schemas/ExperimentQueryParameters"
         required: true
       responses:
         "200":
@@ -1619,7 +1619,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Experiment'
+                $ref: "#/components/schemas/Experiment"
         "204":
           description: The experiment has at least one trace which hasn't been created
             yet
@@ -1657,7 +1657,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ServerStatus'
+                $ref: "#/components/schemas/ServerStatus"
         "503":
           description: The trace server is unavailable or in maintenance and cannot
             receive requests
@@ -1673,7 +1673,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ServerInfoResponse'
+                $ref: "#/components/schemas/ServerInfoResponse"
   /traces/{uuid}:
     get:
       tags:
@@ -1694,7 +1694,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Trace'
+                $ref: "#/components/schemas/Trace"
         "404":
           description: No such trace
           content:
@@ -1720,7 +1720,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Trace'
+                $ref: "#/components/schemas/Trace"
         "404":
           description: No such trace
           content:
@@ -1748,7 +1748,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Trace'
+                  $ref: "#/components/schemas/Trace"
     post:
       tags:
       - Traces
@@ -1760,7 +1760,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TraceQueryParameters'
+              $ref: "#/components/schemas/TraceQueryParameters"
         required: true
       responses:
         "200":
@@ -1768,7 +1768,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Trace'
+                $ref: "#/components/schemas/Trace"
         "400":
           description: Missing query parameters
           content:
@@ -1810,13 +1810,13 @@ components:
     Bookmark:
       type: object
       properties:
-        name:
-          type: string
-          description: User defined name for the bookmark
         end:
           type: integer
           description: The bookmark's end time
           format: int64
+        name:
+          type: string
+          description: User defined name for the bookmark
         start:
           type: integer
           description: The bookmark's start time
@@ -1832,13 +1832,13 @@ components:
       - start
       type: object
       properties:
-        name:
-          type: string
-          description: The name to give this bookmark
         end:
           type: integer
           description: The bookmark's end time
           format: int64
+        name:
+          type: string
+          description: The name to give this bookmark
         start:
           type: integer
           description: The bookmark's start time
@@ -1850,7 +1850,7 @@ components:
       type: object
       properties:
         parameters:
-          $ref: '#/components/schemas/BookmarkParameters'
+          $ref: "#/components/schemas/BookmarkParameters"
     Configuration:
       type: object
       properties:
@@ -1903,18 +1903,18 @@ components:
             when creating or updating a configuration instance of this type. Use this
             instead of schema. Omit if not used.
           items:
-            $ref: '#/components/schemas/ConfigurationParameterDescriptor'
+            $ref: "#/components/schemas/ConfigurationParameterDescriptor"
         description:
           type: string
           description: Describes the configuration source type
-        schema:
-          $ref: '#/components/schemas/OptionalSchema'
         name:
           type: string
           description: The human readable name
         id:
           type: string
           description: The unique ID of the configuration source type
+        schema:
+          $ref: "#/components/schemas/OptionalSchema"
     OptionalSchema:
       type: object
       description: A JSON object that describes a JSON schema for parameters that
@@ -1974,9 +1974,9 @@ components:
           - DATA_TREE
           - NONE
         configuration:
-          $ref: '#/components/schemas/Configuration'
+          $ref: "#/components/schemas/Configuration"
         capabilities:
-          $ref: '#/components/schemas/OutputCapabilities'
+          $ref: "#/components/schemas/OutputCapabilities"
     OutputCapabilities:
       type: object
       properties:
@@ -1995,7 +1995,7 @@ components:
       - sourceTypeId
       type: object
       allOf:
-      - $ref: '#/components/schemas/ConfigurationQueryParameters'
+      - $ref: "#/components/schemas/ConfigurationQueryParameters"
       - type: object
         properties:
           sourceTypeId:
@@ -2015,11 +2015,11 @@ components:
     AnnotationCategoriesResponse:
       type: object
       allOf:
-      - $ref: '#/components/schemas/GenericResponse'
+      - $ref: "#/components/schemas/GenericResponse"
       - type: object
         properties:
           model:
-            $ref: '#/components/schemas/AnnotationCategoriesModel'
+            $ref: "#/components/schemas/AnnotationCategoriesModel"
     GenericResponse:
       type: object
       properties:
@@ -2042,13 +2042,16 @@ components:
       - type
       type: object
       properties:
-        style:
-          $ref: '#/components/schemas/OutputElementStyle'
         entryId:
           type: integer
           description: Entry's unique ID or -1 if annotation not associated with an
             entry
           format: int64
+        style:
+          $ref: "#/components/schemas/OutputElementStyle"
+        label:
+          type: string
+          description: Text label of this annotation
         type:
           type: string
           description: Type of annotation indicating its location
@@ -2063,9 +2066,6 @@ components:
           type: integer
           description: Duration of this annotation
           format: int64
-        label:
-          type: string
-          description: Text label of this annotation
       description: An annotation is used to mark an interesting area at a given time
         or time range
     AnnotationModel:
@@ -2077,17 +2077,17 @@ components:
             type: array
             description: Map of annotations where the keys are categories
             items:
-              $ref: '#/components/schemas/Annotation'
+              $ref: "#/components/schemas/Annotation"
           description: Map of annotations where the keys are categories
       description: Model returned by outputs that contains annotations per category
     AnnotationResponse:
       type: object
       allOf:
-      - $ref: '#/components/schemas/GenericResponse'
+      - $ref: "#/components/schemas/GenericResponse"
       - type: object
         properties:
           model:
-            $ref: '#/components/schemas/AnnotationModel'
+            $ref: "#/components/schemas/AnnotationModel"
     OutputElementStyle:
       type: object
       properties:
@@ -2100,7 +2100,7 @@ components:
         values:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/StyleValue'
+            $ref: "#/components/schemas/StyleValue"
           description: Style values or empty map if there are no values. Keys and
             values are defined in https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/blob/master/tmf/org.eclipse.tracecompass.tmf.core/src/org/eclipse/tracecompass/tmf/core/model/StyleProperties.java
       description: "Represents the style on an element (ex. Entry, TimeGraphState,\
@@ -2122,26 +2122,26 @@ components:
       - requested_timerange
       type: object
       properties:
-        requested_marker_categories:
-          type: array
-          items:
-            type: string
-        requested_marker_set:
-          type: string
         requested_timerange:
-          $ref: '#/components/schemas/TimeRange'
+          $ref: "#/components/schemas/TimeRange"
         requested_items:
           type: array
           items:
             type: integer
             format: int32
+        requested_marker_set:
+          type: string
+        requested_marker_categories:
+          type: array
+          items:
+            type: string
     AnnotationsQueryParameters:
       required:
       - parameters
       type: object
       properties:
         parameters:
-          $ref: '#/components/schemas/AnnotationsParameters'
+          $ref: "#/components/schemas/AnnotationsParameters"
     TimeRange:
       required:
       - end
@@ -2178,40 +2178,40 @@ components:
           type: integer
           description: End time for this arrow
           format: int64
-        start:
-          type: integer
-          description: Start time for this arrow
-          format: int64
         style:
-          $ref: '#/components/schemas/OutputElementStyle'
+          $ref: "#/components/schemas/OutputElementStyle"
         sourceId:
           type: integer
           description: Source entry's unique ID
           format: int64
+        start:
+          type: integer
+          description: Start time for this arrow
+          format: int64
     TimeGraphArrowsResponse:
       type: object
       allOf:
-      - $ref: '#/components/schemas/GenericResponse'
+      - $ref: "#/components/schemas/GenericResponse"
       - type: object
         properties:
           model:
             type: array
             items:
-              $ref: '#/components/schemas/TimeGraphArrow'
+              $ref: "#/components/schemas/TimeGraphArrow"
     ArrowsParameters:
       required:
       - requested_timerange
       type: object
       properties:
         requested_timerange:
-          $ref: '#/components/schemas/TimeRange'
+          $ref: "#/components/schemas/TimeRange"
     ArrowsQueryParameters:
       required:
       - parameters
       type: object
       properties:
         parameters:
-          $ref: '#/components/schemas/ArrowsParameters'
+          $ref: "#/components/schemas/ArrowsParameters"
     TableColumnHeader:
       type: object
       properties:
@@ -2231,13 +2231,13 @@ components:
     TableColumnHeadersResponse:
       type: object
       allOf:
-      - $ref: '#/components/schemas/GenericResponse'
+      - $ref: "#/components/schemas/GenericResponse"
       - type: object
         properties:
           model:
             type: array
             items:
-              $ref: '#/components/schemas/TableColumnHeader'
+              $ref: "#/components/schemas/TableColumnHeader"
     OptionalParameters:
       type: object
     OptionalQueryParameters:
@@ -2246,7 +2246,7 @@ components:
       type: object
       properties:
         parameters:
-          $ref: '#/components/schemas/OptionalParameters'
+          $ref: "#/components/schemas/OptionalParameters"
     TreeColumnHeader:
       required:
       - name
@@ -2285,7 +2285,7 @@ components:
             \ parent ID is -1 or omitted, this entry has no parent."
           format: int64
         style:
-          $ref: '#/components/schemas/OutputElementStyle'
+          $ref: "#/components/schemas/OutputElementStyle"
         id:
           type: integer
           description: Unique ID to identify this entry in the backend
@@ -2315,15 +2315,15 @@ components:
         entries:
           type: array
           items:
-            $ref: '#/components/schemas/TreeDataModel'
+            $ref: "#/components/schemas/TreeDataModel"
         headers:
           type: array
           items:
-            $ref: '#/components/schemas/TreeColumnHeader'
+            $ref: "#/components/schemas/TreeColumnHeader"
     XYTreeEntry:
       type: object
       allOf:
-      - $ref: '#/components/schemas/TreeDataModel'
+      - $ref: "#/components/schemas/TreeDataModel"
       - type: object
         properties:
           isDefault:
@@ -2333,33 +2333,33 @@ components:
     XYTreeEntryModel:
       type: object
       allOf:
-      - $ref: '#/components/schemas/TreeEntryModel'
+      - $ref: "#/components/schemas/TreeEntryModel"
       - type: object
         properties:
           entries:
             type: array
             items:
-              $ref: '#/components/schemas/XYTreeEntry'
+              $ref: "#/components/schemas/XYTreeEntry"
     XYTreeResponse:
       type: object
       allOf:
-      - $ref: '#/components/schemas/GenericResponse'
+      - $ref: "#/components/schemas/GenericResponse"
       - type: object
         properties:
           model:
-            $ref: '#/components/schemas/XYTreeEntryModel'
+            $ref: "#/components/schemas/XYTreeEntryModel"
     TreeParameters:
       type: object
       properties:
         requested_timerange:
-          $ref: '#/components/schemas/TimeRange'
+          $ref: "#/components/schemas/TimeRange"
     TreeQueryParameters:
       required:
       - parameters
       type: object
       properties:
         parameters:
-          $ref: '#/components/schemas/TreeParameters'
+          $ref: "#/components/schemas/TreeParameters"
     VirtualTableCell:
       type: object
       properties:
@@ -2386,7 +2386,7 @@ components:
           description: The content of the cells for this line. This array matches
             the column ids returned above
           items:
-            $ref: '#/components/schemas/VirtualTableCell'
+            $ref: "#/components/schemas/VirtualTableCell"
         index:
           type: integer
           description: The index of this line in the virtual table
@@ -2408,7 +2408,7 @@ components:
         lines:
           type: array
           items:
-            $ref: '#/components/schemas/VirtualTableLine'
+            $ref: "#/components/schemas/VirtualTableLine"
         size:
           type: integer
           description: "Number of events. If filtered, the size will be the number\
@@ -2417,24 +2417,24 @@ components:
     VirtualTableResponse:
       type: object
       allOf:
-      - $ref: '#/components/schemas/GenericResponse'
+      - $ref: "#/components/schemas/GenericResponse"
       - type: object
         properties:
           model:
-            $ref: '#/components/schemas/VirtualTableModel'
+            $ref: "#/components/schemas/VirtualTableModel"
     LinesParameters:
       required:
       - requested_table_count
       type: object
       properties:
+        requested_table_index:
+          type: integer
+          format: int64
         requested_times:
           type: array
           items:
             type: integer
             format: int64
-        requested_table_index:
-          type: integer
-          format: int64
         requested_table_count:
           type: integer
           format: int32
@@ -2459,7 +2459,7 @@ components:
       type: object
       properties:
         parameters:
-          $ref: '#/components/schemas/LinesParameters'
+          $ref: "#/components/schemas/LinesParameters"
     MarkerSet:
       type: object
       properties:
@@ -2474,20 +2474,20 @@ components:
     MarkerSetsResponse:
       type: object
       allOf:
-      - $ref: '#/components/schemas/GenericResponse'
+      - $ref: "#/components/schemas/GenericResponse"
       - type: object
         properties:
           model:
             type: array
             items:
-              $ref: '#/components/schemas/MarkerSet'
+              $ref: "#/components/schemas/MarkerSet"
     TimeGraphModel:
       type: object
       properties:
         rows:
           type: array
           items:
-            $ref: '#/components/schemas/TimeGraphRowModel'
+            $ref: "#/components/schemas/TimeGraphRowModel"
     TimeGraphRowModel:
       required:
       - entryId
@@ -2499,7 +2499,7 @@ components:
           description: List of the time graph entry states associated to this entry
             and zoom level
           items:
-            $ref: '#/components/schemas/TimeGraphState'
+            $ref: "#/components/schemas/TimeGraphState"
         entryId:
           type: integer
           description: The entry to map this state list to
@@ -2519,24 +2519,24 @@ components:
           type: integer
           description: End time for this state
           format: int64
-        start:
-          type: integer
-          description: Start time for this state
-          format: int64
         style:
-          $ref: '#/components/schemas/OutputElementStyle'
+          $ref: "#/components/schemas/OutputElementStyle"
         label:
           type: string
           description: "Text label to apply to this TimeGraphState if resolution permits.\
             \ Optional, no label is applied if absent"
+        start:
+          type: integer
+          description: Start time for this state
+          format: int64
     TimeGraphStatesResponse:
       type: object
       allOf:
-      - $ref: '#/components/schemas/GenericResponse'
+      - $ref: "#/components/schemas/GenericResponse"
       - type: object
         properties:
           model:
-            $ref: '#/components/schemas/TimeGraphModel'
+            $ref: "#/components/schemas/TimeGraphModel"
     RequestedFilterQueryParameters:
       required:
       - filter_expressions_map
@@ -2572,39 +2572,39 @@ components:
       - requested_timerange
       type: object
       properties:
+        filter_query_parameters:
+          $ref: "#/components/schemas/RequestedFilterQueryParameters"
         requested_timerange:
-          $ref: '#/components/schemas/TimeRange'
+          $ref: "#/components/schemas/TimeRange"
         requested_items:
           type: array
           items:
             type: integer
             format: int32
-        filter_query_parameters:
-          $ref: '#/components/schemas/RequestedFilterQueryParameters'
     RequestedQueryParameters:
       required:
       - parameters
       type: object
       properties:
         parameters:
-          $ref: '#/components/schemas/RequestedParameters'
+          $ref: "#/components/schemas/RequestedParameters"
     OutputStyleModel:
       type: object
       properties:
         styles:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/OutputElementStyle'
+            $ref: "#/components/schemas/OutputElementStyle"
       description: Map of styles specific to an output where values give hints on
         the style. The keys are strings that can be used in OutputElementStyle
     StylesResponse:
       type: object
       allOf:
-      - $ref: '#/components/schemas/GenericResponse'
+      - $ref: "#/components/schemas/GenericResponse"
       - type: object
         properties:
           model:
-            $ref: '#/components/schemas/OutputStyleModel'
+            $ref: "#/components/schemas/OutputStyleModel"
     TimeGraphTooltip:
       type: object
       properties:
@@ -2615,13 +2615,13 @@ components:
     TimeGraphTooltipResponse:
       type: object
       allOf:
-      - $ref: '#/components/schemas/GenericResponse'
+      - $ref: "#/components/schemas/GenericResponse"
       - type: object
         properties:
           model:
             type: array
             items:
-              $ref: '#/components/schemas/TimeGraphTooltip'
+              $ref: "#/components/schemas/TimeGraphTooltip"
     Element:
       required:
       - duration
@@ -2660,6 +2660,8 @@ components:
       - requested_times
       type: object
       properties:
+        requested_element:
+          $ref: "#/components/schemas/Element"
         requested_items:
           type: array
           items:
@@ -2670,28 +2672,22 @@ components:
           items:
             type: integer
             format: int64
-        requested_element:
-          $ref: '#/components/schemas/Element'
     TooltipQueryParameters:
       required:
       - parameters
       type: object
       properties:
         parameters:
-          $ref: '#/components/schemas/TooltipParameters'
+          $ref: "#/components/schemas/TooltipParameters"
     TimeGraphEntry:
       type: object
       allOf:
-      - $ref: '#/components/schemas/TreeDataModel'
+      - $ref: "#/components/schemas/TreeDataModel"
       - type: object
         properties:
           end:
             type: integer
             description: End of the range for which this entry exists
-            format: int64
-          start:
-            type: integer
-            description: Beginning of the range for which this entry exists
             format: int64
           metadata:
             type: object
@@ -2711,24 +2707,28 @@ components:
               data across data providers. Keys for the same data shall be the same
               across data providers. Only values of type Number or String are allowed.
               For each key all values shall have the same type.
+          start:
+            type: integer
+            description: Beginning of the range for which this entry exists
+            format: int64
     TimeGraphTreeModel:
       type: object
       allOf:
-      - $ref: '#/components/schemas/TreeEntryModel'
+      - $ref: "#/components/schemas/TreeEntryModel"
       - type: object
         properties:
           entries:
             type: array
             items:
-              $ref: '#/components/schemas/TimeGraphEntry'
+              $ref: "#/components/schemas/TimeGraphEntry"
     TimeGraphTreeResponse:
       type: object
       allOf:
-      - $ref: '#/components/schemas/GenericResponse'
+      - $ref: "#/components/schemas/GenericResponse"
       - type: object
         properties:
           model:
-            $ref: '#/components/schemas/TimeGraphTreeModel'
+            $ref: "#/components/schemas/TimeGraphTreeModel"
     SeriesModel:
       required:
       - seriesId
@@ -2738,15 +2738,15 @@ components:
       - yValues
       type: object
       properties:
+        seriesName:
+          type: string
+          description: Series' name
         seriesId:
           type: integer
           description: Series' ID
           format: int64
-        seriesName:
-          type: string
-          description: Series' name
         style:
-          $ref: '#/components/schemas/OutputElementStyle'
+          $ref: "#/components/schemas/OutputElementStyle"
         xValues:
           type: array
           description: Series' X values
@@ -2770,18 +2770,18 @@ components:
           type: array
           description: The collection of series
           items:
-            $ref: '#/components/schemas/SeriesModel'
+            $ref: "#/components/schemas/SeriesModel"
         title:
           type: string
           description: Title of the model
     XYResponse:
       type: object
       allOf:
-      - $ref: '#/components/schemas/GenericResponse'
+      - $ref: "#/components/schemas/GenericResponse"
       - type: object
         properties:
           model:
-            $ref: '#/components/schemas/XYModel'
+            $ref: "#/components/schemas/XYModel"
     Experiment:
       type: object
       properties:
@@ -2789,7 +2789,7 @@ components:
           type: array
           description: The traces encapsulated by this experiment
           items:
-            $ref: '#/components/schemas/Trace'
+            $ref: "#/components/schemas/Trace"
         end:
           type: integer
           description: The experiment's end time
@@ -2797,10 +2797,6 @@ components:
         nbEvents:
           type: integer
           description: Current number of indexed events in the experiment
-          format: int64
-        start:
-          type: integer
-          description: The experiment's start time
           format: int64
         indexingStatus:
           type: string
@@ -2812,6 +2808,10 @@ components:
         name:
           type: string
           description: User defined name for the experiment
+        start:
+          type: integer
+          description: The experiment's start time
+          format: int64
         UUID:
           type: string
           description: The experiment's unique identifier
@@ -2826,10 +2826,6 @@ components:
         nbEvents:
           type: integer
           description: Current number of indexed events in the trace
-          format: int64
-        start:
-          type: integer
-          description: The trace's start time
           format: int64
         indexingStatus:
           type: string
@@ -2850,6 +2846,10 @@ components:
         path:
           type: string
           description: Path to the trace on the server's file system
+        start:
+          type: integer
+          description: The trace's start time
+          format: int64
         UUID:
           type: string
           description: The trace's unique identifier
@@ -2876,7 +2876,7 @@ components:
       type: object
       properties:
         parameters:
-          $ref: '#/components/schemas/ExperimentParameters'
+          $ref: "#/components/schemas/ExperimentParameters"
     ServerStatus:
       type: object
       properties:
@@ -2893,15 +2893,18 @@ components:
       - version
       type: object
       properties:
-        osArch:
+        productId:
           type: string
-          description: Architecture of the operating system
+          description: Product identifier for the trace server
         buildTime:
           type: string
           description: "Build time or qualifier of the server version, if available"
         os:
           type: string
           description: Operating system name
+        osArch:
+          type: string
+          description: Architecture of the operating system
         osVersion:
           type: string
           description: Operating system version
@@ -2916,9 +2919,6 @@ components:
         launcherName:
           type: string
           description: "Name of the launcher used, if available"
-        productId:
-          type: string
-          description: Product identifier for the trace server
         tspVersion:
           type: string
           description: The TSP version that the trace server supports
@@ -2948,4 +2948,4 @@ components:
       type: object
       properties:
         parameters:
-          $ref: '#/components/schemas/TraceParameters'
+          $ref: "#/components/schemas/TraceParameters"
