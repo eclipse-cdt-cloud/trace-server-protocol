@@ -58,10 +58,10 @@ Swagger has recently been added to the Trace Compass trace-server (reference imp
 1. Copy `~/Downloads/openapi.yaml` to this directory.
 1. Update the latter with its license information and remove extra information by running `./openapi.py`
 1. The resulting diff between `API.yaml` and `openapi.yaml` can then be pushed for review.
-   - Use any diff tools to transfer over the new changes from `openapi.yaml` to `API.yaml`
+   * Use any diff tools to transfer over the new changes from `openapi.yaml` to `API.yaml`
    * Note, that the order of fields, components etc. might be different everytime the API is generated using swagger-core. This is due to how swagger-core is implemented.
-2. Make sure to transfer the diffs to `API-proposed.yaml` as well.
-3. `openapi.yaml` should not be merged to the repository and can be deleted when not needed anymore.
+1. Make sure to transfer the diffs to `API-proposed.yaml` as well.
+1. `openapi.yaml` should not be merged to the repository and can be deleted when not needed anymore.
 
 [apiProposed]: https://eclipse-cdt-cloud.github.io/trace-server-protocol/proposed/
 [apiyaml]: http://localhost:8080/tsp/api/openapi.yaml
