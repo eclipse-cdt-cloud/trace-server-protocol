@@ -56,8 +56,9 @@ Swagger has recently been added to the Trace Compass trace-server (reference imp
 1. Browse [to here][apiyaml] ([swagger][swagger]) or so to generate server's TSP.
 1. The resulting file is stored in the user's Downloads directory; e.g.: `~/Downloads/openapi.yaml`
 1. Copy `~/Downloads/openapi.yaml` to this directory.
-1. Update the latter with its license information and remove extra information: `./openapi.py`
+1. Update the latter with its license information and remove extra information by running `./openapi.py`
 1. The resulting diff between `API.yaml` and `openapi.yaml` can then be pushed for review.
+   * Use any diff tools to transfer over the new changes from `openapi.yaml` to `API.yaml`
    * Note, that the order of fields, components etc. might be different everytime the API is generated using swagger-core. This is due to how swagger-core is implemented.
 1. Make sure to transfer the diffs to `API-proposed.yaml` as well.
 1. `openapi.yaml` should not be merged to the repository and can be deleted when not needed anymore.
