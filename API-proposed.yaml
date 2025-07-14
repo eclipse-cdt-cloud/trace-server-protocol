@@ -26,7 +26,7 @@ info:
   license:
     name: Apache 2
     url: http://www.apache.org/licenses/
-  version: 0.4.0
+  version: 0.5.0
 servers:
 - url: https://localhost:8080/tsp/api
 tags:
@@ -2480,17 +2480,21 @@ components:
           type: string
           description: "Type of data returned by this output. Serves as a hint to\
             \ determine what kind of view should be used for this output (ex. XY,\
-            \ Time Graph, Table, etc..). Providers of type TREE_TIME_XY and TIME_GRAPH\
-            \ can be grouped under the same time axis. Providers of type DATA_TREE\
-            \ only provide a tree with columns and don't have any XY nor time graph\
-            \ data associated with it. Providers of type NONE have no data to visualize.\
-            \ Can be used for grouping purposes and/or as data provider configurator."
+            \ Time Graph, Table, Gantt chart, etc..). Providers of type TREE_TIME_XY\
+            \ and TIME_GRAPH can be grouped under the same time axis. Providers of\
+            \ type DATA_TREE only provide a tree with columns and don't have any XY\
+            \ nor time graph data associated with it. Providers of type GANTT_CHART\
+            \ use the same endpoint as TIME_GRAPH, but have a different x-axis (duration,\
+            \ page faults, etc.), with their own separate ranges.\
+            \ Providers of type NONE have no data to visualize. Can be used for grouping\
+            \ purposes and/or as data provider configurator."
           enum:
           - TABLE
           - TREE_TIME_XY
           - TIME_GRAPH
           - DATA_TREE
           - NONE
+          - GANTT_CHART
         configuration:
           $ref: "#/components/schemas/Configuration"
         capabilities:
