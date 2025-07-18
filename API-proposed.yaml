@@ -93,7 +93,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       tags:
       - Bookmarks
@@ -125,13 +125,13 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: No such experiment
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/bookmarks/{bookmarkUUID}:
     get:
       tags:
@@ -165,7 +165,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags:
       - Bookmarks
@@ -204,13 +204,13 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Experiment or bookmark not found
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       tags:
       - Bookmarks
@@ -243,7 +243,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /config/types/{typeId}/configs/{configId}:
     get:
       tags:
@@ -275,7 +275,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags:
       - Configurations
@@ -320,20 +320,20 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: No such configuration source type or configuration instance
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal trace-server error while trying to update configuration
             instance
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       tags:
       - Configurations
@@ -364,14 +364,14 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal trace-server error while trying to delete configuration
             instance
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /config/types/{typeId}:
     get:
       tags:
@@ -392,6 +392,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ConfigurationSourceType"
+        "404":
+          description: No such configuration type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /config/types:
     get:
       tags:
@@ -435,7 +441,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       tags:
       - Configurations
@@ -475,20 +481,20 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: No such configuration source type or configuration instance
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal trace-server error while trying to create configuration
             instance
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/{outputId}:
     get:
       tags:
@@ -521,7 +527,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       tags:
       - Output Configurations
@@ -573,13 +579,13 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: "Experiment, output provider or configuration type not found"
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/{outputId}/{derivedOutputId}:
     delete:
       tags:
@@ -619,13 +625,13 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: "Experiment, output provider or configuration type not found"
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/{outputId}/annotations:
     get:
       tags:
@@ -664,19 +670,19 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Experiment or output provider not found
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "405":
           description: Analysis cannot run
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       tags:
       - Annotations
@@ -733,19 +739,19 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Experiment or output provider not found
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "405":
           description: Analysis cannot run
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/timeGraph/{outputId}/arrows:
     post:
       tags:
@@ -794,19 +800,19 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Experiment or output provider not found
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "405":
           description: Analysis cannot run
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/table/{outputId}/columns:
     post:
       tags:
@@ -849,19 +855,19 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Experiment or output provider not found
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "405":
           description: Analysis cannot run
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/{outputId}/configTypes/{typeId}:
     get:
       tags:
@@ -901,13 +907,13 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: "Experiment, output provider or configuration type not found"
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/{outputId}/configTypes:
     get:
       tags:
@@ -943,7 +949,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/data/{outputId}/tree:
     post:
       tags:
@@ -994,19 +1000,19 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Experiment or output provider not found
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "405":
           description: Analysis cannot run
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/table/{outputId}/lines:
     post:
       tags:
@@ -1070,25 +1076,25 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Experiment or output provider not found
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "405":
           description: Analysis cannot run
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Error reading the experiment
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/markerSets:
     get:
       tags:
@@ -1115,7 +1121,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs:
     get:
       tags:
@@ -1144,7 +1150,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/timeGraph/{outputId}/states:
     post:
       tags:
@@ -1216,19 +1222,19 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Experiment or output provider not found
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "405":
           description: Analysis cannot run
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/{outputId}/style:
     post:
       tags:
@@ -1271,19 +1277,19 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Experiment or output provider not found
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "405":
           description: Analysis cannot run
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/timeGraph/{outputId}/tooltip:
     post:
       tags:
@@ -1337,19 +1343,19 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Experiment or output provider not found
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "405":
           description: Analysis cannot run
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/timeGraph/{outputId}/tree:
     post:
       tags:
@@ -1400,19 +1406,19 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Experiment or output provider not found
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "405":
           description: Analysis cannot run
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/XY/{outputId}/xy:
     post:
       tags:
@@ -1465,19 +1471,19 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Experiment or output provider not found
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "405":
           description: Analysis cannot run
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/XY/{outputId}/tree:
     post:
       tags:
@@ -1527,19 +1533,19 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Experiment or output provider not found
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "405":
           description: Analysis cannot run
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}:
     get:
       tags:
@@ -1566,7 +1572,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       tags:
       - Experiments
@@ -1592,7 +1598,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       summary: Update an experiment's content and name.
       operationId: putExperiment
@@ -1697,19 +1703,25 @@ paths:
           content:
             application/json:
               schema:
-                type: string
-        "409":
-          description: The experiment (name) already exists and both differ
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: No such trace
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: The experiment (name) already exists and both differ.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExperimentErrorResponse"
         "500":
           description: Internal trace-server error while trying to post experiment
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /health:
     get:
       tags:
@@ -1726,6 +1738,10 @@ paths:
         "503":
           description: The trace server is unavailable or in maintenance and cannot
             receive requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /identifier:
     get:
       tags:
@@ -1765,7 +1781,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       tags:
       - Traces
@@ -1791,14 +1807,14 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "409":
           description: The trace is in use by at least one experiment thus cannot
-            be deleted
+            be deleted.
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/TraceErrorResponse"
   /traces:
     get:
       tags:
@@ -1839,37 +1855,37 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: No such trace
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "406":
           description: Cannot read this trace type
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "409":
-          description: There was already a trace with this name
+          description: The trace (name) already exists and both differ
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/TraceErrorResponse"
         "500":
           description: Trace resource creation failed
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
         "501":
           description: Trace type not supported
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ErrorResponse"
   /about/traceTypes:
     get:
       summary: Get the list of trace types supported by this server.
@@ -2346,6 +2362,20 @@ components:
           type: string
           description: The bookmark's unique identifier
           format: uuid
+    ErrorResponse:
+      required:
+      - title
+      type: object
+      properties:
+        detail:
+          type: string
+          description: The optional human-readable explanation of the error with details
+            helping the client to correct the error
+        title:
+          type: string
+          description: "The short, human-readable description of the error"
+      description: Error response that includes an detailed description of the error
+        occured
     BookmarkParameters:
       required:
       - end
@@ -3338,6 +3368,7 @@ components:
           type: string
           description: The experiment's unique identifier
           format: uuid
+      description: Experiment model
     Trace:
       type: object
       properties:
@@ -3376,6 +3407,17 @@ components:
           type: string
           description: The trace's unique identifier
           format: uuid
+      description: Trace model
+    ExperimentErrorResponse:
+      required:
+      - experiment
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/ErrorResponse"
+      - type: object
+        properties:
+          experiment:
+            $ref: "#/components/schemas/Experiment"
     ExperimentParameters:
       required:
       - name
@@ -3448,6 +3490,16 @@ components:
           type: string
           description: Version in the format Major.Minor.Micro
       description: System Information Response
+    TraceErrorResponse:
+      required:
+      - trace
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/ErrorResponse"
+      - type: object
+        properties:
+          trace:
+            $ref: "#/components/schemas/Trace"
     TraceParameters:
       required:
       - uri
