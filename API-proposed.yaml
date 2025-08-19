@@ -1013,6 +1013,134 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /experiments/{expUUID}/outputs/genericXY/{outputId}/xy:
+    post:
+      tags:
+      - Generic XY
+      summary: API to get the xy model
+      description: "Unique endpoint for all xy models, ensures that the same template\
+        \ is followed for all endpoints."
+      operationId: getGenericXY
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        description: ID of the output provider to query
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Query parameters to fetch the xy model. The object 'requested_timerange'
+          is the requested time range and number of samples. The array 'requested_items'
+          is the list of entryId or seriesId being requested.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenericXYQueryParameters"
+            example:
+              parameters:
+                requested_timerange:
+                  start: 111111111
+                  end: 222222222
+                  nbSamples: 1920
+                requested_items:
+                - 1
+                - 2
+        required: true
+      responses:
+        "200":
+          description: Return the queried xy response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/XYResponse"
+        "400":
+          description: Missing query parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Experiment or output provider not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "405":
+          description: Analysis cannot run
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /experiments/{expUUID}/outputs/genericXY/{outputId}/tree:
+    post:
+      tags:
+      - Generic XY
+      summary: API to get the tree for generic xy chart
+      description: "Unique entry point for output providers, to get the tree of visible\
+        \ entries"
+      operationId: getGenericXYChartTree
+      parameters:
+      - name: expUUID
+        in: path
+        description: UUID of the experiment to query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: outputId
+        in: path
+        description: ID of the output provider to query
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Query parameters to fetch the generic XY tree. The object 'requested_timerange'
+          specifies the requested time range. When absent the tree for the full range
+          is returned.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TreeQueryParameters"
+            example:
+              parameters:
+                requested_timerange:
+                  start: 111111111
+                  end: 222222222
+        required: true
+      responses:
+        "200":
+          description: "Returns a list of generic xy chart entries. The returned model\
+            \ must be consistent, parentIds must refer to a parent which exists in\
+            \ the model."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/XYTreeResponse"
+        "400":
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Experiment or output provider not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "405":
+          description: Analysis cannot run
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /experiments/{expUUID}/outputs/table/{outputId}/lines:
     post:
       tags:
@@ -2909,6 +3037,182 @@ components:
       properties:
         parameters:
           $ref: "#/components/schemas/TreeParameters"
+    AxisDomain:
+      required:
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: "Type of axis domain (e.g., 'categorical' or 'timeRange')"
+      description: Domain of values supported on a chart axis. Can be either categorical
+        or numeric range.
+      discriminator:
+        propertyName: type
+    AxisDomainCategorical:
+      required:
+      - categories
+      - type
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/AxisDomain"
+      - type: object
+        properties:
+          categories:
+            uniqueItems: true
+            type: array
+            description: List of category labels on the axis
+            items:
+              type: string
+          type:
+            type: string
+            description: Type of axis domain
+    AxisDomainTimeRange:
+      required:
+      - end
+      - start
+      - type
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/AxisDomain"
+      - type: object
+        properties:
+          start:
+            type: integer
+            description: Start of the axis range
+            format: int64
+          end:
+            type: integer
+            description: End of the axis range
+            format: int64
+          type:
+            type: string
+            description: Type of axis domain
+    CategorySampling:
+      required:
+      - sampling
+      type: object
+      properties:
+        sampling:
+          type: array
+          description: Sampling as list of categories
+          items:
+            type: string
+            description: Sampling as list of categories
+    RangeSampling:
+      required:
+      - sampling
+      type: object
+      properties:
+        sampling:
+          type: array
+          description: "Sampling as list of [start, end] timestamp ranges"
+          items:
+            $ref: "#/components/schemas/StartEndRange"
+    Sampling:
+      type: object
+      description: Sampling values
+      oneOf:
+      - $ref: "#/components/schemas/TimestampSampling"
+      - $ref: "#/components/schemas/CategorySampling"
+      - $ref: "#/components/schemas/RangeSampling"
+    StartEndRange:
+      required:
+      - end
+      - start
+      type: object
+      properties:
+        start:
+          type: integer
+          description: Start timestamp of the range
+          format: int64
+        end:
+          type: integer
+          description: End timestamp of the range
+          format: int64
+      description: "Sampling as list of [start, end] timestamp ranges"
+    TimestampSampling:
+      required:
+      - sampling
+      type: object
+      properties:
+        sampling:
+          type: array
+          description: Sampling as list of timestamps
+          items:
+            type: integer
+            description: Sampling as list of timestamps
+            format: int64
+    XYAxisDescription:
+      required:
+      - dataType
+      - label
+      - unit
+      type: object
+      properties:
+        dataType:
+          type: string
+          description: The type of data this axis represents
+          enum:
+          - NUMBER
+          - BINARY_NUMBER
+          - TIMESTAMP
+          - DURATION
+          - STRING
+          - TIME_RANGE
+        unit:
+          type: string
+          description: "Unit associated with this axis (e.g., ns, ms)"
+        label:
+          type: string
+          description: Label for the axis
+        axisDomain:
+          $ref: '#/components/schemas/AxisDomain'
+      description: "Describes a single axis in an XY chart, including label, unit,\
+        \ data type, and optional domain."
+    GenericTimeRange:
+      required:
+      - end
+      - start
+      type: object
+      properties:
+        end:
+          type: integer
+          description: End of the range
+          format: int64
+        nbSamples:
+          type: integer
+          description: Optional number of samples (1–65536) to generate within the
+            range
+          format: int32
+        start:
+          type: integer
+          description: Start of the range
+          format: int64
+      description: A generic time range with optional sampling count. Sampling points
+        may represent values other than timestamps.
+    GenericXYQueryParameters:
+      required:
+      - parameters
+      type: object
+      properties:
+        parameters:
+          $ref: "#/components/schemas/GenericXYRequestedParameters"
+    GenericXYRequestedParameters:
+      required:
+      - requested_items
+      - requested_timerange
+      type: object
+      properties:
+        requested_timerange:
+          $ref: "#/components/schemas/GenericTimeRange"
+        requested_items:
+          type: array
+          items:
+            type: integer
+            format: int32
+        filter_query_parameters:
+          $ref: "#/components/schemas/RequestedFilterQueryParameters"
     VirtualTableCell:
       type: object
       properties:
@@ -3284,7 +3588,9 @@ components:
       - seriesName
       - style
       - xValues
+      - xValuesDescription
       - yValues
+      - yValuesDescription
       type: object
       properties:
         seriesName:
@@ -3296,12 +3602,12 @@ components:
           format: int64
         style:
           $ref: "#/components/schemas/OutputElementStyle"
+        xValuesDescription:
+          $ref: "#/components/schemas/XYAxisDescription"
+        yValuesDescription:
+          $ref: "#/components/schemas/XYAxisDescription"
         xValues:
-          type: array
-          description: Series' X values
-          items:
-            type: integer
-            format: int64
+          $ref: "#/components/schemas/Sampling"
         yValues:
           type: array
           description: Series' Y values
