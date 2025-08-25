@@ -2419,10 +2419,7 @@ components:
           description: The unique ID of the configuration instance
         parameters:
           type: object
-          additionalProperties:
-            type: object
-            description: Optional parameters representing the configuration parameters
-              used to create this configuration.
+          additionalProperties: true
           description: Optional parameters representing the configuration parameters
             used to create this configuration.
       description: Configuration instance describing user provided configuration parameters.
