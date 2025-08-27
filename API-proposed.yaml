@@ -3037,57 +3037,41 @@ components:
       properties:
         parameters:
           $ref: "#/components/schemas/TreeParameters"
-    AxisDomain:
-      required:
-      - type
-      type: object
-      properties:
-        type:
-          type: string
-          description: "Type of axis domain (e.g., 'categorical' or 'timeRange')"
-      description: Domain of values supported on a chart axis. Can be either categorical
-        or numeric range.
-      discriminator:
-        propertyName: type
     AxisDomainCategorical:
       required:
       - categories
       - type
       type: object
-      allOf:
-      - $ref: "#/components/schemas/AxisDomain"
-      - type: object
-        properties:
-          categories:
-            uniqueItems: true
-            type: array
-            description: List of category labels on the axis
-            items:
-              type: string
-          type:
+      properties:
+        categories:
+          uniqueItems: true
+          type: array
+          description: List of category labels on the axis
+          items:
             type: string
-            description: Type of axis domain
-    AxisDomainTimeRange:
+        type:
+          type: string
+          description: "Type of axis domain: 'categorical'"
+      description: Domain of values supported on a categorical chart axis.
+    AxisDomainRange:
       required:
       - end
       - start
       - type
       type: object
-      allOf:
-      - $ref: "#/components/schemas/AxisDomain"
-      - type: object
-        properties:
-          start:
-            type: integer
-            description: Start of the axis range
-            format: int64
-          end:
-            type: integer
-            description: End of the axis range
-            format: int64
-          type:
-            type: string
-            description: Type of axis domain
+      properties:
+        start:
+          type: integer
+          description: Start of the axis range
+          format: int64
+        end:
+          type: integer
+          description: End of the axis range
+          format: int64
+        type:
+          type: string
+          description: "Type of axis domain: 'range'"
+      description: Domain of values supported on a numberical range chart axis.
     CategorySampling:
       required:
       - sampling
@@ -3167,7 +3151,11 @@ components:
           type: string
           description: Label for the axis
         axisDomain:
-          $ref: '#/components/schemas/AxisDomain'
+          type: object
+          description: Optional domain of values that this axis supports
+          oneOf:
+          - $ref: "#/components/schemas/AxisDomainCategorical"
+          - $ref: "#/components/schemas/AxisDomainRange"
       description: "Describes a single axis in an XY chart, including label, unit,\
         \ data type, and optional domain."
     GenericTimeRange:
