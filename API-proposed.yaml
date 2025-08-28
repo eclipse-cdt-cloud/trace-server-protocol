@@ -3520,6 +3520,13 @@ components:
       properties:
         parameters:
           $ref: "#/components/schemas/TooltipParameters"
+    MetadataValue:
+      type: object
+      description: Supported types of a metadata value. Only values of type Number
+        or String are allowed.
+      oneOf:
+      - type: string
+      - type: number
     TimeGraphEntry:
       type: object
       allOf:
@@ -3536,18 +3543,13 @@ components:
               type: array
               description: Optional metadata map for domain specific data for matching
                 data across data providers. Keys for the same data shall be the same
-                across data providers. Only values of type Number or String are allowed.
-                For each key all values shall have the same type.
+                across data providers. For each key all values shall have the same
+                type.
               items:
-                type: object
-                description: Optional metadata map for domain specific data for matching
-                  data across data providers. Keys for the same data shall be the
-                  same across data providers. Only values of type Number or String
-                  are allowed. For each key all values shall have the same type.
+                $ref: "#/components/schemas/MetadataValue"
             description: Optional metadata map for domain specific data for matching
               data across data providers. Keys for the same data shall be the same
-              across data providers. Only values of type Number or String are allowed.
-              For each key all values shall have the same type.
+              across data providers. For each key all values shall have the same type.
           start:
             type: integer
             description: Beginning of the range for which this entry exists
