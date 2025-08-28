@@ -2640,9 +2640,9 @@ components:
             \ type DATA_TREE only provide a tree with columns and don't have any XY\
             \ nor time graph data associated with it. Providers of type GANTT_CHART\
             \ use the same endpoint as TIME_GRAPH, but have a different x-axis (duration,\
-            \ page faults, etc.), with their own separate ranges.\
-            \ Providers of type NONE have no data to visualize. Can be used for grouping\
-            \ purposes and/or as data provider configurator."
+            \ page faults, etc.), with their own separate ranges. Providers of type\
+            \ NONE have no data to visualize. Can be used for grouping purposes and/or\
+            \ as data provider configurator."
           enum:
           - TABLE
           - TREE_TIME_XY
@@ -3100,6 +3100,39 @@ components:
       - $ref: "#/components/schemas/TimestampSampling"
       - $ref: "#/components/schemas/CategorySampling"
       - $ref: "#/components/schemas/RangeSampling"
+    SeriesModel:
+      required:
+      - seriesId
+      - seriesName
+      - style
+      - xValues
+      - xValuesDescription
+      - yValues
+      - yValuesDescription
+      type: object
+      properties:
+        seriesId:
+          type: integer
+          description: Series' ID
+          format: int64
+        seriesName:
+          type: string
+          description: Series' name
+        style:
+          $ref: "#/components/schemas/OutputElementStyle"
+        xValues:
+          $ref: "#/components/schemas/Sampling"
+        yValues:
+          type: array
+          description: Series' Y values
+          items:
+            type: number
+            format: double
+        xValuesDescription:
+          $ref: "#/components/schemas/XYAxisDescription"
+        yValuesDescription:
+          $ref: "#/components/schemas/XYAxisDescription"
+      description: This model includes the series output style values.
     StartEndRange:
       required:
       - end
@@ -3158,6 +3191,28 @@ components:
           - $ref: "#/components/schemas/AxisDomainRange"
       description: "Describes a single axis in an XY chart, including label, unit,\
         \ data type, and optional domain."
+    XYModel:
+      required:
+      - series
+      - title
+      type: object
+      properties:
+        series:
+          type: array
+          description: The collection of series
+          items:
+            $ref: "#/components/schemas/SeriesModel"
+        title:
+          type: string
+          description: Title of the model
+    XYResponse:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/GenericResponse"
+      - type: object
+        properties:
+          model:
+            $ref: "#/components/schemas/XYModel"
     GenericTimeRange:
       required:
       - end
@@ -3201,6 +3256,35 @@ components:
             format: int32
         filter_query_parameters:
           $ref: "#/components/schemas/RequestedFilterQueryParameters"
+    RequestedFilterQueryParameters:
+      required:
+      - filter_expressions_map
+      type: object
+      properties:
+        filter_expressions_map:
+          type: object
+          additionalProperties:
+            type: array
+            description: "The key of this map can be \"1\" (means DIMMED) or \"4\"\
+              \ (means EXCLUDED) and the value is an array of the desired search query\
+              \ (e.g. {\"1\": [\"openat\", \"duration>10ms\"]})"
+            items:
+              type: string
+              description: "The key of this map can be \"1\" (means DIMMED) or \"\
+                4\" (means EXCLUDED) and the value is an array of the desired search\
+                \ query (e.g. {\"1\": [\"openat\", \"duration>10ms\"]})"
+          description: "The key of this map can be \"1\" (means DIMMED) or \"4\" (means\
+            \ EXCLUDED) and the value is an array of the desired search query (e.g.\
+            \ {\"1\": [\"openat\", \"duration>10ms\"]})"
+        strategy:
+          type: string
+          description: Optional parameter that enables the full search (deep search)
+            or not
+          enum:
+          - SAMPLED
+          - DEEP
+      description: FilterQueryParameters is used to support search and filter expressions
+        for timegraph views
     VirtualTableCell:
       type: object
       properties:
@@ -3378,35 +3462,6 @@ components:
         properties:
           model:
             $ref: "#/components/schemas/TimeGraphModel"
-    RequestedFilterQueryParameters:
-      required:
-      - filter_expressions_map
-      type: object
-      properties:
-        filter_expressions_map:
-          type: object
-          additionalProperties:
-            type: array
-            description: "The key of this map can be \"1\" (means DIMMED) or \"4\"\
-              \ (means EXCLUDED) and the value is an array of the desired search query\
-              \ (e.g. {\"1\": [\"openat\", \"duration>10ms\"]})"
-            items:
-              type: string
-              description: "The key of this map can be \"1\" (means DIMMED) or \"\
-                4\" (means EXCLUDED) and the value is an array of the desired search\
-                \ query (e.g. {\"1\": [\"openat\", \"duration>10ms\"]})"
-          description: "The key of this map can be \"1\" (means DIMMED) or \"4\" (means\
-            \ EXCLUDED) and the value is an array of the desired search query (e.g.\
-            \ {\"1\": [\"openat\", \"duration>10ms\"]})"
-        strategy:
-          type: string
-          description: Optional parameter that enables the full search (deep search)
-            or not
-          enum:
-          - SAMPLED
-          - DEEP
-      description: FilterQueryParameters is used to support search and filter expressions
-        for timegraph views
     RequestedParameters:
       required:
       - requested_items
@@ -3572,61 +3627,6 @@ components:
         properties:
           model:
             $ref: "#/components/schemas/TimeGraphTreeModel"
-    SeriesModel:
-      required:
-      - seriesId
-      - seriesName
-      - style
-      - xValues
-      - xValuesDescription
-      - yValues
-      - yValuesDescription
-      type: object
-      properties:
-        seriesName:
-          type: string
-          description: Series' name
-        seriesId:
-          type: integer
-          description: Series' ID
-          format: int64
-        style:
-          $ref: "#/components/schemas/OutputElementStyle"
-        xValuesDescription:
-          $ref: "#/components/schemas/XYAxisDescription"
-        yValuesDescription:
-          $ref: "#/components/schemas/XYAxisDescription"
-        xValues:
-          $ref: "#/components/schemas/Sampling"
-        yValues:
-          type: array
-          description: Series' Y values
-          items:
-            type: number
-            format: double
-      description: This model includes the series output style values.
-    XYModel:
-      required:
-      - series
-      - title
-      type: object
-      properties:
-        series:
-          type: array
-          description: The collection of series
-          items:
-            $ref: "#/components/schemas/SeriesModel"
-        title:
-          type: string
-          description: Title of the model
-    XYResponse:
-      type: object
-      allOf:
-      - $ref: "#/components/schemas/GenericResponse"
-      - type: object
-        properties:
-          model:
-            $ref: "#/components/schemas/XYModel"
     Experiment:
       type: object
       properties:
