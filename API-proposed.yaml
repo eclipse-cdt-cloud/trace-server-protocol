@@ -2473,6 +2473,11 @@ paths:
 components:
   schemas:
     Bookmark:
+      required:
+      - end
+      - name
+      - start
+      - uuid
       type: object
       properties:
         end:
@@ -2531,6 +2536,10 @@ components:
         parameters:
           $ref: "#/components/schemas/BookmarkParameters"
     Configuration:
+      required:
+      - id
+      - name
+      - sourceTypeId
       type: object
       properties:
         sourceTypeId:
@@ -2538,7 +2547,7 @@ components:
           description: The ID of the configuration source type
         description:
           type: string
-          description: Describes the configuration instance
+          description: "Optional, describes the configuration instance"
         name:
           type: string
           description: The human readable name
@@ -2552,25 +2561,32 @@ components:
             used to create this configuration.
       description: Configuration instance describing user provided configuration parameters.
     ConfigurationParameterDescriptor:
+      required:
+      - keyName
       type: object
       properties:
         dataType:
           type: string
-          description: The data type hint of the configuration parameter
+          description: "Optional data type hint of the configuration parameter. For\
+            \ example, use NUMBER for numbers, or STRING as strings. If omitted assume\
+            \ the default value is STRING."
         keyName:
           type: string
           description: The unique key name of the configuration parameter
         required:
           type: boolean
-          description: A flag indicating whether the configuration parameter is required
-            or not
+          description: Optional flag indicating whether the configuration parameter
+            is required or not. If ommitted the default value is false.
         description:
           type: string
-          description: Describes the configuration parameter
+          description: "Optional, describes the configuration parameter"
       description: A list of configuration parameter descriptors to be passed when
         creating or updating a configuration instance of this type. Use this instead
         of schema. Omit if not used.
     ConfigurationSourceType:
+      required:
+      - id
+      - name
       type: object
       properties:
         parameterDescriptors:
@@ -2582,7 +2598,7 @@ components:
             $ref: "#/components/schemas/ConfigurationParameterDescriptor"
         description:
           type: string
-          description: Describes the configuration source type
+          description: "Optional, describes the configuration source type"
         name:
           type: string
           description: The human readable name
@@ -2616,6 +2632,11 @@ components:
           description: Parameters as specified in the schema or list of ConfigurationParameterDescriptor
             of the corresponding ConfigurationTypeDescriptor.
     DataProvider:
+      required:
+      - description
+      - id
+      - name
+      - type
       type: object
       properties:
         parentId:
@@ -2682,6 +2703,8 @@ components:
             description: The type ID of the corresponding ConfigurationSourceType
               defined by this output.
     AnnotationCategoriesModel:
+      required:
+      - annotationCategories
       type: object
       properties:
         annotationCategories:
@@ -2700,6 +2723,9 @@ components:
           model:
             $ref: "#/components/schemas/AnnotationCategoriesModel"
     GenericResponse:
+      required:
+      - status
+      - statusMessage
       type: object
       properties:
         statusMessage:
@@ -2768,14 +2794,16 @@ components:
           model:
             $ref: "#/components/schemas/AnnotationModel"
     OutputElementStyle:
+      required:
+      - values
       type: object
       properties:
         parentKey:
           type: string
-          description: "Parent style key or empty if there is no parent. The parent\
-            \ key should match a style key defined in the style model and is used\
-            \ for style inheritance. A comma-delimited list of parent style keys can\
-            \ be used for style composition, the last one taking precedence."
+          description: "Optional, parent style key. If omitted there is no parent.\
+            \ The parent key should match a style key defined in the style model and\
+            \ is used for style inheritance. A comma-delimited list of parent style\
+            \ keys can be used for style composition, the last one taking precedence."
         values:
           type: object
           additionalProperties:
@@ -2892,21 +2920,28 @@ components:
         parameters:
           $ref: "#/components/schemas/ArrowsParameters"
     TableColumnHeader:
+      required:
+      - description
+      - id
+      - name
+      - type
       type: object
       properties:
         description:
           type: string
-          description: Description of the column
+          description: Description of the column. Use empty string if no description
+            is desired.
         name:
           type: string
-          description: Displayed name for this column
+          description: Displayed name for this column.
         id:
           type: integer
           description: Unique id to identify this column in the backend
           format: int64
         type:
           type: string
-          description: Type of data associated to this column
+          description: Type of data associated to this column. Possible strings are
+            defined by the DataType enum.
     TableColumnHeadersResponse:
       type: object
       allOf:
@@ -2958,7 +2993,7 @@ components:
         dataType:
           type: string
           description: "Data type of column. Optional, data type STRING is applied\
-            \ if absent."
+            \ if absent. Possible strings are defined by the DataType enum."
           enum:
           - NUMBER
           - BINARY_NUMBER
@@ -2968,8 +3003,8 @@ components:
           - TIME_RANGE
         tooltip:
           type: string
-          description: "Displayed tooltip for this header. Optional, no tooltip is\
-            \ applied if absent."
+          description: Displayed tooltip for this header. Use empty string if no tooltip
+            is desired.
         name:
           type: string
           description: Displayed name for this header
@@ -2981,7 +3016,7 @@ components:
       properties:
         hasData:
           type: boolean
-          description: Whether or not this entry has data
+          description: Whether or not this entry has data. false if absent.
         parentId:
           type: integer
           description: "Optional unique ID to identify this entry's parent. If the\
@@ -3004,6 +3039,7 @@ components:
     TreeEntryModel:
       required:
       - entries
+      - headers
       type: object
       properties:
         autoExpandLevel:
@@ -3034,6 +3070,8 @@ components:
             description: Optional flag to indicate whether or not the entry is a default
               entry and its xy data should be fetched by default.
     XYTreeEntryModel:
+      required:
+      - entries
       type: object
       allOf:
       - $ref: "#/components/schemas/TreeEntryModel"
@@ -3312,6 +3350,8 @@ components:
       description: FilterQueryParameters is used to support search and filter expressions
         for timegraph views
     VirtualTableCell:
+      required:
+      - content
       type: object
       properties:
         tags:
@@ -3323,14 +3363,17 @@ components:
           type: string
           description: Content of the cell for this line
     VirtualTableLine:
+      required:
+      - cells
+      - index
       type: object
       properties:
         tags:
           type: integer
-          description: "Tags for the entire line. A bit mask to apply for tagging\
-            \ elements (e.g. table lines, states). This can be used by the server\
-            \ to indicate if a filter matches and what action to apply. Use 0 for\
-            \ no tags, 1 and 2 are reserved, 4 for 'BORDER' and 8 for 'HIGHLIGHT'."
+          description: "Optional tags for the entire line. A bit mask to apply for\
+            \ tagging elements (e.g. table lines, states). This can be used by the\
+            \ server to indicate if a filter matches and what action to apply. Use\
+            \ 0 for no tags, 1 and 2 are reserved, 4 for 'BORDER' and 8 for 'HIGHLIGHT'."
           format: int32
         cells:
           type: array
@@ -3343,6 +3386,11 @@ components:
           description: The index of this line in the virtual table
           format: int64
     VirtualTableModel:
+      required:
+      - columnIds
+      - lines
+      - lowIndex
+      - size
       type: object
       properties:
         columnIds:
@@ -3412,6 +3460,9 @@ components:
         parameters:
           $ref: "#/components/schemas/LinesParameters"
     MarkerSet:
+      required:
+      - id
+      - name
       type: object
       properties:
         name:
@@ -3433,6 +3484,8 @@ components:
             items:
               $ref: "#/components/schemas/MarkerSet"
     TimeGraphModel:
+      required:
+      - rows
       type: object
       properties:
         rows:
@@ -3511,6 +3564,8 @@ components:
         parameters:
           $ref: "#/components/schemas/RequestedParameters"
     OutputStyleModel:
+      required:
+      - styles
       type: object
       properties:
         styles:
@@ -3606,6 +3661,9 @@ components:
       - type: string
       - type: number
     TimeGraphEntry:
+      required:
+      - end
+      - start
       type: object
       allOf:
       - $ref: "#/components/schemas/TreeDataModel"
@@ -3633,6 +3691,8 @@ components:
             description: Beginning of the range for which this entry exists
             format: int64
     TimeGraphTreeModel:
+      required:
+      - entries
       type: object
       allOf:
       - $ref: "#/components/schemas/TreeEntryModel"
@@ -3651,6 +3711,14 @@ components:
           model:
             $ref: "#/components/schemas/TimeGraphTreeModel"
     Experiment:
+      required:
+      - UUID
+      - end
+      - indexingStatus
+      - name
+      - nbEvents
+      - start
+      - traces
       type: object
       properties:
         traces:
@@ -3686,6 +3754,15 @@ components:
           format: uuid
       description: Experiment model
     Trace:
+      required:
+      - UUID
+      - end
+      - indexingStatus
+      - name
+      - nbEvents
+      - path
+      - properties
+      - start
       type: object
       properties:
         end:
@@ -3758,6 +3835,8 @@ components:
         parameters:
           $ref: "#/components/schemas/ExperimentParameters"
     ServerStatus:
+      required:
+      - status
       type: object
       properties:
         status:
