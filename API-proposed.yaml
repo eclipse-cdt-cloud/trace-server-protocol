@@ -1461,7 +1461,7 @@ paths:
         required: true
       responses:
         "200":
-          description: Returns a list of tooltip keys to values
+          description: Returns a map of tooltip keys to values
           content:
             application/json:
               schema:
@@ -3527,13 +3527,6 @@ components:
         properties:
           model:
             $ref: "#/components/schemas/OutputStyleModel"
-    TimeGraphTooltip:
-      type: object
-      properties:
-        value:
-          type: string
-        key:
-          type: string
     TimeGraphTooltipResponse:
       type: object
       allOf:
@@ -3541,9 +3534,13 @@ components:
       - type: object
         properties:
           model:
-            type: array
-            items:
-              $ref: "#/components/schemas/TimeGraphTooltip"
+            type: object
+            additionalProperties:
+              type: string
+              description: "Tooltip map with key-value pairs, where the key is the\
+                \ tooltip name and the corresponding value is the tooltip value"
+            description: "Tooltip map with key-value pairs, where the key is the tooltip\
+              \ name and the corresponding value is the tooltip value"
     Element:
       required:
       - duration
