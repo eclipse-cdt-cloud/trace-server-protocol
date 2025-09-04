@@ -2120,8 +2120,9 @@ components:
             \ nor time graph data associated with it. Providers of type GANTT_CHART\
             \ use the same endpoint as TIME_GRAPH, but have a different x-axis (duration,\
             \ page faults, etc.), with their own separate ranges. Providers of type\
-            \ NONE have no data to visualize. Can be used for grouping purposes and/or\
-            \ as data provider configurator."
+            \ TREE_GENERIC_XY supports XY view with non-time x-axis. Providers of\
+            \ type NONE have no data to visualize. Can be used for grouping purposes\
+            \ and/or as data provider configurator."
           enum:
           - TABLE
           - TREE_TIME_XY
@@ -2129,6 +2130,7 @@ components:
           - DATA_TREE
           - NONE
           - GANTT_CHART
+          - TREE_GENERIC_XY
         configuration:
           $ref: "#/components/schemas/Configuration"
         capabilities:
