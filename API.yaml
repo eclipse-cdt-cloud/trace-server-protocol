@@ -2616,34 +2616,25 @@ components:
           type: string
           description: "Type of axis domain: 'range'"
       description: Domain of values supported on a numberical range chart axis.
-    CategorySampling:
-      required:
-      - sampling
-      type: object
-      properties:
-        sampling:
-          type: array
-          description: Sampling as list of categories
-          items:
-            type: string
-            description: Sampling as list of categories
-    RangeSampling:
-      required:
-      - sampling
-      type: object
-      properties:
-        sampling:
-          type: array
-          description: "Sampling as list of [start, end] timestamp ranges"
-          items:
-            $ref: "#/components/schemas/StartEndRange"
     Sampling:
       type: object
       description: Sampling values
       oneOf:
-      - $ref: "#/components/schemas/TimestampSampling"
-      - $ref: "#/components/schemas/CategorySampling"
-      - $ref: "#/components/schemas/RangeSampling"
+      - type: array
+        description: "Sampling as a flat list of timestamps. Example: [100, 200, 350]"
+        items:
+          type: integer
+          format: int64
+      - type: array
+        description: "Sampling as a flat list of categories. Example: [\"READ\", \"\
+          WRITE\"]"
+        items:
+          type: string
+      - type: array
+        description: "Sampling as a list of start/end range objects. Example: [{\"\
+          start\": 10, \"end\": 20}, {\"start\": 50, \"end\": 75}]"
+        items:
+          $ref: '#/components/schemas/StartEndRange'
     SeriesModel:
       required:
       - seriesId
@@ -2685,25 +2676,13 @@ components:
       properties:
         start:
           type: integer
-          description: Start timestamp of the range
+          description: Start of the range (inclusive).
           format: int64
         end:
           type: integer
-          description: End timestamp of the range
+          description: End of the range (inclusive).
           format: int64
-      description: "Sampling as list of [start, end] timestamp ranges"
-    TimestampSampling:
-      required:
-      - sampling
-      type: object
-      properties:
-        sampling:
-          type: array
-          description: Sampling as list of timestamps
-          items:
-            type: integer
-            description: Sampling as list of timestamps
-            format: int64
+      description: An object representing a closed interval with a start and end.
     XYAxisDescription:
       required:
       - dataType
