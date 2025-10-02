@@ -1,5 +1,17 @@
 # trace-server-protocol
 
+The Trace Server Protocol is a protocol designed to allow frontend visualizers to be decoupled from backend. It allows the frontend to query resources in a RESTful way. The guiding principles:
+
+* Keep things as imutable as possible
+* A trace can be queried for any UI elements.
+ * UI elements can be but should not be limited to charts, graphs, trees and more.
+ * Filtering on the server side may produce additional UI elements.
+ * The data type is delivered to the client so the client can remain as lightweight as possible.
+
+The initial design is base on the Eclipse Trace Compass backend and the theia-trace-extension frontend, however this protocol is agnostic and all changes will be considered and suggestions are welcomed.
+
+## How it works
+
 Specification of the Trace Server Protocol
 
 This protocol is built to decouple the backend and frontend of trace analysers, allowing traces to reside and be analysed on the backend, and visual models to be exchanged with a variety of clients.
