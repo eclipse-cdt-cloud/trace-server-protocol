@@ -26,7 +26,7 @@ info:
   license:
     name: Apache 2
     url: http://www.apache.org/licenses/
-  version: 0.5.0
+  version: 0.6.0
 servers:
 - url: https://localhost:8080/tsp/api
 tags:
@@ -2988,6 +2988,7 @@ components:
     TreeColumnHeader:
       required:
       - name
+      - tooltip
       type: object
       properties:
         dataType:
@@ -3136,31 +3137,26 @@ components:
           type: string
           description: "Type of axis domain: 'range'"
       description: Domain of values supported on a numberical range chart axis.
-    Sampling:
+    Range:
+      required:
+      - end
+      - start
       type: object
-      description: Sampling values
-      oneOf:
-      - type: array
-        description: "Sampling as a flat list of timestamps. Example: [100, 200, 350]"
-        items:
+      properties:
+        start:
           type: integer
+          description: Start of the range (inclusive).
           format: int64
-      - type: array
-        description: "Sampling as a flat list of categories. Example: [\"READ\", \"\
-          WRITE\"]"
-        items:
-          type: string
-      - type: array
-        description: "Sampling as a list of start/end range objects. Example: [{\"\
-          start\": 10, \"end\": 20}, {\"start\": 50, \"end\": 75}]"
-        items:
-          $ref: '#/components/schemas/StartEndRange'
+        end:
+          type: integer
+          description: End of the range (inclusive).
+          format: int64
+      description: An object representing a closed interval with a start and end.
     SeriesModel:
       required:
       - seriesId
       - seriesName
       - style
-      - xValues
       - xValuesDescription
       - yValues
       - yValuesDescription
@@ -3176,7 +3172,29 @@ components:
         style:
           $ref: "#/components/schemas/OutputElementStyle"
         xValues:
-          $ref: "#/components/schemas/Sampling"
+          type: array
+          description: "X values as list of int64 values (e.g. timestamps). Example:\
+            \ [100, 200, 350]. Mutually exclusive with xCategories/xRanges."
+          items:
+            type: integer
+            description: "X values as list of int64 values (e.g. timestamps). Example:\
+              \ [100, 200, 350]. Mutually exclusive with xCategories/xRanges."
+            format: int64
+        xCategories:
+          type: array
+          description: "X values as list of category strings. Example: [\"READ\",\
+            \ \"WRITE\"]. Mutually exclusive with xValues/xRanges."
+          items:
+            type: string
+            description: "X values as list of category strings. Example: [\"READ\"\
+              , \"WRITE\"]. Mutually exclusive with xValues/xRanges."
+        xRanges:
+          type: array
+          description: "X values as list of start/end range objects. Example: [{\"\
+            start\": 10, \"end\": 20}, {\"start\": 50, \"end\": 75}]. Mutually exclusive\
+            \ with xValues/xCategories."
+          items:
+            $ref: "#/components/schemas/Range"
         yValues:
           type: array
           description: Series' Y values
@@ -3188,21 +3206,6 @@ components:
         yValuesDescription:
           $ref: "#/components/schemas/XYAxisDescription"
       description: This model includes the series output style values.
-    StartEndRange:
-      required:
-      - end
-      - start
-      type: object
-      properties:
-        start:
-          type: integer
-          description: Start of the range (inclusive).
-          format: int64
-        end:
-          type: integer
-          description: End of the range (inclusive).
-          format: int64
-      description: An object representing a closed interval with a start and end.
     XYAxisDescription:
       required:
       - dataType
